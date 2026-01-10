@@ -1,0 +1,9 @@
+versao: 1.0
+criterios:
+  - nome: impacto
+    descricao: "Implementacao deve gerar impacto tecnico ou cognitivo mensuravel."
+  - nome: custo
+    descricao: "Custo de integracao proporcional ao ganho."
+decisao:
+  aprovado: "Criterios >= 7"
+  rejeitado: "Impacto < 7"

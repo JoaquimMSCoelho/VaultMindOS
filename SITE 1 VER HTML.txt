@@ -1,0 +1,1587 @@
+SITE 1 VER HTML
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<style>
+    /* --- CONFIGURAÇÕES GERAIS E FONTES --- */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap');
+
+    :root {
+        --bg-dark: #0f172a;
+        --bg-darker: #020617;
+        --primary-neon: #00f3ff; /* Ciano Neon */
+        --secondary-neon: #bd00ff; /* Roxo Neon */
+        --glass-bg: rgba(255, 255, 255, 0.03);
+        --glass-border: rgba(255, 255, 255, 0.08);
+        --text-main: #f8fafc;
+        --text-muted: #94a3b8;
+    }
+
+    /* Reset básico */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: var(--bg-dark);
+        /* Técnica: Gradientes Dinâmicos [cite: 24] */
+        background-image: radial-gradient(circle at 15% 50%, rgba(189, 0, 255, 0.08), transparent 25%),
+                          radial-gradient(circle at 85% 30%, rgba(0, 243, 255, 0.08), transparent 25%);
+        color: var(--text-main);
+        line-height: 1.6;
+        overflow-x: hidden;
+    }
+
+    /* --- LAYOUT CONTAINERS --- */
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* --- HEADER --- */
+    header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 2rem 0;
+    }
+
+    .logo {
+        font-family: 'JetBrains Mono', monospace; /* Tipografia Criativa [cite: 44] */
+        font-weight: 700;
+        font-size: 1.5rem;
+        letter-spacing: -1px;
+        background: linear-gradient(90deg, #fff, #94a3b8);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .contact-btn {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        text-decoration: none;
+        transition: color 0.3s;
+    }
+    .contact-btn:hover { color: var(--primary-neon); }
+
+    /* --- HERO SECTION --- */
+    .hero {
+        text-align: center;
+        padding: 80px 0 60px;
+    }
+
+    h1 {
+        font-size: 3.5rem;
+        font-weight: 800;
+        line-height: 1.1;
+        margin-bottom: 1.5rem;
+        letter-spacing: -0.02em;
+        background: linear-gradient(180deg, #fff 0%, #cbd5e1 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    /* Efeito Terminal Typing  */
+    .terminal-wrapper {
+        font-family: 'JetBrains Mono', monospace;
+        color: var(--primary-neon);
+        font-size: 1.1rem;
+        margin-bottom: 2.5rem;
+        display: inline-block;
+        background: rgba(0, 243, 255, 0.05);
+        padding: 8px 16px;
+        border-radius: 4px;
+        border: 1px solid rgba(0, 243, 255, 0.1);
+    }
+    
+    .cursor {
+        display: inline-block;
+        width: 8px;
+        height: 18px;
+        background-color: var(--primary-neon);
+        animation: blink 1s infinite;
+        vertical-align: middle;
+        margin-left: 5px;
+    }
+
+    @keyframes blink { 50% { opacity: 0; } }
+
+    /* --- GLASSMORPHISM CARDS (Bento Grid) [cite: 4, 12, 69] --- */
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* CSS Grid [cite: 36] */
+        gap: 24px;
+        margin: 60px 0;
+    }
+
+    .glass-card {
+        /* Técnica: Overlay transparente e Backdrop Filter [cite: 3, 5] */
+        background: var(--glass-bg);
+        backdrop-filter: blur(12px); 
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--glass-border);
+        border-radius: 16px;
+        padding: 32px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease; /* Microinterações [cite: 40, 41] */
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Efeito de brilho no hover */
+    .glass-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0 30px rgba(0, 243, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .card-icon {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+        display: block;
+    }
+
+    .card-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        color: #fff;
+    }
+
+    .card-text {
+        font-size: 0.95rem;
+        color: var(--text-muted);
+    }
+
+    /* --- FORMULÁRIO DE WAITLIST --- */
+    .waitlist-section {
+        max-width: 500px;
+        margin: 0 auto 80px;
+        padding: 30px;
+        /* Estilo Glassmorphism Evoluído [cite: 51] */
+        background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
+        border-radius: 20px;
+        border: 1px solid var(--glass-border);
+        text-align: center;
+    }
+
+    .input-group {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+        flex-direction: column;
+    }
+
+    @media(min-width: 600px) {
+        .input-group { flex-direction: row; }
+    }
+
+    input[type="email"] {
+        flex: 1;
+        padding: 14px 20px;
+        border-radius: 8px;
+        border: 1px solid #334155;
+        background: #0f172a;
+        color: #fff;
+        font-family: 'Inter', sans-serif;
+        outline: none;
+    }
+
+    input[type="email"]:focus {
+        border-color: var(--secondary-neon);
+        box-shadow: 0 0 10px rgba(189, 0, 255, 0.2);
+    }
+
+    /* Botão com Gradiente e Microinteração [cite: 24, 88] */
+    .cta-button {
+        padding: 14px 28px;
+        border-radius: 8px;
+        border: none;
+        background: linear-gradient(90deg, #4f46e5 0%, #bd00ff 100%);
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-size: 0.9rem;
+    }
+
+    .cta-button:hover {
+        box-shadow: 0 0 20px rgba(189, 0, 255, 0.4);
+        transform: scale(1.02);
+    }
+
+    /* --- FOOTER --- */
+    footer {
+        border-top: 1px solid var(--glass-border);
+        padding: 40px 0;
+        text-align: center;
+        color: #64748b;
+        font-size: 0.9rem;
+    }
+
+</style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div class="logo">VaultMindOS_</div>
+        <a href="mailto:contact@vaultmindos.com" class="contact-btn">contact@vaultmindos.com</a>
+    </header>
+
+    <section class="hero">
+        <div class="terminal-wrapper">
+            > <span id="typewriter"></span><span class="cursor"></span>
+        </div>
+        <h1>O Sistema Operacional<br>da sua Inteligência.</h1>
+        <p style="color: #94a3b8; margin-top: 1.5rem; font-size: 1.1rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+            Transforme conversas efêmeras em ativos digitais permanentes. 
+            Privacidade total. IA Local. Seu "segundo cérebro" blindado.
+        </p>
+    </section>
+
+    <section class="waitlist-section">
+        <h3 style="color: #fff; margin-bottom: 10px;">Solicitar Acesso Alpha</h3>
+        <p style="font-size: 0.9rem; color: #94a3b8;">Junte-se a engenheiros e arquitetos na lista de espera.</p>
+        
+        <form class="input-group" onsubmit="event.preventDefault(); alert('Em breve conectado ao seu sistema de e-mail!');">
+            <input type="email" placeholder="seu@email.com" required>
+            <button type="submit" class="cta-button">Entrar no Vault</button>
+        </form>
+    </section>
+
+    <section class="features-grid">
+        <div class="glass-card">
+            <span class="card-icon">🔒</span>
+            <h3 class="card-title">Privacidade Absoluta</h3>
+            <p class="card-text">
+                Tecnologia Local-First. Seus vetores e dados rodam no ChromaDB dentro da sua máquina. Zero dados na nuvem.
+            </p>
+        </div>
+
+        <div class="glass-card">
+            <span class="card-icon">🧠</span>
+            <h3 class="card-title">Memória Infinita (RAG)</h3>
+            <p class="card-text">
+                O fim da amnésia. Recupere códigos, prompts e estratégias de meses atrás em milissegundos com busca semântica.
+            </p>
+        </div>
+
+        <div class="glass-card">
+            <span class="card-icon">💎</span>
+            <h3 class="card-title">Padronização Enterprise</h3>
+            <p class="card-text">
+                Organize seus fluxos em Workspaces. Crie a memória institucional da sua agência ou projeto de software.
+            </p>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 VaultMindOS. Automating Intelligence. Preserving Privacy.</p>
+    </footer>
+</div>
+
+<script>
+    const text = "Initializing Vault... Local Memory Access... Secure.";
+    const element = document.getElementById("typewriter");
+    let i = 0;
+
+    function typeWriter() {
+        if (i < text.length) {
+            element.innerHTML += text.charAt(i);
+            i++;
+            setTimeout(typeWriter, 50); // Velocidade da digitação
+        }
+    }
+    
+    // Inicia o efeito quando a página carrega
+    window.onload = typeWriter;
+</script>
+
+</body>
+</html>
+
+============================================================================================================================
+============================================================================================================================
+
+SITE 2 VER HTML
+
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VaultMindOS | Enterprise Intelligence Architecture</title>
+<style>
+    /* --- CONFIGURAÇÕES GERAIS E FONTES --- */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+    :root {
+        --bg-dark: #0B0F19; /* Fundo mais profundo e azulado (Enterprise Dark) */
+        --bg-card: #151B2B;
+        --primary: #38bdf8; /* Azul Celeste Profissional */
+        --secondary: #818cf8; /* Indigo Suave */
+        --accent: #2dd4bf; /* Verde Água Tecnológico */
+        --text-main: #f1f5f9;
+        --text-muted: #94a3b8;
+        --border-light: rgba(255, 255, 255, 0.06);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: var(--bg-dark);
+        color: var(--text-main);
+        line-height: 1.6;
+        overflow-x: hidden;
+    }
+
+    /* --- BACKGROUND DINÂMICO SUTIL --- */
+    .bg-glow {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: 
+            radial-gradient(circle at 10% 20%, rgba(56, 189, 248, 0.03) 0%, transparent 40%),
+            radial-gradient(circle at 90% 80%, rgba(129, 140, 248, 0.03) 0%, transparent 40%);
+        z-index: -1;
+        pointer-events: none;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 24px;
+    }
+
+    /* --- HEADER (Estilo Navegação SaaS) --- */
+    header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 24px 0;
+        border-bottom: 1px solid var(--border-light);
+    }
+
+    .logo {
+        font-family: 'Inter', sans-serif;
+        font-weight: 800;
+        font-size: 1.25rem;
+        letter-spacing: -0.5px;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .logo span { color: var(--accent); }
+
+    .nav-links {
+        display: flex;
+        gap: 20px;
+    }
+
+    .nav-btn {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        text-decoration: none;
+        font-weight: 500;
+        padding: 8px 16px;
+        border-radius: 6px;
+        transition: all 0.2s;
+    }
+
+    .nav-btn:hover { color: #fff; background: rgba(255,255,255,0.05); }
+    
+    .nav-btn.primary {
+        background: #fff;
+        color: var(--bg-dark);
+        font-weight: 600;
+    }
+    .nav-btn.primary:hover { background: #e2e8f0; }
+
+    /* --- HERO SECTION (Autoridade e Clareza) --- */
+    .hero {
+        text-align: center;
+        padding: 100px 0 60px;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 12px;
+        background: rgba(45, 212, 191, 0.1);
+        color: var(--accent);
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 24px;
+        border: 1px solid rgba(45, 212, 191, 0.2);
+    }
+
+    h1 {
+        font-size: 4rem;
+        font-weight: 800;
+        line-height: 1.1;
+        margin-bottom: 24px;
+        letter-spacing: -0.03em;
+        background: linear-gradient(180deg, #fff 0%, #94a3b8 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+        font-size: 1.25rem;
+        color: var(--text-muted);
+        max-width: 680px;
+        margin: 0 auto 40px;
+        font-weight: 300;
+    }
+
+    /* --- TRUST BAR (Logos de Parceiros/Tecnologias) --- */
+    .trust-bar {
+        text-align: center;
+        margin-bottom: 80px;
+        opacity: 0.6;
+    }
+    .trust-label {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 20px;
+        color: #475569;
+    }
+    .logos-grid {
+        display: flex;
+        justify-content: center;
+        gap: 40px;
+        flex-wrap: wrap;
+        font-family: 'JetBrains Mono', monospace;
+        color: #64748b;
+        font-size: 0.9rem;
+    }
+
+    /* --- BENTO GRID (Estilo Quantumrun) --- */
+    .features-section {
+        padding: 40px 0 100px;
+    }
+    
+    .bento-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+    }
+
+    .bento-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-light);
+        border-radius: 12px;
+        padding: 32px;
+        transition: transform 0.2s, border-color 0.2s;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
+    }
+
+    .bento-card.large {
+        grid-column: span 2; /* Card de destaque horizontal */
+        background: linear-gradient(135deg, #151B2B 0%, #1e293b 100%);
+    }
+
+    .bento-card:hover {
+        transform: translateY(-4px);
+        border-color: rgba(255,255,255,0.15);
+    }
+
+    .icon-box {
+        width: 48px; height: 48px;
+        background: rgba(255,255,255,0.03);
+        border-radius: 8px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 24px;
+        border: 1px solid var(--border-light);
+    }
+
+    .bento-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 12px;
+        color: #fff;
+    }
+
+    .bento-text {
+        font-size: 0.95rem;
+        color: var(--text-muted);
+    }
+
+    /* --- FORMULÁRIO DE CAPTURA --- */
+    .cta-box {
+        background: linear-gradient(90deg, #0f172a 0%, #1e293b 100%);
+        border: 1px solid var(--border-light);
+        border-radius: 16px;
+        padding: 60px;
+        text-align: center;
+        margin-bottom: 80px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .cta-box::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 4px;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+    }
+
+    .input-wrapper {
+        display: flex;
+        max-width: 450px;
+        margin: 30px auto 0;
+        gap: 10px;
+    }
+
+    input {
+        flex: 1;
+        padding: 16px;
+        border-radius: 8px;
+        border: 1px solid #334155;
+        background: #0B0F19;
+        color: #fff;
+        font-size: 1rem;
+    }
+
+    button.submit-btn {
+        padding: 16px 32px;
+        border-radius: 8px;
+        border: none;
+        background: #fff;
+        color: #000;
+        font-weight: 600;
+        cursor: pointer;
+        transition: opacity 0.2s;
+    }
+    button.submit-btn:hover { opacity: 0.9; }
+
+    /* --- FOOTER --- */
+    footer {
+        border-top: 1px solid var(--border-light);
+        padding: 60px 0;
+        color: #64748b;
+        font-size: 0.9rem;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    @media (max-width: 768px) {
+        h1 { font-size: 2.5rem; }
+        .bento-grid { grid-template-columns: 1fr; }
+        .bento-card.large { grid-column: span 1; }
+        .input-wrapper { flex-direction: column; }
+        footer { flex-direction: column; gap: 20px; text-align: center; }
+    }
+</style>
+</head>
+<body>
+
+<div class="bg-glow"></div>
+
+<div class="container">
+    <header>
+        <div class="logo">
+            <div style="width: 20px; height: 20px; background: var(--accent); border-radius: 4px;"></div>
+            VaultMind<span>OS</span>
+        </div>
+        <nav class="nav-links">
+            <a href="#" class="nav-btn">Documentação</a>
+            <a href="#" class="nav-btn">Segurança</a>
+            <a href="#" class="nav-btn primary">Acessar Sistema</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="badge">v2.0 Beta Disponível</div>
+        <h1>Inteligência Corporativa.<br>Privacidade Soberana.</h1>
+        <p>
+            Uma infraestrutura de IA local-first que transforma dados não estruturados em ativos estratégicos. 
+            Sem vazamentos. Sem dependência de nuvem.
+        </p>
+        
+        <div style="font-family: 'JetBrains Mono', monospace; color: var(--accent); background: rgba(45, 212, 191, 0.05); display: inline-block; padding: 10px 20px; border-radius: 8px; border: 1px solid rgba(45, 212, 191, 0.1);">
+            > <span id="typewriter"></span><span style="animation: blink 1s infinite">_</span>
+        </div>
+    </section>
+
+    <div class="trust-bar">
+        <div class="trust-label">Arquitetura compatível com</div>
+        <div class="logos-grid">
+            <span>PYTHON</span>
+            <span>REACT</span>
+            <span>DOCKER</span>
+            <span>CHROMA DB</span>
+            <span>LANGCHAIN</span>
+        </div>
+    </div>
+
+    <section class="features-section">
+        <div class="bento-grid">
+            <div class="bento-card large">
+                <div class="icon-box">🛡️</div>
+                <div>
+                    <h3 class="bento-title">Segurança de Nível Militar</h3>
+                    <p class="bento-text">
+                        Seus dados nunca saem da infraestrutura da empresa. O VaultMindOS opera em containers isolados, 
+                        garantindo que segredos comerciais permaneçam secretos. A criptografia é aplicada em repouso e em trânsito.
+                    </p>
+                </div>
+            </div>
+
+            <div class="bento-card">
+                <div class="icon-box">⚡</div>
+                <h3 class="bento-title">RAG Instantâneo</h3>
+                <p class="bento-text">
+                    Recuperação Aumentada de Geração (RAG) integrada. Indexe PDFs, códigos e contratos em segundos.
+                </p>
+            </div>
+
+            <div class="bento-card">
+                <div class="icon-box">🧠</div>
+                <h3 class="bento-title">Memória Contextual</h3>
+                <p class="bento-text">
+                    O sistema "lembra" de decisões passadas, criando uma base de conhecimento evolutiva para sua equipe.
+                </p>
+            </div>
+
+            <div class="bento-card">
+                <div class="icon-box">📊</div>
+                <h3 class="bento-title">Analytics Preditivo</h3>
+                <p class="bento-text">
+                    Transforme logs de conversas em insights de produtividade e identifique gargalos operacionais.
+                </p>
+            </div>
+            
+            <div class="bento-card">
+                <div class="icon-box">🔌</div>
+                <h3 class="bento-title">API First</h3>
+                <p class="bento-text">
+                    Integre o VaultMindOS ao seu CRM, ERP ou Slack através de endpoints RESTful documentados.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-box">
+        <h2 style="font-size: 2rem; margin-bottom: 16px;">Pronto para implantar?</h2>
+        <p style="color: var(--text-muted);">Entre na lista de espera para receber a documentação técnica.</p>
+        
+        <form class="input-wrapper" onsubmit="event.preventDefault(); alert('E-mail registrado na lista de espera!');">
+            <input type="email" placeholder="nome@suaempresa.com" required>
+            <button type="submit" class="submit-btn">Solicitar Acesso</button>
+        </form>
+    </section>
+
+    <footer>
+        <div>
+            <strong>VaultMindOS</strong>
+            <div style="margin-top: 10px;">Automating Intelligence.</div>
+        </div>
+        <div style="display: flex; gap: 20px;">
+            <a href="#" style="color: inherit; text-decoration: none;">GitHub</a>
+            <a href="#" style="color: inherit; text-decoration: none;">Twitter</a>
+            <a href="#" style="color: inherit; text-decoration: none;">LinkedIn</a>
+        </div>
+    </footer>
+</div>
+
+<script>
+    const text = "System.initialize({ privacy: 'strict', memory: 'infinite' });";
+    const element = document.getElementById("typewriter");
+    let i = 0;
+
+    function typeWriter() {
+        if (i < text.length) {
+            element.innerHTML += text.charAt(i);
+            i++;
+            setTimeout(typeWriter, 40);
+        }
+    }
+    
+    // Inicia a animação ao carregar
+    window.onload = typeWriter;
+</script>
+
+</body>
+</html>
+
+===================================================================================================================
+===================================================================================================================
+===================================================================================================================
+===================================================================================================================
+
+
+SITE VERSÃO 3
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VaultMindOS | Enterprise Intelligence Architecture</title>
+<style>
+    /* --- CONFIGURAÇÕES GERAIS E FONTES --- */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+    :root {
+        --bg-dark: #0B0F19; 
+        --bg-card: #151B2B;
+        --primary: #38bdf8; 
+        --secondary: #818cf8; 
+        --accent: #2dd4bf; 
+        --text-main: #f1f5f9;
+        --text-muted: #94a3b8;
+        --border-light: rgba(255, 255, 255, 0.06);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: var(--bg-dark);
+        color: var(--text-main);
+        line-height: 1.6;
+        overflow-x: hidden;
+    }
+
+    /* --- BACKGROUND DINÂMICO SUTIL --- */
+    .bg-glow {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: 
+            radial-gradient(circle at 10% 20%, rgba(56, 189, 248, 0.03) 0%, transparent 40%),
+            radial-gradient(circle at 90% 80%, rgba(129, 140, 248, 0.03) 0%, transparent 40%);
+        z-index: -1;
+        pointer-events: none;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 24px;
+    }
+
+    /* --- HEADER (Navegação) --- */
+    header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 24px 0;
+        border-bottom: 1px solid var(--border-light);
+    }
+
+    .logo {
+        font-family: 'Inter', sans-serif;
+        font-weight: 800;
+        font-size: 1.25rem;
+        letter-spacing: -0.5px;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .logo span { color: var(--accent); }
+
+    .nav-links {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+    }
+
+    .nav-btn {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        text-decoration: none;
+        font-weight: 500;
+        padding: 8px 16px;
+        border-radius: 6px;
+        transition: all 0.2s;
+    }
+
+    .nav-btn:hover { color: #fff; background: rgba(255,255,255,0.05); }
+    
+    /* --- BOTÃO DE IDIOMA (NOVO - Baseado na Referência) --- */
+    .lang-dropdown {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background-color: #f1f5f9; /* Fundo claro como na imagem */
+        color: #0f172a; /* Texto escuro para contraste */
+        padding: 8px 12px;
+        border-radius: 4px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+        border: 1px solid transparent;
+    }
+
+    .lang-dropdown:hover {
+        background-color: #e2e8f0;
+    }
+
+    .lang-flag {
+        width: 20px;
+        height: auto;
+        border-radius: 2px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+
+    .lang-arrow {
+        font-size: 0.7rem;
+        margin-left: 4px;
+        opacity: 0.6;
+    }
+
+    /* Botão de Ação Principal */
+    .nav-btn.primary {
+        background: #fff;
+        color: var(--bg-dark);
+        font-weight: 600;
+        margin-left: 10px;
+    }
+    .nav-btn.primary:hover { background: #e2e8f0; }
+
+    /* --- HERO SECTION --- */
+    .hero {
+        text-align: center;
+        padding: 100px 0 60px;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 12px;
+        background: rgba(45, 212, 191, 0.1);
+        color: var(--accent);
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 24px;
+        border: 1px solid rgba(45, 212, 191, 0.2);
+    }
+
+    h1 {
+        font-size: 4rem;
+        font-weight: 800;
+        line-height: 1.1;
+        margin-bottom: 24px;
+        letter-spacing: -0.03em;
+        background: linear-gradient(180deg, #fff 0%, #94a3b8 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+        font-size: 1.25rem;
+        color: var(--text-muted);
+        max-width: 680px;
+        margin: 0 auto 40px;
+        font-weight: 300;
+    }
+
+    /* --- TRUST BAR --- */
+    .trust-bar {
+        text-align: center;
+        margin-bottom: 80px;
+        opacity: 0.6;
+    }
+    .trust-label {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 20px;
+        color: #475569;
+    }
+    .logos-grid {
+        display: flex;
+        justify-content: center;
+        gap: 40px;
+        flex-wrap: wrap;
+        font-family: 'JetBrains Mono', monospace;
+        color: #64748b;
+        font-size: 0.9rem;
+    }
+
+    /* --- BENTO GRID --- */
+    .features-section {
+        padding: 40px 0 100px;
+    }
+    
+    .bento-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+    }
+
+    .bento-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-light);
+        border-radius: 12px;
+        padding: 32px;
+        transition: transform 0.2s, border-color 0.2s;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
+    }
+
+    .bento-card.large {
+        grid-column: span 2;
+        background: linear-gradient(135deg, #151B2B 0%, #1e293b 100%);
+    }
+
+    .bento-card:hover {
+        transform: translateY(-4px);
+        border-color: rgba(255,255,255,0.15);
+    }
+
+    .icon-box {
+        width: 48px; height: 48px;
+        background: rgba(255,255,255,0.03);
+        border-radius: 8px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 24px;
+        border: 1px solid var(--border-light);
+    }
+
+    .bento-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 12px;
+        color: #fff;
+    }
+
+    .bento-text {
+        font-size: 0.95rem;
+        color: var(--text-muted);
+    }
+
+    /* --- FORMULÁRIO --- */
+    .cta-box {
+        background: linear-gradient(90deg, #0f172a 0%, #1e293b 100%);
+        border: 1px solid var(--border-light);
+        border-radius: 16px;
+        padding: 60px;
+        text-align: center;
+        margin-bottom: 80px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .cta-box::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 4px;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+    }
+
+    .input-wrapper {
+        display: flex;
+        max-width: 450px;
+        margin: 30px auto 0;
+        gap: 10px;
+    }
+
+    input {
+        flex: 1;
+        padding: 16px;
+        border-radius: 8px;
+        border: 1px solid #334155;
+        background: #0B0F19;
+        color: #fff;
+        font-size: 1rem;
+    }
+
+    button.submit-btn {
+        padding: 16px 32px;
+        border-radius: 8px;
+        border: none;
+        background: #fff;
+        color: #000;
+        font-weight: 600;
+        cursor: pointer;
+        transition: opacity 0.2s;
+    }
+    button.submit-btn:hover { opacity: 0.9; }
+
+    /* --- FOOTER --- */
+    footer {
+        border-top: 1px solid var(--border-light);
+        padding: 60px 0;
+        color: #64748b;
+        font-size: 0.9rem;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    @media (max-width: 768px) {
+        h1 { font-size: 2.5rem; }
+        .bento-grid { grid-template-columns: 1fr; }
+        .bento-card.large { grid-column: span 1; }
+        .input-wrapper { flex-direction: column; }
+        header { flex-direction: column; gap: 20px; }
+        .nav-links { flex-wrap: wrap; justify-content: center; }
+        footer { flex-direction: column; gap: 20px; text-align: center; }
+    }
+</style>
+</head>
+<body>
+
+<div class="bg-glow"></div>
+
+<div class="container">
+    <header>
+        <div class="logo">
+            <div style="width: 20px; height: 20px; background: var(--accent); border-radius: 4px;"></div>
+            VaultMind<span>OS</span>
+        </div>
+        <nav class="nav-links">
+            <div class="lang-dropdown" onclick="alert('Default Language: English (US)')">
+                <img src="https://flagcdn.com/w40/us.png" alt="USA Flag" class="lang-flag">
+                <span>English</span>
+                <span class="lang-arrow">▼</span>
+            </div>
+
+            <a href="#" class="nav-btn">Documentação</a>
+            <a href="#" class="nav-btn">Segurança</a>
+            <a href="#" class="nav-btn primary">Acessar Sistema</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="badge">v2.0 Beta Disponível</div>
+        <h1>Inteligência Corporativa.<br>Privacidade Soberana.</h1>
+        <p>
+            Uma infraestrutura de IA local-first que transforma dados não estruturados em ativos estratégicos. 
+            Sem vazamentos. Sem dependência de nuvem.
+        </p>
+        
+        <div style="font-family: 'JetBrains Mono', monospace; color: var(--accent); background: rgba(45, 212, 191, 0.05); display: inline-block; padding: 10px 20px; border-radius: 8px; border: 1px solid rgba(45, 212, 191, 0.1);">
+            > <span id="typewriter"></span><span style="animation: blink 1s infinite">_</span>
+        </div>
+    </section>
+
+    <div class="trust-bar">
+        <div class="trust-label">Arquitetura compatível com</div>
+        <div class="logos-grid">
+            <span>PYTHON</span>
+            <span>REACT</span>
+            <span>DOCKER</span>
+            <span>CHROMA DB</span>
+            <span>LANGCHAIN</span>
+        </div>
+    </div>
+
+    <section class="features-section">
+        <div class="bento-grid">
+            <div class="bento-card large">
+                <div class="icon-box">🛡️</div>
+                <div>
+                    <h3 class="bento-title">Segurança de Nível Militar</h3>
+                    <p class="bento-text">
+                        Seus dados nunca saem da infraestrutura da empresa. O VaultMindOS opera em containers isolados, 
+                        garantindo que segredos comerciais permaneçam secretos.
+                    </p>
+                </div>
+            </div>
+
+            <div class="bento-card">
+                <div class="icon-box">⚡</div>
+                <h3 class="bento-title">RAG Instantâneo</h3>
+                <p class="bento-text">
+                    Recuperação Aumentada de Geração (RAG) integrada. Indexe PDFs e códigos em segundos.
+                </p>
+            </div>
+
+            <div class="bento-card">
+                <div class="icon-box">🧠</div>
+                <h3 class="bento-title">Memória Contextual</h3>
+                <p class="bento-text">
+                    O sistema "lembra" de decisões passadas, criando uma base de conhecimento evolutiva.
+                </p>
+            </div>
+
+            <div class="bento-card">
+                <div class="icon-box">📊</div>
+                <h3 class="bento-title">Analytics Preditivo</h3>
+                <p class="bento-text">
+                    Transforme logs de conversas em insights de produtividade e identifique gargalos.
+                </p>
+            </div>
+            
+            <div class="bento-card">
+                <div class="icon-box">🔌</div>
+                <h3 class="bento-title">API First</h3>
+                <p class="bento-text">
+                    Integre o VaultMindOS ao seu CRM ou Slack através de endpoints RESTful.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-box">
+        <h2 style="font-size: 2rem; margin-bottom: 16px;">Pronto para implantar?</h2>
+        <p style="color: var(--text-muted);">Entre na lista de espera para receber a documentação técnica.</p>
+        
+        <form class="input-wrapper" onsubmit="event.preventDefault(); alert('E-mail registrado na lista de espera!');">
+            <input type="email" placeholder="nome@suaempresa.com" required>
+            <button type="submit" class="submit-btn">Solicitar Acesso</button>
+        </form>
+    </section>
+
+    <footer>
+        <div>
+            <strong>VaultMindOS</strong>
+            <div style="margin-top: 10px;">Automating Intelligence.</div>
+        </div>
+        <div style="display: flex; gap: 20px;">
+            <a href="#" style="color: inherit; text-decoration: none;">GitHub</a>
+            <a href="#" style="color: inherit; text-decoration: none;">Twitter</a>
+            <a href="#" style="color: inherit; text-decoration: none;">LinkedIn</a>
+        </div>
+    </footer>
+</div>
+
+<script>
+    const text = "System.initialize({ privacy: 'strict', memory: 'infinite' });";
+    const element = document.getElementById("typewriter");
+    let i = 0;
+
+    function typeWriter() {
+        if (i < text.length) {
+            element.innerHTML += text.charAt(i);
+            i++;
+            setTimeout(typeWriter, 40);
+        }
+    }
+    window.onload = typeWriter;
+</script>
+
+</body>
+</html>
+
+===================================================================================================================
+===================================================================================================================
+===================================================================================================================
+===================================================================================================================
+
+
+SITE VERSÃO 4
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VaultMindOS | Strategic Foresight & Intelligence</title>
+<style>
+    /* --- CONFIGURAÇÕES GERAIS E FONTES --- */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+    :root {
+        --bg-dark: #0B0F19; 
+        --bg-card: #151B2B;
+        --primary: #38bdf8; 
+        --secondary: #818cf8; 
+        --accent: #2dd4bf; 
+        --text-main: #f1f5f9;
+        --text-muted: #94a3b8;
+        --border-light: rgba(255, 255, 255, 0.06);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: var(--bg-dark);
+        color: var(--text-main);
+        line-height: 1.6;
+        overflow-x: hidden;
+    }
+
+    /* BACKGROUND DINÂMICO */
+    .bg-glow {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: 
+            radial-gradient(circle at 15% 25%, rgba(56, 189, 248, 0.04) 0%, transparent 40%),
+            radial-gradient(circle at 85% 75%, rgba(45, 212, 191, 0.04) 0%, transparent 40%);
+        z-index: -1;
+        pointer-events: none;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 24px;
+    }
+
+    /* --- HEADER --- */
+    header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 24px 0;
+        border-bottom: 1px solid var(--border-light);
+    }
+
+    .logo {
+        font-family: 'Inter', sans-serif;
+        font-weight: 800;
+        font-size: 1.25rem;
+        letter-spacing: -0.5px;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .logo span { color: var(--accent); }
+
+    .nav-links {
+        display: flex;
+        gap: 24px;
+        align-items: center;
+    }
+
+    .nav-item {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.2s;
+    }
+    .nav-item:hover { color: #fff; }
+
+    /* SELETOR DE IDIOMA (Estilo Quantumrun) */
+    .lang-dropdown {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background-color: #f8fafc;
+        color: #0f172a;
+        padding: 6px 12px;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        cursor: pointer;
+        border: 1px solid transparent;
+        margin-right: 15px;
+    }
+    .lang-flag { width: 18px; border-radius: 2px; }
+    .lang-arrow { font-size: 0.6rem; opacity: 0.6; }
+
+    .btn-login {
+        border: 1px solid var(--border-light);
+        padding: 8px 16px;
+        border-radius: 6px;
+        color: #fff;
+        text-decoration: none;
+        font-size: 0.9rem;
+    }
+
+    /* --- HERO --- */
+    .hero {
+        text-align: center;
+        padding: 100px 0 60px;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    h1 {
+        font-size: 3.5rem;
+        font-weight: 800;
+        line-height: 1.1;
+        margin-bottom: 24px;
+        letter-spacing: -0.02em;
+        background: linear-gradient(180deg, #fff 0%, #cbd5e1 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+        font-size: 1.2rem;
+        color: var(--text-muted);
+        max-width: 700px;
+        margin: 0 auto 40px;
+    }
+
+    /* --- SERVICES GRID (Dados do Arquivo) --- */
+    .section-title {
+        font-size: 1.8rem;
+        margin-bottom: 40px;
+        border-left: 4px solid var(--primary);
+        padding-left: 20px;
+    }
+
+    .bento-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 24px;
+        margin-bottom: 80px;
+    }
+
+    .bento-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-light);
+        border-radius: 12px;
+        padding: 30px;
+        transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .bento-card:hover {
+        transform: translateY(-5px);
+        border-color: rgba(255,255,255,0.1);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .card-icon { font-size: 1.5rem; margin-bottom: 15px; display: block; }
+    .card-title { font-size: 1.1rem; color: #fff; margin-bottom: 10px; font-weight: 600; }
+    .card-desc { font-size: 0.9rem; color: var(--text-muted); }
+
+    /* --- INDUSTRIES TAGS (Dados do Arquivo) --- */
+    .industries-wrapper {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 80px;
+    }
+
+    .industry-tag {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid var(--border-light);
+        padding: 10px 20px;
+        border-radius: 50px;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        transition: all 0.2s;
+        cursor: default;
+    }
+
+    .industry-tag:hover {
+        background: rgba(56, 189, 248, 0.1);
+        color: var(--primary);
+        border-color: var(--primary);
+    }
+
+    /* --- FOOTER (Estrutura do Arquivo) --- */
+    footer {
+        border-top: 1px solid var(--border-light);
+        padding: 80px 0 40px;
+        background: #080b12;
+        margin-top: 60px;
+    }
+
+    .footer-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 40px;
+        margin-bottom: 60px;
+    }
+
+    .footer-col h4 {
+        color: #fff;
+        margin-bottom: 20px;
+        font-size: 1rem;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+    }
+
+    .footer-col ul { list-style: none; }
+    
+    .footer-col li { margin-bottom: 12px; }
+    
+    .footer-col a {
+        color: #64748b;
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: color 0.2s;
+    }
+
+    .footer-col a:hover { color: var(--primary); }
+
+    .footer-bottom {
+        border-top: 1px solid var(--border-light);
+        padding-top: 30px;
+        text-align: center;
+        font-size: 0.85rem;
+        color: #475569;
+    }
+
+    @media (max-width: 768px) {
+        header { flex-direction: column; gap: 20px; }
+        .nav-links { flex-wrap: wrap; justify-content: center; }
+        h1 { font-size: 2.5rem; }
+    }
+</style>
+</head>
+<body>
+
+<div class="bg-glow"></div>
+
+<div class="container">
+    <header>
+        <div class="logo">
+            <div style="width: 20px; height: 20px; background: var(--accent); border-radius: 4px;"></div>
+            VaultMind<span>OS</span>
+        </div>
+        
+        <nav class="nav-links">
+            <a href="#" class="nav-item">Consulting</a>
+            <a href="#" class="nav-item">Platform</a>
+            <a href="#" class="nav-item">Industries</a>
+            <a href="#" class="nav-item">About</a>
+            
+            <div class="lang-dropdown">
+                <img src="https://flagcdn.com/w40/us.png" alt="US" class="lang-flag">
+                <span>English</span>
+                <span class="lang-arrow">▼</span>
+            </div>
+            
+            <a href="#" class="btn-login">Login</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div style="color: var(--accent); font-family: 'JetBrains Mono'; font-size: 0.9rem; margin-bottom: 20px;">
+            > FUTURE_READINESS_PROTOCOL_INIT
+        </div>
+        <h1>Adapt to emerging trends<br>before they happen.</h1>
+        <p>
+            Strategic foresight consulting and intelligence software to help your company stay aware and adapt to market shifts.
+        </p>
+    </section>
+
+    <h2 class="section-title">Consulting Services</h2>
+    <div class="bento-grid">
+        <div class="bento-card">
+            <span class="card-icon">💡</span>
+            <div class="card-title">Business Ideation</div>
+            <div class="card-desc">Generate innovative product and service concepts based on data-driven trends.</div>
+        </div>
+        <div class="bento-card">
+            <span class="card-icon">🎤</span>
+            <div class="card-title">Futurist Speakers</div>
+            <div class="card-desc">Engage your audience with keynote presentations on the future of your industry.</div>
+        </div>
+        <div class="bento-card">
+            <span class="card-icon">🛠️</span>
+            <div class="card-title">Foresight Workshops</div>
+            <div class="card-desc">Collaborative sessions to map out scenarios and build strategic resilience.</div>
+        </div>
+        <div class="bento-card">
+            <span class="card-icon">📊</span>
+            <div class="card-title">Corporate Reports</div>
+            <div class="card-desc">Deep-dive custom research reports tailored to your specific organizational needs.</div>
+        </div>
+        <div class="bento-card">
+            <span class="card-icon">🌐</span>
+            <div class="card-title">Trend Scanning</div>
+            <div class="card-desc">Continuous monitoring of signals and shifts relevant to your market sector.</div>
+        </div>
+        <div class="bento-card">
+            <span class="card-icon">🚀</span>
+            <div class="card-title">SciFi Visioning</div>
+            <div class="card-desc">Design fiction and prototyping to visualize potential futures tangibly.</div>
+        </div>
+    </div>
+
+    <h2 class="section-title">Industries We Serve</h2>
+    <div class="industries-wrapper">
+        <span class="industry-tag">Aerospace</span>
+        <span class="industry-tag">Automotive</span>
+        <span class="industry-tag">Banking & Finance</span>
+        <span class="industry-tag">Consumer Goods (CPG)</span>
+        <span class="industry-tag">Energy Sector</span>
+        <span class="industry-tag">Insurance</span>
+        <span class="industry-tag">Retail</span>
+        <span class="industry-tag">Technology</span>
+        <span class="industry-tag">Pharmaceuticals</span>
+        <span class="industry-tag">Government</span>
+        <span class="industry-tag">Logistics</span>
+    </div>
+
+</div>
+
+<footer>
+    <div class="container">
+        <div class="footer-grid">
+            
+            <div class="footer-col">
+                <h4>Consulting</h4>
+                <ul>
+                    <li><a href="#">Business Ideation</a></li>
+                    <li><a href="#">Futurist Speakers</a></li>
+                    <li><a href="#">Foresight Workshops</a></li>
+                    <li><a href="#">Corporate Reports</a></li>
+                    <li><a href="#">Policy Foresight</a></li>
+                    <li><a href="#">Internal Department</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Platform</h4>
+                <ul>
+                    <li><a href="#">Foresight Platform</a></li>
+                    <li><a href="#">Pricing & Plans</a></li>
+                    <li><a href="#">Newsletter</a></li>
+                    <li><a href="#">Trend Reports 2024</a></li>
+                    <li><a href="#">Affiliate Program</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Publications</h4>
+                <ul>
+                    <li><a href="#">Public Website</a></li>
+                    <li><a href="#">Trends Report</a></li>
+                    <li><a href="#">Special Series</a></li>
+                    <li><a href="#">Future Timelines</a></li>
+                    <li><a href="#">Blog</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Company</h4>
+                <ul>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Methodology</a></li>
+                    <li><a href="#">The Team</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">Press</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </div>
+
+        </div>
+
+        <div class="footer-bottom">
+            &copy; 2025 VaultMindOS Foresight. Subsidiary of FutureSpec Group. All Rights Reserved.
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>

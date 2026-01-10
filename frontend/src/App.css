@@ -1,0 +1,81 @@
+/* Reset básico */
+* { box-sizing: border-box; }
+body { margin: 0; padding: 0; overflow: hidden; }
+
+/* Animação do botão de anexo */
+button:active { transform: scale(0.95); }
+
+/* Scrollbar bonita */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); }
+::-webkit-scrollbar-thumb { background: rgba(22, 160, 133, 0.5); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(22, 160, 133, 0.8); }
+
+/* --- ESTILOS DE MARKDOWN (TABELAS E LISTAS) --- */
+
+/* Garante que o texto não "vaze" do balão */
+.markdown-content {
+    overflow-wrap: break-word;
+    font-size: 0.95rem;
+}
+
+.markdown-content p {
+    margin-bottom: 10px;
+}
+
+/* Títulos dentro do chat */
+.markdown-content h1, 
+.markdown-content h2, 
+.markdown-content h3 {
+    margin-top: 15px;
+    margin-bottom: 8px;
+    font-weight: 700;
+    color: #16A085; /* Verde-Água da sua paleta */
+}
+
+/* Listas */
+.markdown-content ul, 
+.markdown-content ol {
+    padding-left: 20px;
+    margin-bottom: 10px;
+}
+
+/* Negrito */
+.markdown-content strong {
+    color: #2C3E50;
+    font-weight: 700;
+}
+
+/* --- TABELAS PROFISSIONAIS --- */
+.markdown-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+    font-size: 0.9rem;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 8px;
+    overflow: hidden; /* Arredonda as bordas da tabela */
+}
+
+.markdown-content th {
+    background-color: #16A085; /* Cabeçalho Verde */
+    color: white;
+    text-align: left;
+    padding: 10px;
+    font-weight: bold;
+}
+
+.markdown-content td {
+    padding: 8px 10px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.markdown-content tr:last-child td {
+    border-bottom: none;
+}
+
+/* Links */
+.markdown-content a {
+    color: #F39C12;
+    text-decoration: underline;
+}

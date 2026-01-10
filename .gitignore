@@ -1,0 +1,43 @@
+# 1. Voltar para a raiz
+cd ..
+
+# 2. Criar o arquivo .gitignore (Cole o bloco abaixo no terminal)
+Set-Content -Path ".gitignore" -Value @"
+# --- VAULTMINDOS .GITIGNORE (MARCO ZERO v3.0) ---
+
+# 1. Ambientes Virtuais e Dependências
+venv/
+node_modules/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+dist/
+build/
+
+# 2. Variáveis de Ambiente e Segredos (CRÍTICO)
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+
+# 3. Arquivos de Sistema e IDE
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.log
+
+# 4. Dados Locais e Banco de Dados (Persistência Local)
+*.sqlite3
+instance/
+chroma_db/
+uploads/
+postgres_data/
+pgadmin_data/
+
+# 5. Logs de Execução
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+"@ -Encoding UTF8
