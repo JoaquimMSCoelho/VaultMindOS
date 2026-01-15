@@ -30,7 +30,6 @@ export default function ForgotPassword() {
         </div>
 
         {message ? (
-          // Área de Sucesso (Mantida igual)
           <div className="bg-cyan-950/50 border border-cyan-500/30 rounded-lg p-6 text-center animate-in fade-in zoom-in duration-300">
             <div className="text-cyan-400 text-4xl mb-4">📨</div>
             <p className="text-sm text-cyan-100 font-medium leading-relaxed mb-6">
@@ -55,9 +54,12 @@ export default function ForgotPassword() {
                 </button>
             </div>
             
-            {/* --- AQUI ESTÁ A MUDANÇA: Link transformado em Botão Secundário --- */}
-            <Link href="/login" className="w-full flex items-center justify-center bg-transparent border border-white/10 text-white font-bold py-3 rounded-lg hover:bg-white/5 hover:border-cyan-500/30 transition-all text-sm mt-4">
-              ← Voltar para Login
+            {/* Botão Secundário com Seta SVG Grossa */}
+            <Link href="/login" className="w-full flex items-center justify-center bg-transparent border border-white/10 text-white font-bold py-3 rounded-lg hover:bg-white/5 hover:border-cyan-500/30 transition-all mt-4">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="3" stroke="currentColor" className="w-5 h-5 mr-2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+              </svg>
+              Voltar para Login
             </Link>
           </form>
         )}
