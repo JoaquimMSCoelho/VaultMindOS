@@ -19,18 +19,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR" className="scroll-smooth" suppressHydrationWarning>
-      {/* Removemos a cor de fundo sólida bg-[#050A14] pois agora temos o vídeo */}
-      <body className="\ \ antialiased text-slate-200" suppressHydrationWarning>
+      {/* ADICIONADO: bg-transparent para garantir que o body não cubra o vídeo */}
+      <body className="\ \ antialiased text-slate-200 bg-transparent" suppressHydrationWarning>
         
-        {/* Camada 0: O Vídeo de Fundo */}
         <BackgroundVideo />
 
-        {/* Camada 1: O Conteúdo do Site */}
         <div className="relative z-10">
           {children}
         </div>
         
-        {/* Camada 2: Monitor Global */}
         <SystemStatus />
       </body>
     </html>

@@ -6,7 +6,7 @@ export default async function UpdatePasswordPage(props: { searchParams: Promise<
   const errorMessage = params?.error;
 
   return (
-    <div className="min-h-screen bg-[#0B0F19] flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center p-4">
       <div className="w-full max-w-[450px] bg-[#0B0F19] p-8 rounded-xl border border-white/10 hover:border-cyan-500/30 transition-all duration-500 shadow-2xl relative overflow-hidden group">
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-70"></div>
 
