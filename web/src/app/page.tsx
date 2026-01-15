@@ -3,18 +3,18 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-[#050A14] text-slate-300 font-sans selection:bg-cyan-500/30">
+    <div className="min-h-screen text-slate-300 font-sans selection:bg-cyan-500/30">
       
       {/* --- NAV BAR --- */}
       <header className="fixed top-0 w-full z-50 bg-[#050A14]/80 backdrop-blur-md border-b border-white/5">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           
-          {/* Logo */}
-          <div className="flex items-center gap-2">
+          {/* Logo (Com Link para Home) */}
+          <div className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer">
             <div className="w-4 h-4 bg-cyan-400 rounded-sm shadow-[0_0_10px_rgba(34,211,238,0.8)]"></div>
-            <span className="font-bold text-xl tracking-tight text-white">
+            <Link href="/" className="font-bold text-xl tracking-tight text-white">
               VaultMind <span className="text-cyan-400">SO</span>
-            </span>
+            </Link>
           </div>
 
           {/* Menu Desktop */}
@@ -41,7 +41,6 @@ export default function Home() {
       </header>
 
       {/* --- HERO SECTION --- */}
-      {/* ALTERAÇÃO: pt-40 -> pt-32 | pb-32 -> pb-20 (Compactação de 40%) */}
       <section className="pt-32 pb-20 px-6 relative overflow-hidden">
         <div className="max-w-4xl mx-auto text-center relative z-10">
           <p className="font-mono text-xs text-cyan-400 tracking-wider mb-6 uppercase">
@@ -54,91 +53,67 @@ export default function Home() {
             antes que elas aconteçam.
           </h1>
           
-          {/* ALTERAÇÃO: mb-12 -> mb-8 */}
           <p className="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto mb-8 leading-relaxed">
             Consultoria em previsão estratégica e software de inteligência para ajudar
             sua empresa a se manter informada e a se adaptar às mudanças do mercado.
           </p>
         </div>
         
-        {/* Glow de Fundo */}
+        {/* Glow de Fundo (Decorativo) */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-cyan-900/10 rounded-full blur-[120px] -z-10 pointer-events-none"></div>
       </section>
 
       {/* --- SERVIÇOS --- */}
-      {/* ALTERAÇÃO: py-24 -> py-14 (Aproximação dos blocos) */}
-      <section id="consultoria" className="py-14 bg-[#080E1A]">
+      <section id="consultoria" className="py-14 bg-[#080E1A]/80 border-y border-white/5 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-6">
-          {/* ALTERAÇÃO: mb-12 -> mb-8 */}
           <div className="flex items-center gap-3 mb-8 border-l-4 border-cyan-500 pl-4">
             <h2 className="text-3xl font-bold text-white">Serviços de consultoria</h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Card 1 */}
-            <div className="bg-[#0E1421] p-8 rounded-xl border border-white/5 hover:border-cyan-500/30 transition-all group">
+            {/* Cards mantidos originais */}
+            <div className="bg-[#0E1421]/90 p-8 rounded-xl border border-white/5 hover:border-cyan-500/30 transition-all group">
               <div className="text-yellow-400 text-2xl mb-4">💡</div>
               <h3 className="text-lg font-bold text-white mb-3 group-hover:text-cyan-400 transition-colors">Ideias de negócios</h3>
-              <p className="text-sm leading-relaxed text-slate-400">
-                Gere conceitos inovadores de produtos e serviços com base em tendências orientadas por dados.
-              </p>
+              <p className="text-sm leading-relaxed text-slate-400">Gere conceitos inovadores de produtos e serviços com base em tendências orientadas por dados.</p>
             </div>
 
-            {/* Card 2 */}
-            <div className="bg-[#0E1421] p-8 rounded-xl border border-white/5 hover:border-cyan-500/30 transition-all group">
+            <div className="bg-[#0E1421]/90 p-8 rounded-xl border border-white/5 hover:border-cyan-500/30 transition-all group">
               <div className="text-purple-400 text-2xl mb-4">🎤</div>
               <h3 className="text-lg font-bold text-white mb-3 group-hover:text-cyan-400 transition-colors">Palestrantes futuristas</h3>
-              <p className="text-sm leading-relaxed text-slate-400">
-                Cative seu público com apresentações inspiradoras sobre o futuro do seu setor.
-              </p>
+              <p className="text-sm leading-relaxed text-slate-400">Cative seu público com apresentações inspiradoras sobre o futuro do seu setor.</p>
             </div>
 
-            {/* Card 3 */}
-            <div className="bg-[#0E1421] p-8 rounded-xl border border-white/5 hover:border-cyan-500/30 transition-all group">
+            <div className="bg-[#0E1421]/90 p-8 rounded-xl border border-white/5 hover:border-cyan-500/30 transition-all group">
               <div className="text-orange-400 text-2xl mb-4">🛠️</div>
               <h3 className="text-lg font-bold text-white mb-3 group-hover:text-cyan-400 transition-colors">Oficinas de Prospectiva</h3>
-              <p className="text-sm leading-relaxed text-slate-400">
-                Sessões colaborativas para mapear cenários e construir resiliência estratégica.
-              </p>
+              <p className="text-sm leading-relaxed text-slate-400">Sessões colaborativas para mapear cenários e construir resiliência estratégica.</p>
             </div>
 
-             {/* Card 4 */}
-            <div className="bg-[#0E1421] p-8 rounded-xl border border-white/5 hover:border-cyan-500/30 transition-all group">
+            <div className="bg-[#0E1421]/90 p-8 rounded-xl border border-white/5 hover:border-cyan-500/30 transition-all group">
               <div className="text-blue-400 text-2xl mb-4">📊</div>
               <h3 className="text-lg font-bold text-white mb-3 group-hover:text-cyan-400 transition-colors">Relatórios Corporativos</h3>
-              <p className="text-sm leading-relaxed text-slate-400">
-                Relatórios de pesquisa personalizados e aprofundados, adaptados às necessidades específicas.
-              </p>
+              <p className="text-sm leading-relaxed text-slate-400">Relatórios de pesquisa personalizados e aprofundados, adaptados às necessidades específicas.</p>
             </div>
 
-            {/* Card 5 */}
-            <div className="bg-[#0E1421] p-8 rounded-xl border border-white/5 hover:border-cyan-500/30 transition-all group">
+            <div className="bg-[#0E1421]/90 p-8 rounded-xl border border-white/5 hover:border-cyan-500/30 transition-all group">
               <div className="text-cyan-400 text-2xl mb-4">🌐</div>
               <h3 className="text-lg font-bold text-white mb-3 group-hover:text-cyan-400 transition-colors">Análise de Tendências</h3>
-              <p className="text-sm leading-relaxed text-slate-400">
-                Monitoramento contínuo de sinais e mudanças relevantes para o seu setor de mercado.
-              </p>
+              <p className="text-sm leading-relaxed text-slate-400">Monitoramento contínuo de sinais e mudanças relevantes para o seu setor de mercado.</p>
             </div>
 
-            {/* Card 6 */}
-            <div className="bg-[#0E1421] p-8 rounded-xl border border-white/5 hover:border-cyan-500/30 transition-all group">
+            <div className="bg-[#0E1421]/90 p-8 rounded-xl border border-white/5 hover:border-cyan-500/30 transition-all group">
               <div className="text-red-400 text-2xl mb-4">🚀</div>
               <h3 className="text-lg font-bold text-white mb-3 group-hover:text-cyan-400 transition-colors">Visão de ficção científica</h3>
-              <p className="text-sm leading-relaxed text-slate-400">
-                Criar ficção científica e protótipos para visualizar futuros potenciais de forma tangível.
-              </p>
+              <p className="text-sm leading-relaxed text-slate-400">Criar ficção científica e protótipos para visualizar futuros potenciais de forma tangível.</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* --- FOOTER & INDÚSTRIAS --- */}
-      {/* ALTERAÇÃO: pt-24 -> pt-16 | pb-12 -> pb-8 */}
-      <footer className="bg-[#050A14] pt-16 pb-8 border-t border-white/5" id="industrias">
+      {/* --- FOOTER (Limpo, sem duplicata de status) --- */}
+      <footer className="bg-[#050A14]/90 pt-16 pb-8 border-t border-white/5" id="industrias">
         <div className="max-w-7xl mx-auto px-6">
-          
-          {/* Seção de Indústrias */}
-          {/* ALTERAÇÃO: mb-20 -> mb-12 */}
           <div className="mb-12">
              <div className="flex items-center gap-3 mb-6 border-l-4 border-blue-600 pl-4">
                <h2 className="text-2xl font-bold text-white">Setores em que atuamos</h2>
@@ -153,73 +128,47 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-12 border-t border-white/5 pt-12">
-            
-            {/* Coluna 1 */}
             <div className="space-y-4">
               <h4 className="text-white font-bold tracking-wider text-xs uppercase mb-4">Consultoria</h4>
               <ul className="space-y-3 text-sm text-slate-500">
                 <li className="hover:text-cyan-400 cursor-pointer">Ideias de negócios</li>
                 <li className="hover:text-cyan-400 cursor-pointer">Palestrantes futuristas</li>
                 <li className="hover:text-cyan-400 cursor-pointer">Oficinas de Prospectiva</li>
-                <li className="hover:text-cyan-400 cursor-pointer">Relatórios Corporativos</li>
-                <li className="hover:text-cyan-400 cursor-pointer">Previsão de Políticas</li>
-                <li className="hover:text-cyan-400 cursor-pointer">Departamento Interno</li>
               </ul>
             </div>
-
-            {/* Coluna 2 */}
             <div className="space-y-4">
               <h4 className="text-white font-bold tracking-wider text-xs uppercase mb-4">Plataforma</h4>
               <ul className="space-y-3 text-sm text-slate-500">
                 <li className="hover:text-cyan-400 cursor-pointer">Plataforma de Previsão</li>
                 <li className="hover:text-cyan-400 cursor-pointer">Preços e planos</li>
                 <li className="hover:text-cyan-400 cursor-pointer">Boletim informativo</li>
-                <li className="hover:text-cyan-400 cursor-pointer">Relatórios de Tendências 2026</li>
-                <li className="hover:text-cyan-400 cursor-pointer">Programa de afiliados</li>
               </ul>
             </div>
-
-            {/* Coluna 3 */}
             <div className="space-y-4">
               <h4 className="text-white font-bold tracking-wider text-xs uppercase mb-4">Publicações</h4>
               <ul className="space-y-3 text-sm text-slate-500">
                 <li className="hover:text-cyan-400 cursor-pointer">Site público</li>
                 <li className="hover:text-cyan-400 cursor-pointer">Relatório de Tendências</li>
-                <li className="hover:text-cyan-400 cursor-pointer">Série Especial</li>
-                <li className="hover:text-cyan-400 cursor-pointer">Linhas do tempo futuras</li>
                 <li className="hover:text-cyan-400 cursor-pointer">Blog</li>
               </ul>
             </div>
-
-            {/* Coluna 4 */}
             <div className="space-y-4">
               <h4 className="text-white font-bold tracking-wider text-xs uppercase mb-4">Empresa</h4>
               <ul className="space-y-3 text-sm text-slate-500">
                 <li className="hover:text-cyan-400 cursor-pointer">Sobre nós</li>
-                <li className="hover:text-cyan-400 cursor-pointer">Metodologia</li>
-                <li className="hover:text-cyan-400 cursor-pointer">A Equipe</li>
                 <li className="hover:text-cyan-400 cursor-pointer">Carreiras</li>
-                <li className="hover:text-cyan-400 cursor-pointer">Imprensa</li>
                 <li className="hover:text-cyan-400 cursor-pointer">Contato</li>
               </ul>
             </div>
-
           </div>
 
           <div className="mt-16 pt-8 border-t border-white/5 text-center md:text-left">
-            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-              <p className="text-xs text-slate-600">
-                © 2026 VaultMindOS. Todos os direitos reservados.
-              </p>
-              <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/5">
-                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
-                 <span className="text-[10px] text-emerald-500 font-mono tracking-widest uppercase">System Operational</span>
-              </div>
-            </div>
+            <p className="text-xs text-slate-600">
+              © 2026 VaultMindOS Foresight. Subsidiária do FutureSpec Group. Todos os direitos reservados.
+            </p>
           </div>
         </div>
       </footer>
     </div>
   );
 }
-
