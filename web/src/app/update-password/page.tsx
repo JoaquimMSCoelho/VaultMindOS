@@ -1,4 +1,5 @@
 ﻿import { updatePassword } from './actions'
+import Link from 'next/link'
 
 export default async function UpdatePasswordPage(props: { searchParams: Promise<{ error?: string }> }) {
   const params = await props.searchParams;
@@ -10,7 +11,11 @@ export default async function UpdatePasswordPage(props: { searchParams: Promise<
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-70"></div>
 
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold tracking-tight text-white mb-2">Nova Senha</h1>
+          <Link href="/" className="inline-block hover:opacity-80 transition-opacity" title="Voltar para a Home">
+             <h1 className="text-3xl font-bold tracking-tight text-white mb-2">
+                VaultMind<span className="text-cyan-400">OS</span>
+             </h1>
+          </Link>
           <p className="text-slate-400 text-sm">Crie uma nova senha segura.</p>
         </div>
 

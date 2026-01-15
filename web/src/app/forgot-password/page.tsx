@@ -23,9 +23,11 @@ export default function ForgotPassword() {
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-70"></div>
         
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold tracking-tight text-white mb-2">
-            VaultMind<span className="text-cyan-400">OS</span>
-          </h1>
+          <Link href="/" className="inline-block hover:opacity-80 transition-opacity" title="Voltar para a Home">
+            <h1 className="text-3xl font-bold tracking-tight text-white mb-2">
+              VaultMind<span className="text-cyan-400">OS</span>
+            </h1>
+          </Link>
           <p className="text-slate-400 text-sm">Recuperação de Acesso</p>
         </div>
 
@@ -54,7 +56,6 @@ export default function ForgotPassword() {
                 </button>
             </div>
             
-            {/* Botão Secundário com Seta SVG Grossa */}
             <Link href="/login" className="w-full flex items-center justify-center bg-transparent border border-white/10 text-white font-bold py-3 rounded-lg hover:bg-white/5 hover:border-cyan-500/30 transition-all mt-4">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="3" stroke="currentColor" className="w-5 h-5 mr-2">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />

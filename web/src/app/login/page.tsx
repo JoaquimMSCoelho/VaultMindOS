@@ -11,9 +11,12 @@ export default async function LoginPage(props: { searchParams: Promise<{ error?:
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-70"></div>
 
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold tracking-tight text-white mb-2">
-            VaultMind<span className="text-cyan-400">OS</span>
-          </h1>
+          {/* Logo agora é um Link para a Home */}
+          <Link href="/" className="inline-block hover:opacity-80 transition-opacity" title="Voltar para a Home">
+            <h1 className="text-3xl font-bold tracking-tight text-white mb-2">
+              VaultMind<span className="text-cyan-400">OS</span>
+            </h1>
+          </Link>
           <p className="text-slate-400 text-sm">Acesse seu terminal de controle.</p>
         </div>
 

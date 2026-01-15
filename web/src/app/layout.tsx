@@ -1,14 +1,14 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import SystemStatus from "@/components/SystemStatus";
 
-// Configuração das Fontes Profissionais
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
-const jetbrains = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" });
+const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" });
 
 export const metadata: Metadata = {
-  title: "VaultMindOS | Enterprise Operating System",
-  description: "O Sistema Operacional definitivo para gestão de SaaS, Saúde e Varejo.",
+  title: "VaultMindOS | Enterprise Intelligence",
+  description: "Sistema de Gestão Modular e Inteligência de Dados.",
 };
 
 export default function RootLayout({
@@ -17,9 +17,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR" suppressHydrationWarning>
-      <body className={`${inter.variable} ${jetbrains.variable} font-sans bg-[#0B0F19] text-slate-100 antialiased`} suppressHydrationWarning>
+    // 'suppressHydrationWarning' impede que extensões quebrem o React no modo Dev
+    <html lang="pt-BR" className="scroll-smooth" suppressHydrationWarning>
+      <body className="\ \ antialiased bg-[#050A14]" suppressHydrationWarning>
         {children}
+        
+        {/* Monitor Global */}
+        <SystemStatus />
       </body>
     </html>
   );
