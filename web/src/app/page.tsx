@@ -5,9 +5,8 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-[#050A14] text-slate-300 font-sans selection:bg-cyan-500/30">
       
-      {/* --- NAV BAR --- */}
-      {/* Ajuste: h-20 mantido para robustez, mas background ajustado */}
-      <header className="fixed top-0 w-full z-50 bg-[#050A14]/90 backdrop-blur-md border-b border-white/5">
+      {/* --- NAV BAR (Baseado na Imagem 4037ea) --- */}
+      <header className="fixed top-0 w-full z-50 bg-[#050A14]/80 backdrop-blur-md border-b border-white/5">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           
           {/* Logo */}
@@ -41,9 +40,8 @@ export default function Home() {
         </div>
       </header>
 
-      {/* --- HERO SECTION --- */}
-      {/* Ajuste: Reduzi pt-40 para pt-32 e pb-32 para pb-20 (Menos teto e chão) */}
-      <section className="pt-32 pb-20 px-6 relative overflow-hidden">
+      {/* --- HERO SECTION (Baseado na Imagem 4037ea) --- */}
+      <section className="pt-40 pb-32 px-6 relative overflow-hidden">
         <div className="max-w-4xl mx-auto text-center relative z-10">
           <p className="font-mono text-xs text-cyan-400 tracking-wider mb-6 uppercase">
             &gt; FUTURE_READINESS_PROTOCOL_INIT
@@ -55,8 +53,7 @@ export default function Home() {
             antes que elas aconteçam.
           </h1>
           
-          {/* Ajuste: Reduzi mb-12 para mb-8 */}
-          <p className="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto mb-8 leading-relaxed">
+          <p className="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto mb-12 leading-relaxed">
             Consultoria em previsão estratégica e software de inteligência para ajudar
             sua empresa a se manter informada e a se adaptar às mudanças do mercado.
           </p>
@@ -66,17 +63,14 @@ export default function Home() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-cyan-900/10 rounded-full blur-[120px] -z-10 pointer-events-none"></div>
       </section>
 
-      {/* --- SERVIÇOS --- */}
-      {/* Ajuste: Reduzi py-24 para py-16 (Compactação vertical) */}
-      <section id="consultoria" className="py-16 bg-[#080E1A]">
+      {/* --- SERVIÇOS (Baseado na Imagem 403828) --- */}
+      <section id="consultoria" className="py-24 bg-[#080E1A]">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="flex items-center gap-3 mb-10 border-l-4 border-cyan-500 pl-4">
+          <div className="flex items-center gap-3 mb-12 border-l-4 border-cyan-500 pl-4">
             <h2 className="text-3xl font-bold text-white">Serviços de consultoria</h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Mantive exatamente os mesmos cards e textos */}
-            
             {/* Card 1 */}
             <div className="bg-[#0E1421] p-8 rounded-xl border border-white/5 hover:border-cyan-500/30 transition-all group">
               <div className="text-yellow-400 text-2xl mb-4">💡</div>
@@ -134,15 +128,13 @@ export default function Home() {
         </div>
       </section>
 
-      {/* --- FOOTER & INDÚSTRIAS --- */}
-      {/* Ajuste: Reduzi pt-24 para pt-16 */}
-      <footer className="bg-[#050A14] pt-16 pb-12 border-t border-white/5" id="industrias">
+      {/* --- FOOTER & INDÚSTRIAS (Baseado na Imagem 403866) --- */}
+      <footer className="bg-[#050A14] pt-24 pb-12 border-t border-white/5" id="industrias">
         <div className="max-w-7xl mx-auto px-6">
           
           {/* Seção de Indústrias */}
-          {/* Ajuste: Reduzi mb-20 para mb-12 */}
-          <div className="mb-12">
-             <div className="flex items-center gap-3 mb-6 border-l-4 border-blue-600 pl-4">
+          <div className="mb-20">
+             <div className="flex items-center gap-3 mb-8 border-l-4 border-blue-600 pl-4">
                <h2 className="text-2xl font-bold text-white">Setores em que atuamos</h2>
              </div>
              <div className="flex flex-wrap gap-3">
@@ -154,9 +146,9 @@ export default function Home() {
              </div>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 border-t border-white/5 pt-12">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-12 border-t border-white/5 pt-12">
             
-            {/* Colunas originais mantidas */}
+            {/* Coluna 1 */}
             <div className="space-y-4">
               <h4 className="text-white font-bold tracking-wider text-xs uppercase mb-4">Consultoria</h4>
               <ul className="space-y-3 text-sm text-slate-500">
@@ -169,6 +161,7 @@ export default function Home() {
               </ul>
             </div>
 
+            {/* Coluna 2 */}
             <div className="space-y-4">
               <h4 className="text-white font-bold tracking-wider text-xs uppercase mb-4">Plataforma</h4>
               <ul className="space-y-3 text-sm text-slate-500">
@@ -180,6 +173,7 @@ export default function Home() {
               </ul>
             </div>
 
+            {/* Coluna 3 */}
             <div className="space-y-4">
               <h4 className="text-white font-bold tracking-wider text-xs uppercase mb-4">Publicações</h4>
               <ul className="space-y-3 text-sm text-slate-500">
@@ -191,6 +185,7 @@ export default function Home() {
               </ul>
             </div>
 
+            {/* Coluna 4 */}
             <div className="space-y-4">
               <h4 className="text-white font-bold tracking-wider text-xs uppercase mb-4">Empresa</h4>
               <ul className="space-y-3 text-sm text-slate-500">
@@ -205,7 +200,7 @@ export default function Home() {
 
           </div>
 
-          <div className="mt-12 pt-8 border-t border-white/5 text-center md:text-left">
+          <div className="mt-16 pt-8 border-t border-white/5 text-center md:text-left">
             <p className="text-xs text-slate-600">
               © 2026 VaultMindOS Foresight. Subsidiária do FutureSpec Group. Todos os direitos reservados.
             </p>
