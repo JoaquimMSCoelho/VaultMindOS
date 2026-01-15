@@ -1,0 +1,109 @@
+// 1. Configurações do Gerador e Fonte de Dados
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL") // Importante para Migrations no Supabase
+}
+
+// 2. Enums (Tipagem Forte para Regras de Negócio)
+enum UserRole {
+  SUPER_ADMIN // Você (Acesso Total)
+  ARCHITECT   // Perfil Técnico
+  DOCTOR      // Módulo Saúde
+  AFFILIATE   // Módulo Marketing/Vendas
+  USER        // Usuário Final
+}
+
+enum SubscriptionTier {
+  FREE
+  PRO
+  ENTERPRISE
+}
+
+// 3. Tabela Mestra de Perfis (Vinculada ao Supabase Auth)
+model Profile {
+  id          String   @id @default(uuid()) // Este ID deve bater com o auth.users.id do Supabase
+  email       String   @unique
+  fullName    String?
+  avatarUrl   String?
+  role        UserRole @default(USER)
+  tier        SubscriptionTier @default(FREE)
+  
+  // Auditoria
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relacionamentos (Arquitetura Modular)
+  // Módulo Saúde
+  doctorProfile DoctorProfile? 
+  patients      Patient[]
+  
+  // Módulo Marketing/Varejo
+  campaigns     MarketingCampaign[]
+  products      Product[]
+
+  @@map("profiles") // Nome da tabela no banco (lowercase)
+}
+
+// --- MÓDULO 1: SAÚDE CICLO DA VIDA ---
+
+model DoctorProfile {
+  id             String  @id @default(cuid())
+  crm            String  @unique // Registro Médico
+  specialty      String
+  profileId      String  @unique
+  profile        Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  
+  @@map("doctor_profiles")
+}
+
+model Patient {
+  id             String   @id @default(cuid())
+  name           String
+  birthDate      DateTime
+  clinicalNotes  String?  @db.Text
+  
+  // Quem cadastrou este paciente? (Médico ou Admin)
+  managedById    String
+  managedBy      Profile  @relation(fields: [managedById], references: [id])
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@map("patients")
+}
+
+// --- MÓDULO 2: MARKETING & VAREJO (AutoZap/Digistore) ---
+
+model MarketingCampaign {
+  id          String   @id @default(cuid())
+  name        String
+  platform    String   // Ex: Facebook, Google, YouTube
+  status      String   @default("DRAFT") // DRAFT, ACTIVE, PAUSED
+  budget      Decimal  @db.Decimal(10, 2)
+  
+  ownerId     String
+  owner       Profile  @relation(fields: [ownerId], references: [id])
+
+  createdAt   DateTime @default(now())
+  
+  @@map("marketing_campaigns")
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  title       String
+  price       Decimal  @db.Decimal(10, 2)
+  affiliateLink String? // Link do Digistore24/ClickBank
+  
+  sellerId    String
+  seller      Profile  @relation(fields: [sellerId], references: [id])
+
+  createdAt   DateTime @default(now())
+
+  @@map("products")
+}
