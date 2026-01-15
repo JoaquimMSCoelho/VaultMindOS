@@ -30,13 +30,12 @@ export default function ForgotPassword() {
         </div>
 
         {message ? (
-          // --- ÁREA DE SUCESSO CORRIGIDA (Estilo Azul/Cyan) ---
+          // Área de Sucesso (Mantida igual)
           <div className="bg-cyan-950/50 border border-cyan-500/30 rounded-lg p-6 text-center animate-in fade-in zoom-in duration-300">
             <div className="text-cyan-400 text-4xl mb-4">📨</div>
             <p className="text-sm text-cyan-100 font-medium leading-relaxed mb-6">
               {message}
             </p>
-            {/* Botão agora usa o estilo padrão Cyan, não mais branco */}
             <Link href="/login" className="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(8,145,178,0.2)] hover:shadow-[0_0_30px_rgba(8,145,178,0.4)] block text-center">
               Voltar para o Login
             </Link>
@@ -56,11 +55,10 @@ export default function ForgotPassword() {
                 </button>
             </div>
             
-            <div className="text-center mt-4">
-              <Link href="/login" className="text-xs text-slate-500 hover:text-white transition-colors">
-                ← Voltar para Login
-              </Link>
-            </div>
+            {/* --- AQUI ESTÁ A MUDANÇA: Link transformado em Botão Secundário --- */}
+            <Link href="/login" className="w-full flex items-center justify-center bg-transparent border border-white/10 text-white font-bold py-3 rounded-lg hover:bg-white/5 hover:border-cyan-500/30 transition-all text-sm mt-4">
+              ← Voltar para Login
+            </Link>
           </form>
         )}
       </div>
