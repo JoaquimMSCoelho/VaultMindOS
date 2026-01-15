@@ -19,15 +19,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR" className="scroll-smooth" suppressHydrationWarning>
-      {/* ADICIONADO: bg-transparent para garantir que o body não cubra o vídeo */}
       <body className="\ \ antialiased text-slate-200 bg-transparent" suppressHydrationWarning>
-        
         <BackgroundVideo />
-
-        <div className="relative z-10">
+        <div className="relative z-10 min-h-screen flex flex-col">
           {children}
         </div>
-        
         <SystemStatus />
       </body>
     </html>
