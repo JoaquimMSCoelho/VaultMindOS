@@ -18,12 +18,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR" className="scroll-smooth" suppressHydrationWarning>
-      <body className="\ \ antialiased text-slate-200 bg-transparent" suppressHydrationWarning>
+    <html lang="pt-BR" className="scroll-smooth" suppressHydrationWarning={true}>
+      <body
+        className={`${inter.variable} ${mono.variable} antialiased text-slate-200 bg-transparent`}
+        suppressHydrationWarning={true}
+      >
+        {/* Componentes Globais do VaultMindOS */}
         <BackgroundVideo />
+
         <div className="relative z-10 min-h-screen flex flex-col">
           {children}
         </div>
+
         <SystemStatus />
       </body>
     </html>
