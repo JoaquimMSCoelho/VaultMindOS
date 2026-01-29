@@ -1,7 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ChevronLeft, PlayCircle, Lock } from "lucide-react";
+import { ChevronLeft, ChevronRight, PlayCircle, Lock } from "lucide-react"; 
 // IMPORTAÇÃO: Componente interativo de Check
 import { LessonCheck } from "@/components/LessonCheck";
 
@@ -33,7 +33,7 @@ export default async function WatchPage({
   const { aula } = await searchParams;
   const supabase = await createClient();
 
-  // 1. SEGURANÇA: Identificar o usuário para buscar o progresso DELE
+  // 1. SEGURANÇA
   const { data: { user } } = await supabase.auth.getUser();
 
   // 2. BUSCA DO CURSO
@@ -62,10 +62,8 @@ export default async function WatchPage({
     return notFound();
   }
 
-  // 3. BUSCA DE PROGRESSO (LMS CORE)
-  // Busca apenas os IDs das aulas que este usuário já completou
+  // 3. BUSCA DE PROGRESSO
   let completedLessonIds = new Set<string>();
-  
   if (user) {
     const { data: progressData } = await supabase
       .from('user_progress')
@@ -73,7 +71,6 @@ export default async function WatchPage({
       .eq('user_id', user.id)
       .eq('is_completed', true);
     
-    // Otimização: Set permite verificação O(1) instantânea
     if (progressData) {
       progressData.forEach(p => completedLessonIds.add(p.lesson_id));
     }
@@ -85,53 +82,101 @@ export default async function WatchPage({
     mod.lessons.sort((a: any, b: any) => a.position - b.position);
   });
 
-  // LÓGICA DE SELEÇÃO DE AULA
-  let activeLesson = null;
-  let activeModuleTitle = "";
-
+  // 4. INTELIGÊNCIA DE NAVEGAÇÃO
   const allLessons = sortedModules.flatMap((m: any) => m.lessons.map((l: any) => ({ ...l, moduleTitle: m.title })));
 
+  // Lógica de Seleção
+  let activeLesson = null;
   if (aula) {
     activeLesson = allLessons.find((l: any) => l.id === aula);
   }
-  
   if (!activeLesson && allLessons.length > 0) {
     activeLesson = allLessons[0];
   }
 
-  activeModuleTitle = activeLesson?.moduleTitle || sortedModules[0]?.title;
-  
-  // Caminho atual para revalidação automática ao clicar no check
+  // Cálculo Anterior / Próximo
+  const activeIndex = allLessons.findIndex((l: any) => l.id === activeLesson?.id);
+  const prevLesson = activeIndex > 0 ? allLessons[activeIndex - 1] : null;
+  const nextLesson = activeIndex < allLessons.length - 1 ? allLessons[activeIndex + 1] : null;
+
+  // Caminho atual
   const currentPath = `/portal/watch/${slug}`;
 
   return (
     <div className="fixed inset-0 z-50 bg-[#141414] text-white flex flex-col font-sans">
       
-      {/* HEADER DE NAVEGAÇÃO */}
-      <header className="h-20 border-b border-white/10 flex items-center justify-between px-6 bg-[#141414] shrink-0">
-        <div className="flex items-center gap-6">
+      {/* HEADER DE NAVEGAÇÃO (AJUSTADO: ALTA VISIBILIDADE + POSIÇÃO DIREITA) */}
+      <header className="h-20 border-b border-white/10 flex items-center justify-between px-4 md:px-6 bg-[#141414] shrink-0 gap-4">
+        
+        {/* Lado Esquerdo: Voltar e Título */}
+        <div className="flex items-center gap-4 md:gap-6 shrink-0 w-1/3">
           <Link 
             href="/portal" 
-            className="group flex items-center gap-3 text-zinc-400 hover:text-white transition-colors"
+            className="group flex items-center gap-2 md:gap-3 text-zinc-400 hover:text-white transition-colors"
+            title="Voltar ao Portal"
           >
             <div className="p-2 rounded-full bg-white/5 group-hover:bg-white/10 transition-colors">
-              <ChevronLeft className="w-6 h-6" />
+              <ChevronLeft className="w-5 h-5 md:w-6 md:h-6" />
             </div>
-            <span className="text-base font-medium">Voltar ao Portal</span>
+            <span className="text-sm md:text-base font-medium hidden sm:inline">Voltar</span>
           </Link>
-          <div className="h-8 w-px bg-white/10 hidden md:block"></div>
-          <h1 className="text-lg md:text-xl font-bold text-zinc-100 truncate max-w-[300px] md:max-w-xl">
+          <div className="h-6 w-px bg-white/10 hidden sm:block"></div>
+          {/* Título Reduzido (Escala -1) */}
+          <h1 className="text-sm md:text-base font-bold text-zinc-100 truncate leading-tight opacity-80">
             {course.title}
           </h1>
         </div>
 
-        <div className="flex items-center gap-4">
-           {/* Barra de Progresso Geral */}
-           <div className="hidden sm:flex flex-col items-end gap-1">
-             <div className="text-sm text-zinc-500 font-medium">
-                {completedLessonIds.size} de {allLessons.length} Aulas
+        {/* CENTRO-DIREITA: CONTROLES DE NAVEGAÇÃO (MOVIDO PARA A DIREITA) */}
+        {/* justify-end empurra para a direita. pr-8 ou pr-12 ajusta a distância da barra de progresso */}
+        <div className="flex-1 flex justify-end pr-83 md:pr-115">
+            <div className="flex items-center gap-3">
+                
+                {/* BOTÃO ANTERIOR (HIGH VISIBILITY) */}
+                {prevLesson ? (
+                    <Link
+                        href={`/portal/watch/${slug}?aula=${prevLesson.id}`}
+                        title={`Anterior: ${prevLesson.title}`}
+                        className="flex items-center gap-2 px-4 py-2 rounded-full bg-zinc-800 border border-white/10 hover:bg-zinc-700 hover:border-white/30 transition-all text-zinc-300 hover:text-white group"
+                    >
+                        <ChevronLeft className="w-4 h-4" />
+                        <span className="text-xs font-bold uppercase tracking-wider hidden md:inline">Anterior</span>
+                    </Link>
+                ) : (
+                    // Desativado Visualmente
+                    <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-zinc-900 border border-white/5 opacity-40 cursor-not-allowed text-zinc-500">
+                        <ChevronLeft className="w-4 h-4" />
+                        <span className="text-xs font-bold uppercase tracking-wider hidden md:inline">Anterior</span>
+                    </div>
+                )}
+
+                {/* BOTÃO PRÓXIMO (HIGH VISIBILITY & DESTAQUE) */}
+                {nextLesson ? (
+                    <Link
+                        href={`/portal/watch/${slug}?aula=${nextLesson.id}`}
+                        title={`Próxima: ${nextLesson.title}`}
+                        className="flex items-center gap-2 px-4 py-2 rounded-full bg-white text-black border border-white hover:bg-zinc-200 transition-all group font-bold shadow-lg shadow-white/5"
+                    >
+                        <span className="text-xs font-bold uppercase tracking-wider hidden md:inline">Próxima</span>
+                        <ChevronRight className="w-4 h-4" />
+                    </Link>
+                ) : (
+                    // Desativado Visualmente
+                    <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-zinc-900 border border-white/5 opacity-40 cursor-not-allowed text-zinc-500">
+                        <span className="text-xs font-bold uppercase tracking-wider hidden md:inline">Próxima</span>
+                        <ChevronRight className="w-4 h-4" />
+                    </div>
+                )}
+            </div>
+        </div>
+
+        {/* Lado Direito: Barra de Progresso (Mantida, mas compacta) */}
+        <div className="flex items-center gap-4 shrink-0 hidden lg:flex w-auto justify-end">
+           <div className="flex flex-col items-end gap-1">
+             <div className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">
+                Progresso Geral
              </div>
-             <div className="w-32 h-1 bg-zinc-800 rounded-full overflow-hidden">
+             <div className="w-24 h-1.5 bg-zinc-800 rounded-full overflow-hidden border border-white/5">
                 <div 
                   className="h-full bg-green-500 transition-all duration-500"
                   style={{ width: `${(completedLessonIds.size / Math.max(allLessons.length, 1)) * 100}%` }}
@@ -149,8 +194,8 @@ export default async function WatchPage({
           
           {/* ÁREA DO VÍDEO */}
           {activeLesson ? (
-            <div className="w-full bg-black relative group flex-shrink-0 py-4 flex justify-center items-center bg-zinc-950 border-b border-white/5">
-                <div className="w-full max-w-6xl px-4">
+            <div className="w-full bg-zinc-950 border-b border-white/5 py-4">
+                <div className="w-full max-w-6xl mx-auto px-4">
                     <div className="relative pt-[56.25%] w-full bg-zinc-900 rounded-lg overflow-hidden shadow-2xl shadow-black/50 border border-white/5"> 
                         <div className="absolute inset-0 flex items-center justify-center">
                             {activeLesson.video_url ? (
@@ -189,7 +234,7 @@ export default async function WatchPage({
                         <h2 className="text-2xl font-bold text-white leading-tight">{activeLesson.title}</h2>
                         
                         <div className="flex items-center gap-4 text-zinc-400">
-                            {/* Botão de Conclusão (Ação Principal Injetada) */}
+                            {/* Botão de Conclusão */}
                             <div className="flex items-center gap-2">
                                 <LessonCheck 
                                   lessonId={activeLesson.id} 
@@ -212,7 +257,6 @@ export default async function WatchPage({
                     {/* LADO DIREITO: Descrição (60%) */}
                     <div className="lg:col-span-3 prose prose-invert max-w-none">
                         <h3 className="text-xl font-bold text-zinc-200 mb-3 mt-0">Descrição da Aula</h3>
-                        {/* FONTE PRESERVADA: text-base */}
                         <p className="text-zinc-300 text-base leading-relaxed">
                             Nesta aula vamos aprofundar os conceitos técnicos apresentados no módulo. 
                             Aproveite para fazer anotações e revisar o material complementar caso esteja disponível.
@@ -254,7 +298,7 @@ export default async function WatchPage({
                                           isActive ? "bg-white/5 border-l-4 border-red-600" : "border-l-4 border-transparent"
                                       }`}
                                   >
-                                      {/* CHECKBOX INTERATIVO NA SIDEBAR */}
+                                      {/* CHECKBOX SIDEBAR */}
                                       <div className="mt-1 shrink-0 z-20">
                                         <LessonCheck 
                                           lessonId={lesson.id}

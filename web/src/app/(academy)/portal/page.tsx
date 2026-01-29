@@ -1,20 +1,40 @@
-﻿import Link from "next/link";
-import { Play, Info, Lock } from "lucide-react";
-import { createClient } from "@/utils/supabase/server";
+﻿import { createClient } from "@/utils/supabase/server";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { Play, Info, Lock, Zap, LogOut, Clock, Award, PlayCircle } from "lucide-react";
 
-export default async function PortalHome() {
+export default async function PortalDashboard() {
   // 1. Conectar ao Supabase
   const supabase = await createClient();
 
-  // 2. Buscar Cursos com Tratamento de Erro (FUSÃO TÉCNICA: Extração de 'error')
+  // 2. SEGURANÇA: Verifica usuário logado
+  const { data: { user } } = await supabase.auth.getUser();
+  
+  if (!user) {
+    redirect("/login");
+  }
+
+  // 3. BUSCA DE DADOS HÍBRIDA
   const { data: courses, error } = await supabase
     .from("courses")
-    .select("*")
+    .select(`
+      *,
+      modules (
+        lessons (id)
+      )
+    `)
     .eq("is_published", true)
     .order("created_at", { ascending: false });
 
-  // BLINDAGEM CONTRA ERRO 500 (INJEÇÃO FUNCIONAL)
-  // Se houver erro no banco, renderiza mensagem amigável ao invés de quebrar a página inteira
+  // 4. Busca o Progresso do Usuário
+  const { data: progress } = await supabase
+    .from("user_progress")
+    .select("lesson_id")
+    .eq("user_id", user.id)
+    .eq("is_completed", true);
+
+  const completedLessonIds = new Set(progress?.map((p) => p.lesson_id) || []);
+
   if (error) {
     console.error("❌ ERRO CRÍTICO AO BUSCAR CURSOS:", error.message);
     return (
@@ -26,104 +46,211 @@ export default async function PortalHome() {
     );
   }
 
-  // 3. Lógica de Exibição Segura
-  const safeCourses = courses || []; // Garante array vazio se for null
+  const safeCourses = courses || [];
   const featuredCourse = safeCourses[0];
   const otherCourses = safeCourses.slice(1);
 
-  return (
-    <div className="pb-20">
-      
-      {/* BILLBOARD DINÂMICO */}
-      {featuredCourse ? (
-        <div className="relative h-[80vh] w-full overflow-hidden group">
-          {/* Imagem de Fundo */}
-          <div 
-            className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
-            style={{ 
-              backgroundImage: `url(${featuredCourse.thumbnail_url || "https://images.unsplash.com/photo-1550751827-4bd374c3f58b"})` 
-            }}
-          >
-            <div className="absolute inset-0 bg-gradient-to-r from-[#141414] via-[#141414]/60 to-transparent"></div>
-            <div className="absolute inset-0 bg-gradient-to-t from-[#141414] via-transparent to-transparent"></div>
-          </div>
+  const getProgress = (course: any) => {
+    const totalLessons = course.modules?.reduce((acc: number, mod: any) => acc + mod.lessons.length, 0) || 0;
+    const completedCount = course.modules?.reduce((acc: number, mod: any) => {
+       return acc + mod.lessons.filter((l: any) => completedLessonIds.has(l.id)).length;
+    }, 0) || 0;
+    const percent = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
+    return { percent, completedCount, totalLessons };
+  };
 
-          <div className="absolute top-[30%] left-8 md:left-12 max-w-2xl z-10">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-red-600/20 border border-red-500/30 text-red-500 text-xs font-bold uppercase tracking-widest rounded mb-4">
-              {featuredCourse.is_premium ? "Exclusivo Assinantes" : "Gratuito"}
+  return (
+    <div className="min-h-screen bg-[#0a0a0a] text-white font-sans flex flex-col pb-20">
+      
+      {/* HEADER DO DASHBOARD */}
+      <header className="border-b border-white/10 bg-[#0a0a0a]/50 backdrop-blur-md sticky top-0 z-40">
+        {/* AJUSTE DE ALINHAMENTO: px-6 md:px-8 (Mais próximo da margem esquerda, alinhado com o conteúdo) */}
+        <div className="w-full px-6 md:px-8 h-20 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-red-500/10 rounded-lg border border-red-500/20">
+              <Zap className="w-6 h-6 text-red-500" />
             </div>
-            <h1 className="text-4xl md:text-6xl font-black text-white mb-6 drop-shadow-2xl leading-tight">
-              {featuredCourse.title}
-            </h1>
-            <p className="text-lg text-slate-200 mb-8 drop-shadow-md leading-relaxed line-clamp-3">
-              {featuredCourse.description}
-            </p>
-            
-            <div className="flex items-center gap-4">
-              <Link href={`/portal/watch/${featuredCourse.slug}`} className="flex items-center gap-2 px-8 py-3 bg-white text-black font-bold rounded hover:bg-white/90 transition-all">
-                <Play className="w-5 h-5 fill-black" /> Assistir
-              </Link>
-              <button className="flex items-center gap-2 px-8 py-3 bg-white/20 backdrop-blur-md text-white font-bold rounded hover:bg-white/30 transition-all">
-                <Info className="w-5 h-5" /> Detalhes
-              </button>
-            </div>
+            <h1 className="text-xl font-bold tracking-tight">VaultMind<span className="text-zinc-500">Academy</span></h1>
+          </div>
+          
+          <div className="flex items-center gap-6">
+             <div className="text-right hidden sm:block">
+                <p className="text-xs text-zinc-500 uppercase tracking-wider">Aluno</p>
+                <p className="text-sm font-medium text-white">{user.email?.split('@')[0]}</p>
+             </div>
+             {/* Este é o botão Sair do TOPO. O do rodapé esquerdo fica no layout.tsx */}
+             <form action="/auth/signout" method="post">
+                <button className="p-2 text-zinc-400 hover:text-white hover:bg-white/10 rounded-full transition-colors" title="Sair">
+                  <LogOut className="w-5 h-5" />
+                </button>
+             </form>
           </div>
         </div>
+      </header>
+
+      {/* BILLBOARD DINÂMICO */}
+      {featuredCourse ? (
+        (() => {
+            const { percent, completedCount, totalLessons } = getProgress(featuredCourse);
+            const hasStarted = percent > 0;
+            const isCompleted = percent === 100 && totalLessons > 0;
+
+            return (
+                <div className="relative h-[50vh] w-full overflow-hidden group">
+                  {/* Imagem de Fundo */}
+                  <div 
+                    className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
+                    style={{ 
+                      backgroundImage: `url(${featuredCourse.thumbnail_url || "https://images.unsplash.com/photo-1550751827-4bd374c3f58b"})` 
+                    }}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0a] via-[#0a0a0a]/80 to-transparent"></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent"></div>
+                  </div>
+
+                  {/* AJUSTE: px-6 md:px-8 - Alinhamento estrito com o Header e Grid */}
+                  <div className="absolute inset-0 w-full px-6 md:px-8 flex flex-col justify-center z-10 pointer-events-none">
+                      
+                      <div className="max-w-6xl -mt-12 pointer-events-auto"> 
+                        
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="inline-flex items-center gap-2 px-3 py-1 bg-red-600/20 border border-red-500/30 text-red-500 text-xs font-bold uppercase tracking-widest rounded">
+                                {featuredCourse.is_premium ? "Destaque" : "Gratuito"}
+                            </div>
+                            {isCompleted && (
+                                <div className="inline-flex items-center gap-1 px-3 py-1 bg-green-500/20 border border-green-500/30 text-green-500 text-xs font-bold uppercase tracking-widest rounded">
+                                    <Award className="w-3 h-3" /> Concluído
+                                </div>
+                            )}
+                        </div>
+                        
+                        <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-4 drop-shadow-2xl leading-none tracking-tighter">
+                          {featuredCourse.title}
+                        </h1>
+                        
+                        <p className="text-lg text-slate-300 mb-6 drop-shadow-md leading-relaxed line-clamp-2 max-w-2xl">
+                          {featuredCourse.description}
+                        </p>
+                        
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                          <Link 
+                            href={`/portal/watch/${featuredCourse.slug}`} 
+                            className={`flex items-center gap-3 px-8 py-3.5 font-bold rounded hover:scale-105 transition-all shadow-lg ${hasStarted ? 'bg-white text-black' : 'bg-red-600 text-white hover:bg-red-500'}`}
+                          >
+                            {isCompleted ? (
+                                <> <PlayCircle className="w-5 h-5" /> Revisar Curso </>
+                            ) : hasStarted ? (
+                                <> <Play className="w-5 h-5 fill-current" /> Continuar (Aula {completedCount + 1}) </>
+                            ) : (
+                                <> <Play className="w-5 h-5 fill-current" /> Começar Agora </>
+                            )}
+                          </Link>
+                          
+                          {hasStarted && (
+                              <div className="flex flex-col gap-1 w-full sm:w-64">
+                                  <div className="flex justify-between text-xs font-medium text-zinc-400">
+                                      <span>Progresso</span>
+                                      <span className="text-white">{percent}%</span>
+                                  </div>
+                                  <div className="w-full h-1.5 bg-white/20 rounded-full overflow-hidden">
+                                      <div 
+                                          className={`h-full rounded-full transition-all duration-1000 ${isCompleted ? 'bg-green-500' : 'bg-red-500'}`}
+                                          style={{ width: `${percent}%` }}
+                                      ></div>
+                                  </div>
+                              </div>
+                          )}
+                        </div>
+                      </div>
+                  </div>
+                </div>
+            );
+        })()
       ) : (
-        // Fallback visualmente corrigido para fundo escuro
-        <div className="h-[50vh] flex items-center justify-center text-white bg-[#141414]">
-          <p className="animate-pulse">Carregando catálogo ou catálogo vazio...</p>
+        <div className="h-[40vh] flex items-center justify-center text-white bg-[#0a0a0a]">
+          <p className="animate-pulse text-zinc-500">Carregando catálogo...</p>
         </div>
       )}
 
       {/* TRILHAS DE CONTEÚDO */}
-      <div className="relative z-20 -mt-32 px-8 space-y-12">
+      {/* AJUSTE: px-6 md:px-8 - Alinhamento consistente com o topo */}
+      <div className="relative z-20 -mt-15 px-6 md:px-8 w-full">
         <section>
-          <h3 className="text-xl font-bold text-white mb-4 pl-1 border-l-4 border-red-600">
-            Adicionados Recentemente
+          <h3 className="text-xl font-bold text-white mb-6 pl-1 border-l-4 border-red-600 flex items-center gap-2">
+            Meus Cursos e Trilhas
           </h3>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-            {/* Renderiza os outros cursos buscados do banco */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
             {otherCourses.length > 0 ? (
-              otherCourses.map((course) => (
-                <Link key={course.id} href={`/portal/watch/${course.slug}`}>
-                  <div className="aspect-video bg-zinc-900 rounded-lg border border-white/5 hover:scale-105 hover:border-red-600/50 transition-all cursor-pointer relative overflow-hidden group">
-                    {/* Imagem */}
-                    {course.thumbnail_url ? (
-                        <img src={course.thumbnail_url} alt={course.title} className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity" />
-                    ) : (
-                        <div className="w-full h-full bg-zinc-800 flex items-center justify-center text-zinc-600">Sem Capa</div>
-                    )}
-                    
-                    {/* Overlay Hover */}
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Play className="w-12 h-12 text-white fill-white" />
-                    </div>
+              otherCourses.map((course) => {
+                const { percent, completedCount, totalLessons } = getProgress(course);
+                const hasStarted = percent > 0;
+                const isCompleted = percent === 100 && totalLessons > 0;
 
-                    {/* Badge Premium */}
-                    {course.is_premium && (
-                      <div className="absolute top-2 right-2 bg-black/60 p-1 rounded backdrop-blur-sm">
-                        <Lock className="w-3 h-3 text-yellow-500" />
+                return (
+                  <Link key={course.id} href={`/portal/watch/${course.slug}`}>
+                    <div className="group bg-zinc-900 border border-white/5 rounded-xl overflow-hidden hover:border-red-600/50 hover:shadow-2xl hover:shadow-red-900/10 transition-all duration-300 relative flex flex-col h-full">
+                      
+                      <div className="aspect-video relative overflow-hidden bg-zinc-800">
+                        {course.thumbnail_url ? (
+                            <img 
+                                src={course.thumbnail_url} 
+                                alt={course.title} 
+                                className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500" 
+                            />
+                        ) : (
+                            <div className="w-full h-full flex items-center justify-center text-zinc-600">
+                                <PlayCircle className="w-12 h-12" />
+                            </div>
+                        )}
+                        
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <Play className="w-12 h-12 text-white fill-white drop-shadow-lg" />
+                        </div>
+
+                        {isCompleted && (
+                            <div className="absolute top-2 right-2 bg-green-500 text-black text-[10px] font-bold px-2 py-0.5 rounded shadow">
+                                CONCLUÍDO
+                            </div>
+                        )}
                       </div>
-                    )}
 
-                    {/* Info Inferior */}
-                    <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black via-black/80 to-transparent">
-                      <p className="text-sm font-bold text-white truncate">{course.title}</p>
+                      <div className="p-5 flex-1 flex flex-col justify-between bg-zinc-900">
+                        <div>
+                            <h4 className="text-base font-bold text-white group-hover:text-red-500 transition-colors line-clamp-1 mb-1">
+                                {course.title}
+                            </h4>
+                            <p className="text-xs text-zinc-500 line-clamp-2 mb-4">
+                                {course.description || "Sem descrição."}
+                            </p>
+                        </div>
+
+                        <div className="space-y-1.5">
+                            <div className="flex justify-between text-[10px] font-medium text-zinc-400">
+                                <span className="flex items-center gap-1">
+                                    <Clock className="w-3 h-3" /> {completedCount}/{totalLessons} Aulas
+                                </span>
+                                <span className={isCompleted ? "text-green-500" : "text-zinc-300"}>{percent}%</span>
+                            </div>
+                            <div className="w-full h-1 bg-zinc-800 rounded-full overflow-hidden">
+                                <div 
+                                    className={`h-full rounded-full transition-all ${isCompleted ? 'bg-green-500' : 'bg-red-600'}`}
+                                    style={{ width: `${percent}%` }}
+                                ></div>
+                            </div>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </Link>
-              ))
+                  </Link>
+                );
+              })
             ) : (
-              // Correção de layout: col-span-4 para não quebrar o grid
-              <p className="text-slate-500 col-span-4">Nenhum outro curso encontrado no momento.</p>
+              <p className="text-slate-500 col-span-full py-10 text-center">Nenhum outro curso encontrado no momento.</p>
             )}
             
-            {/* Card Exemplo - Só aparece se não tiver nada (Lógica condicional aplicada para limpeza visual) */}
             {safeCourses.length === 0 && (
                 <div className="aspect-video bg-zinc-800/50 rounded-lg border border-white/5 flex flex-col items-center justify-center text-center p-4 border-dashed col-span-1">
-                <span className="text-slate-500 text-sm">Em breve novos cursos...</span>
+                   <span className="text-slate-500 text-sm">Em breve...</span>
                 </div>
             )}
           </div>
