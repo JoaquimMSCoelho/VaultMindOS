@@ -2,10 +2,12 @@
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function updateSession(request: NextRequest) {
+  // 1. Cria a resposta inicial
   let supabaseResponse = NextResponse.next({
     request,
   })
 
+  // 2. Cria o cliente Supabase para gerenciar os cookies
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -15,10 +17,15 @@ export async function updateSession(request: NextRequest) {
           return request.cookies.getAll()
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) => request.cookies.set(name, value))
+          // A mágica acontece aqui: sincroniza cookies da Request com a Response
+          cookiesToSet.forEach(({ name, value }) =>
+            request.cookies.set(name, value)
+          )
+          
           supabaseResponse = NextResponse.next({
             request,
           })
+          
           cookiesToSet.forEach(({ name, value, options }) =>
             supabaseResponse.cookies.set(name, value, options)
           )
@@ -27,7 +34,7 @@ export async function updateSession(request: NextRequest) {
     }
   )
 
-  // Atualizar a sessão se existir
+  // 3. Importante: Atualiza o token se estiver expirado
   await supabase.auth.getUser()
 
   return supabaseResponse

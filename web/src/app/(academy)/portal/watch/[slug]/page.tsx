@@ -1,7 +1,9 @@
 import { createClient } from "@/utils/supabase/server";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ChevronLeft, PlayCircle, Lock, CheckCircle } from "lucide-react";
+import { ChevronLeft, PlayCircle, Lock } from "lucide-react";
+// IMPORTAÇÃO: Componente interativo de Check
+import { LessonCheck } from "@/components/LessonCheck";
 
 // Definição de Tipos
 type Lesson = {
@@ -31,7 +33,10 @@ export default async function WatchPage({
   const { aula } = await searchParams;
   const supabase = await createClient();
 
-  // BUSCA HIERÁRQUICA
+  // 1. SEGURANÇA: Identificar o usuário para buscar o progresso DELE
+  const { data: { user } } = await supabase.auth.getUser();
+
+  // 2. BUSCA DO CURSO
   const { data: course, error } = await supabase
     .from("courses")
     .select(`
@@ -57,6 +62,23 @@ export default async function WatchPage({
     return notFound();
   }
 
+  // 3. BUSCA DE PROGRESSO (LMS CORE)
+  // Busca apenas os IDs das aulas que este usuário já completou
+  let completedLessonIds = new Set<string>();
+  
+  if (user) {
+    const { data: progressData } = await supabase
+      .from('user_progress')
+      .select('lesson_id')
+      .eq('user_id', user.id)
+      .eq('is_completed', true);
+    
+    // Otimização: Set permite verificação O(1) instantânea
+    if (progressData) {
+      progressData.forEach(p => completedLessonIds.add(p.lesson_id));
+    }
+  }
+
   // Ordenação
   const sortedModules = (course.modules || []).sort((a: any, b: any) => a.position - b.position);
   sortedModules.forEach((mod: any) => {
@@ -78,6 +100,9 @@ export default async function WatchPage({
   }
 
   activeModuleTitle = activeLesson?.moduleTitle || sortedModules[0]?.title;
+  
+  // Caminho atual para revalidação automática ao clicar no check
+  const currentPath = `/portal/watch/${slug}`;
 
   return (
     <div className="fixed inset-0 z-50 bg-[#141414] text-white flex flex-col font-sans">
@@ -101,8 +126,17 @@ export default async function WatchPage({
         </div>
 
         <div className="flex items-center gap-4">
-           <div className="text-sm text-zinc-500 hidden sm:block font-medium">
-             Módulo {sortedModules.findIndex((m: any) => m.lessons.some((l: any) => l.id === activeLesson?.id)) + 1} de {sortedModules.length}
+           {/* Barra de Progresso Geral */}
+           <div className="hidden sm:flex flex-col items-end gap-1">
+             <div className="text-sm text-zinc-500 font-medium">
+                {completedLessonIds.size} de {allLessons.length} Aulas
+             </div>
+             <div className="w-32 h-1 bg-zinc-800 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-green-500 transition-all duration-500"
+                  style={{ width: `${(completedLessonIds.size / Math.max(allLessons.length, 1)) * 100}%` }}
+                ></div>
+             </div>
            </div>
         </div>
       </header>
@@ -155,18 +189,30 @@ export default async function WatchPage({
                         <h2 className="text-2xl font-bold text-white leading-tight">{activeLesson.title}</h2>
                         
                         <div className="flex items-center gap-4 text-zinc-400">
+                            {/* Botão de Conclusão (Ação Principal Injetada) */}
+                            <div className="flex items-center gap-2">
+                                <LessonCheck 
+                                  lessonId={activeLesson.id} 
+                                  isCompleted={completedLessonIds.has(activeLesson.id)}
+                                  path={currentPath}
+                                />
+                                <span className="text-sm font-medium text-zinc-300">
+                                  {completedLessonIds.has(activeLesson.id) ? "Concluída" : "Marcar como vista"}
+                                </span>
+                            </div>
+
+                            <span className="w-px h-4 bg-zinc-700"></span>
+
                             <span className="flex items-center gap-2 text-sm">
                                 <PlayCircle className="w-5 h-5" /> {Math.floor(activeLesson.duration / 60)} min
                             </span>
-                            <span className="w-1 h-1 rounded-full bg-zinc-600"></span>
-                            <span className="text-sm">{activeModuleTitle}</span>
                         </div>
                     </div>
                     
                     {/* LADO DIREITO: Descrição (60%) */}
                     <div className="lg:col-span-3 prose prose-invert max-w-none">
                         <h3 className="text-xl font-bold text-zinc-200 mb-3 mt-0">Descrição da Aula</h3>
-                        {/* AJUSTE: Fonte reduzida de text-lg para text-base */}
+                        {/* FONTE PRESERVADA: text-base */}
                         <p className="text-zinc-300 text-base leading-relaxed">
                             Nesta aula vamos aprofundar os conceitos técnicos apresentados no módulo. 
                             Aproveite para fazer anotações e revisar o material complementar caso esteja disponível.
@@ -198,6 +244,8 @@ export default async function WatchPage({
                         <div>
                             {module.lessons.map((lesson: any) => {
                                 const isActive = lesson.id === activeLesson?.id;
+                                const isCompleted = completedLessonIds.has(lesson.id);
+
                                 return (
                                   <Link 
                                       key={lesson.id}
@@ -206,15 +254,17 @@ export default async function WatchPage({
                                           isActive ? "bg-white/5 border-l-4 border-red-600" : "border-l-4 border-transparent"
                                       }`}
                                   >
-                                      <div className="mt-1 shrink-0">
-                                          {isActive ? (
-                                              <PlayCircle className="w-5 h-5 text-red-500" />
-                                          ) : (
-                                              <CheckCircle className="w-5 h-5 text-zinc-700 group-hover:text-zinc-500" />
-                                          )}
+                                      {/* CHECKBOX INTERATIVO NA SIDEBAR */}
+                                      <div className="mt-1 shrink-0 z-20">
+                                        <LessonCheck 
+                                          lessonId={lesson.id}
+                                          isCompleted={isCompleted}
+                                          path={currentPath}
+                                        />
                                       </div>
+
                                       <div className="flex-1 min-w-0">
-                                          <p className={`text-base truncate ${isActive ? "text-white font-bold" : "text-zinc-400 font-medium"}`}>
+                                          <p className={`text-base truncate ${isActive ? "text-white font-bold" : "text-zinc-400 font-medium"} ${isCompleted ? "text-zinc-500 line-through decoration-zinc-700" : ""}`}>
                                               {lesson.title}
                                           </p>
                                           <span className="text-sm text-zinc-500 flex items-center gap-1 mt-2">

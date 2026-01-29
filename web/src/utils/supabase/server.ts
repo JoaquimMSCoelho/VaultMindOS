@@ -22,7 +22,9 @@ export async function createClient() {
               cookieStore.set(name, value, options)
             );
           } catch {
-            // Ignorar erro de cookies em Server Components
+            // O método setAll foi chamado de um Server Component.
+            // Isso pode ser ignorado se você tiver um middleware atualizando
+            // as sessões do usuário.
           }
         },
       },
