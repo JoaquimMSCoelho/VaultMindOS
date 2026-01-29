@@ -65,7 +65,10 @@ export default function PublicLayout({
 
       {/* FOOTER SIMPLIFICADO */}
       <footer className="border-t border-white/5 bg-black/40 mt-20 py-12">
-        <div className="container mx-auto px-4 text-center">
+        <div 
+          className="container mx-auto px-4 text-center"
+          suppressHydrationWarning={true}
+        >
           <p className="text-slate-500 text-sm">
             © 2026 ConnectionCyber Soluções em Tecnologia. Todos os direitos reservados.
           </p>

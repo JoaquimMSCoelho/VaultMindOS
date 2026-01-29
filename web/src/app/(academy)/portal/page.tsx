@@ -14,16 +14,32 @@ export default async function PortalDashboard() {
     redirect("/login");
   }
 
-  // 3. BUSCA DE DADOS HÍBRIDA
+  // --- NOVO BLOCO: BUSCAR PERFIL (FUSÃO TÉCNICA) ---
+  // Busca o nome de exibição para mostrar no Header
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("full_name")
+    .eq("id", user.id)
+    .single();
+  // -------------------------------------------------
+
+  // 3. BUSCA DE DADOS BLINDADA (Via Enrollments)
+  // Agora filtramos por cursos que tenham uma matrícula correspondente ao usuário
   const { data: courses, error } = await supabase
     .from("courses")
     .select(`
       *,
       modules (
         lessons (id)
+      ),
+      enrollments!inner (
+        status,
+        source
       )
     `)
     .eq("is_published", true)
+    .eq("enrollments.user_id", user.id) // Garante que a matrícula é DO usuário
+    .in("enrollments.status", ["active", "completed"]) // Apenas ativos ou concluídos
     .order("created_at", { ascending: false });
 
   // 4. Busca o Progresso do Usuário
@@ -40,7 +56,7 @@ export default async function PortalDashboard() {
     return (
       <div className="h-screen flex flex-col items-center justify-center text-white bg-[#141414]">
         <h1 className="text-2xl font-bold text-red-500 mb-2">Erro no Sistema</h1>
-        <p className="text-zinc-400">Não foi possível carregar o catálogo.</p>
+        <p className="text-zinc-400">Não foi possível verificar suas matrículas.</p>
         <p className="text-xs text-zinc-600 mt-4 font-mono">Erro: {error.message}</p>
       </div>
     );
@@ -60,11 +76,12 @@ export default async function PortalDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white font-sans flex flex-col pb-20">
+    <div className="min-h-screen bg-[#0a0a0a] text-white font-sans flex flex-col pb-20"
+    suppressHydrationWarning={true}
+    >
       
       {/* HEADER DO DASHBOARD */}
       <header className="border-b border-white/10 bg-[#0a0a0a]/50 backdrop-blur-md sticky top-0 z-40">
-        {/* AJUSTE DE ALINHAMENTO: px-6 md:px-8 (Mais próximo da margem esquerda, alinhado com o conteúdo) */}
         <div className="w-full px-6 md:px-8 h-20 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-red-500/10 rounded-lg border border-red-500/20">
@@ -76,9 +93,12 @@ export default async function PortalDashboard() {
           <div className="flex items-center gap-6">
              <div className="text-right hidden sm:block">
                 <p className="text-xs text-zinc-500 uppercase tracking-wider">Aluno</p>
-                <p className="text-sm font-medium text-white">{user.email?.split('@')[0]}</p>
+                {/* LÓGICA DE EXIBIÇÃO DE NOME ATUALIZADA */}
+                <p className="text-sm font-medium text-white">
+                    {profile?.full_name || user.email?.split('@')[0]}
+                </p>
              </div>
-             {/* Este é o botão Sair do TOPO. O do rodapé esquerdo fica no layout.tsx */}
+             {/* Botão Sair */}
              <form action="/auth/signout" method="post">
                 <button className="p-2 text-zinc-400 hover:text-white hover:bg-white/10 rounded-full transition-colors" title="Sair">
                   <LogOut className="w-5 h-5" />
@@ -108,14 +128,15 @@ export default async function PortalDashboard() {
                     <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent"></div>
                   </div>
 
-                  {/* AJUSTE: px-6 md:px-8 - Alinhamento estrito com o Header e Grid */}
+                  {/* AJUSTE: px-6 md:px-8 - Alinhamento estrito */}
                   <div className="absolute inset-0 w-full px-6 md:px-8 flex flex-col justify-center z-10 pointer-events-none">
                       
                       <div className="max-w-6xl -mt-12 pointer-events-auto"> 
                         
                         <div className="flex items-center gap-3 mb-4">
                             <div className="inline-flex items-center gap-2 px-3 py-1 bg-red-600/20 border border-red-500/30 text-red-500 text-xs font-bold uppercase tracking-widest rounded">
-                                {featuredCourse.is_premium ? "Destaque" : "Gratuito"}
+                                {/* LÓGICA INJETADA: Verifica origem da matrícula (Projeto Social) */}
+                                {featuredCourse.enrollments[0]?.source === 'social_project' ? "Projeto Social" : (featuredCourse.is_premium ? "Destaque" : "Gratuito")}
                             </div>
                             {isCompleted && (
                                 <div className="inline-flex items-center gap-1 px-3 py-1 bg-green-500/20 border border-green-500/30 text-green-500 text-xs font-bold uppercase tracking-widest rounded">
@@ -167,95 +188,94 @@ export default async function PortalDashboard() {
             );
         })()
       ) : (
-        <div className="h-[40vh] flex items-center justify-center text-white bg-[#0a0a0a]">
-          <p className="animate-pulse text-zinc-500">Carregando catálogo...</p>
+        // STATE EMPTY (INJEÇÃO FUNCIONAL): Quando o usuário não tem nenhuma matrícula
+        <div className="h-[60vh] flex flex-col items-center justify-center text-white bg-[#0a0a0a] px-4 text-center">
+          <div className="p-4 bg-zinc-900 rounded-full mb-4">
+            <Lock className="w-8 h-8 text-zinc-500" />
+          </div>
+          <h2 className="text-xl font-bold text-white mb-2">Nenhum curso disponível</h2>
+          <p className="text-zinc-400 max-w-md">
+            Você ainda não possui matrículas ativas. Se você faz parte do <span className="text-red-500 font-bold">Projeto Primeiro Emprego</span>, aguarde a liberação ou entre em contato com o suporte.
+          </p>
         </div>
       )}
 
       {/* TRILHAS DE CONTEÚDO */}
-      {/* AJUSTE: px-6 md:px-8 - Alinhamento consistente com o topo */}
-      <div className="relative z-20 -mt-15 px-6 md:px-8 w-full">
-        <section>
-          <h3 className="text-xl font-bold text-white mb-6 pl-1 border-l-4 border-red-600 flex items-center gap-2">
-            Meus Cursos e Trilhas
-          </h3>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-            {otherCourses.length > 0 ? (
-              otherCourses.map((course) => {
-                const { percent, completedCount, totalLessons } = getProgress(course);
-                const hasStarted = percent > 0;
-                const isCompleted = percent === 100 && totalLessons > 0;
+      {/* Condicional do arquivo novo para não exibir bloco vazio, mas com a classe visual original -mt-15 */}
+      {otherCourses.length > 0 && (
+          <div className="relative z-20 -mt-15 px-6 md:px-8 w-full">
+            <section>
+              <h3 className="text-xl font-bold text-white mb-6 pl-1 border-l-4 border-red-600 flex items-center gap-2">
+                Meus Cursos e Trilhas
+              </h3>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                  {otherCourses.map((course) => {
+                    const { percent, completedCount, totalLessons } = getProgress(course);
+                    const hasStarted = percent > 0;
+                    const isCompleted = percent === 100 && totalLessons > 0;
 
-                return (
-                  <Link key={course.id} href={`/portal/watch/${course.slug}`}>
-                    <div className="group bg-zinc-900 border border-white/5 rounded-xl overflow-hidden hover:border-red-600/50 hover:shadow-2xl hover:shadow-red-900/10 transition-all duration-300 relative flex flex-col h-full">
-                      
-                      <div className="aspect-video relative overflow-hidden bg-zinc-800">
-                        {course.thumbnail_url ? (
-                            <img 
-                                src={course.thumbnail_url} 
-                                alt={course.title} 
-                                className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500" 
-                            />
-                        ) : (
-                            <div className="w-full h-full flex items-center justify-center text-zinc-600">
-                                <PlayCircle className="w-12 h-12" />
+                    return (
+                      <Link key={course.id} href={`/portal/watch/${course.slug}`}>
+                        <div className="group bg-zinc-900 border border-white/5 rounded-xl overflow-hidden hover:border-red-600/50 hover:shadow-2xl hover:shadow-red-900/10 transition-all duration-300 relative flex flex-col h-full">
+                          
+                          <div className="aspect-video relative overflow-hidden bg-zinc-800">
+                            {course.thumbnail_url ? (
+                                <img 
+                                    src={course.thumbnail_url} 
+                                    alt={course.title} 
+                                    className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500" 
+                                />
+                            ) : (
+                                <div className="w-full h-full flex items-center justify-center text-zinc-600">
+                                    <PlayCircle className="w-12 h-12" />
+                                </div>
+                            )}
+                            
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <Play className="w-12 h-12 text-white fill-white drop-shadow-lg" />
                             </div>
-                        )}
-                        
-                        <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <Play className="w-12 h-12 text-white fill-white drop-shadow-lg" />
+
+                            {isCompleted && (
+                                <div className="absolute top-2 right-2 bg-green-500 text-black text-[10px] font-bold px-2 py-0.5 rounded shadow">
+                                    CONCLUÍDO
+                                </div>
+                            )}
+                          </div>
+
+                          <div className="p-5 flex-1 flex flex-col justify-between bg-zinc-900">
+                            <div>
+                                <h4 className="text-base font-bold text-white group-hover:text-red-500 transition-colors line-clamp-1 mb-1">
+                                    {course.title}
+                                </h4>
+                                <p className="text-xs text-zinc-500 line-clamp-2 mb-4">
+                                    {course.description || "Sem descrição."}
+                                </p>
+                            </div>
+
+                            <div className="space-y-1.5">
+                                <div className="flex justify-between text-[10px] font-medium text-zinc-400">
+                                    <span className="flex items-center gap-1">
+                                        <Clock className="w-3 h-3" /> {completedCount}/{totalLessons} Aulas
+                                    </span>
+                                    <span className={isCompleted ? "text-green-500" : "text-zinc-300"}>{percent}%</span>
+                                </div>
+                                <div className="w-full h-1 bg-zinc-800 rounded-full overflow-hidden">
+                                    <div 
+                                        className={`h-full rounded-full transition-all ${isCompleted ? 'bg-green-500' : 'bg-red-600'}`}
+                                        style={{ width: `${percent}%` }}
+                                    ></div>
+                                </div>
+                            </div>
+                          </div>
                         </div>
-
-                        {isCompleted && (
-                            <div className="absolute top-2 right-2 bg-green-500 text-black text-[10px] font-bold px-2 py-0.5 rounded shadow">
-                                CONCLUÍDO
-                            </div>
-                        )}
-                      </div>
-
-                      <div className="p-5 flex-1 flex flex-col justify-between bg-zinc-900">
-                        <div>
-                            <h4 className="text-base font-bold text-white group-hover:text-red-500 transition-colors line-clamp-1 mb-1">
-                                {course.title}
-                            </h4>
-                            <p className="text-xs text-zinc-500 line-clamp-2 mb-4">
-                                {course.description || "Sem descrição."}
-                            </p>
-                        </div>
-
-                        <div className="space-y-1.5">
-                            <div className="flex justify-between text-[10px] font-medium text-zinc-400">
-                                <span className="flex items-center gap-1">
-                                    <Clock className="w-3 h-3" /> {completedCount}/{totalLessons} Aulas
-                                </span>
-                                <span className={isCompleted ? "text-green-500" : "text-zinc-300"}>{percent}%</span>
-                            </div>
-                            <div className="w-full h-1 bg-zinc-800 rounded-full overflow-hidden">
-                                <div 
-                                    className={`h-full rounded-full transition-all ${isCompleted ? 'bg-green-500' : 'bg-red-600'}`}
-                                    style={{ width: `${percent}%` }}
-                                ></div>
-                            </div>
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
-                );
-              })
-            ) : (
-              <p className="text-slate-500 col-span-full py-10 text-center">Nenhum outro curso encontrado no momento.</p>
-            )}
-            
-            {safeCourses.length === 0 && (
-                <div className="aspect-video bg-zinc-800/50 rounded-lg border border-white/5 flex flex-col items-center justify-center text-center p-4 border-dashed col-span-1">
-                   <span className="text-slate-500 text-sm">Em breve...</span>
-                </div>
-            )}
+                      </Link>
+                    );
+                  })}
+              </div>
+            </section>
           </div>
-        </section>
-      </div>
+      )}
     </div>
   );
 }
