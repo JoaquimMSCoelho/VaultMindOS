@@ -33,7 +33,7 @@ if ($gitStatus) {
     git add .
     
     # Comita com Timestamp
-    git commit -m "Backup Automático: $timestamp - Golden State (Auth+Player)"
+    git commit -m "Backup Automático: $timestamp - Golden State"
     
     # Envia (Push)
     $pushOutput = git push 2>&1
@@ -41,8 +41,7 @@ if ($gitStatus) {
     if ($LASTEXITCODE -eq 0) {
         Write-Host "✅ GitHub atualizado com sucesso!" -ForegroundColor Green
     } else {
-        Write-Host "⚠️ Erro no Git Push. Verifique sua conexão. O backup físico continuará." -ForegroundColor Red
-        Write-Host $pushOutput -ForegroundColor DarkGray
+        Write-Host "⚠️ Erro no Git Push ou nada a enviar. Continuando..." -ForegroundColor DarkGray
     }
 } else {
     Write-Host "✅ Nada a comitar. O GitHub já está atualizado." -ForegroundColor Green
@@ -68,11 +67,12 @@ $destination = "$destRoot\$backupName"
 New-Item -ItemType Directory -Force -Path $destination | Out-Null
 
 # Robocopy (Apenas pasta WEB, ignorando lixo)
-# /E = Recursivo | /XO = Excluir arquivos antigos inalterados | /NFL = Sem lista de arquivos (limpo)
+# REMOVIDO /NFT para compatibilidade.
 Write-Host "Copiando arquivos críticos..." -ForegroundColor Cyan
 
-robocopy $webSource $destination /E /XO /NFT /NDL /NJH /NJS /XD "node_modules" ".next" ".git" ".vs" "dist" "build" ".vercel"
+robocopy $webSource $destination /E /XO /NDL /NJH /NJS /XD "node_modules" ".next" ".git" ".vs" "dist" "build" ".vercel"
 
+# Robocopy retorna códigos de 0 a 7 como sucesso/parcial
 if ($LASTEXITCODE -le 8) {
     Write-Host "`n==========================================" -ForegroundColor Green
     Write-Host "   ✅ BACKUP COMPLETO FINALIZADO" -ForegroundColor Green
