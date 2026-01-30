@@ -14,17 +14,16 @@ export default async function PortalDashboard() {
     redirect("/login");
   }
 
-  // --- NOVO BLOCO: BUSCAR PERFIL (FUSÃO TÉCNICA) ---
+  // --- BUSCAR PERFIL ---
   // Busca o nome de exibição para mostrar no Header
   const { data: profile } = await supabase
     .from("profiles")
     .select("full_name")
     .eq("id", user.id)
     .single();
-  // -------------------------------------------------
 
   // 3. BUSCA DE DADOS BLINDADA (Via Enrollments)
-  // Agora filtramos por cursos que tenham uma matrícula correspondente ao usuário
+  // Filtra por cursos que tenham uma matrícula correspondente ao usuário
   const { data: courses, error } = await supabase
     .from("courses")
     .select(`
@@ -38,8 +37,8 @@ export default async function PortalDashboard() {
       )
     `)
     .eq("is_published", true)
-    .eq("enrollments.user_id", user.id) // Garante que a matrícula é DO usuário
-    .in("enrollments.status", ["active", "completed"]) // Apenas ativos ou concluídos
+    .eq("enrollments.user_id", user.id)
+    .in("enrollments.status", ["active", "completed"])
     .order("created_at", { ascending: false });
 
   // 4. Busca o Progresso do Usuário
@@ -54,10 +53,10 @@ export default async function PortalDashboard() {
   if (error) {
     console.error("❌ ERRO CRÍTICO AO BUSCAR CURSOS:", error.message);
     return (
-      <div className="h-screen flex flex-col items-center justify-center text-white bg-[#141414]">
+      <div className="h-screen flex flex-col items-center justify-center text-white bg-neutral-950">
         <h1 className="text-2xl font-bold text-red-500 mb-2">Erro no Sistema</h1>
-        <p className="text-zinc-400">Não foi possível verificar suas matrículas.</p>
-        <p className="text-xs text-zinc-600 mt-4 font-mono">Erro: {error.message}</p>
+        <p className="text-neutral-400">Não foi possível verificar suas matrículas.</p>
+        <p className="text-xs text-neutral-600 mt-4 font-mono">Erro: {error.message}</p>
       </div>
     );
   }
@@ -76,31 +75,30 @@ export default async function PortalDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white font-sans flex flex-col pb-20"
+    <div className="min-h-screen bg-neutral-950 text-neutral-100 font-sans flex flex-col pb-20 selection:bg-emerald-500/30"
     suppressHydrationWarning={true}
     >
       
       {/* HEADER DO DASHBOARD */}
-      <header className="border-b border-white/10 bg-[#0a0a0a]/50 backdrop-blur-md sticky top-0 z-40">
+      <header className="border-b border-neutral-800 bg-neutral-950/80 backdrop-blur-md sticky top-0 z-40">
         <div className="w-full px-6 md:px-8 h-20 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-red-500/10 rounded-lg border border-red-500/20">
-              <Zap className="w-6 h-6 text-red-500" />
+            <div className="p-2 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
+              <Zap className="w-6 h-6 text-emerald-500" />
             </div>
-            <h1 className="text-xl font-bold tracking-tight">VaultMind<span className="text-zinc-500">Academy</span></h1>
+            <h1 className="text-xl font-bold tracking-tight">VaultMind<span className="text-emerald-500">Academy</span></h1>
           </div>
           
           <div className="flex items-center gap-6">
              <div className="text-right hidden sm:block">
-                <p className="text-xs text-zinc-500 uppercase tracking-wider">Aluno</p>
-                {/* LÓGICA DE EXIBIÇÃO DE NOME ATUALIZADA */}
+                <p className="text-xs text-neutral-500 uppercase tracking-wider">Aluno</p>
                 <p className="text-sm font-medium text-white">
                     {profile?.full_name || user.email?.split('@')[0]}
                 </p>
              </div>
              {/* Botão Sair */}
              <form action="/auth/signout" method="post">
-                <button className="p-2 text-zinc-400 hover:text-white hover:bg-white/10 rounded-full transition-colors" title="Sair">
+                <button className="p-2 text-neutral-400 hover:text-white hover:bg-neutral-800 rounded-full transition-colors" title="Sair">
                   <LogOut className="w-5 h-5" />
                 </button>
              </form>
@@ -124,22 +122,20 @@ export default async function PortalDashboard() {
                       backgroundImage: `url(${featuredCourse.thumbnail_url || "https://images.unsplash.com/photo-1550751827-4bd374c3f58b"})` 
                     }}
                   >
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0a] via-[#0a0a0a]/80 to-transparent"></div>
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent"></div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-neutral-950 via-neutral-950/80 to-transparent"></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-transparent to-transparent"></div>
                   </div>
 
-                  {/* AJUSTE: px-6 md:px-8 - Alinhamento estrito */}
                   <div className="absolute inset-0 w-full px-6 md:px-8 flex flex-col justify-center z-10 pointer-events-none">
                       
                       <div className="max-w-6xl -mt-12 pointer-events-auto"> 
                         
                         <div className="flex items-center gap-3 mb-4">
-                            <div className="inline-flex items-center gap-2 px-3 py-1 bg-red-600/20 border border-red-500/30 text-red-500 text-xs font-bold uppercase tracking-widest rounded">
-                                {/* LÓGICA INJETADA: Verifica origem da matrícula (Projeto Social) */}
+                            <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-xs font-bold uppercase tracking-widest rounded">
                                 {featuredCourse.enrollments[0]?.source === 'social_project' ? "Projeto Social" : (featuredCourse.is_premium ? "Destaque" : "Gratuito")}
                             </div>
                             {isCompleted && (
-                                <div className="inline-flex items-center gap-1 px-3 py-1 bg-green-500/20 border border-green-500/30 text-green-500 text-xs font-bold uppercase tracking-widest rounded">
+                                <div className="inline-flex items-center gap-1 px-3 py-1 bg-emerald-500/20 border border-emerald-500/30 text-emerald-500 text-xs font-bold uppercase tracking-widest rounded">
                                     <Award className="w-3 h-3" /> Concluído
                                 </div>
                             )}
@@ -149,14 +145,14 @@ export default async function PortalDashboard() {
                           {featuredCourse.title}
                         </h1>
                         
-                        <p className="text-lg text-slate-300 mb-6 drop-shadow-md leading-relaxed line-clamp-2 max-w-2xl">
+                        <p className="text-lg text-neutral-300 mb-6 drop-shadow-md leading-relaxed line-clamp-2 max-w-2xl">
                           {featuredCourse.description}
                         </p>
                         
                         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                           <Link 
                             href={`/portal/watch/${featuredCourse.slug}`} 
-                            className={`flex items-center gap-3 px-8 py-3.5 font-bold rounded hover:scale-105 transition-all shadow-lg ${hasStarted ? 'bg-white text-black' : 'bg-red-600 text-white hover:bg-red-500'}`}
+                            className={`flex items-center gap-3 px-8 py-3.5 font-bold rounded hover:scale-105 transition-all shadow-lg ${hasStarted ? 'bg-white text-neutral-950' : 'bg-emerald-600 text-white hover:bg-emerald-500 shadow-emerald-500/20'}`}
                           >
                             {isCompleted ? (
                                 <> <PlayCircle className="w-5 h-5" /> Revisar Curso </>
@@ -169,13 +165,13 @@ export default async function PortalDashboard() {
                           
                           {hasStarted && (
                               <div className="flex flex-col gap-1 w-full sm:w-64">
-                                  <div className="flex justify-between text-xs font-medium text-zinc-400">
+                                  <div className="flex justify-between text-xs font-medium text-neutral-400">
                                       <span>Progresso</span>
                                       <span className="text-white">{percent}%</span>
                                   </div>
-                                  <div className="w-full h-1.5 bg-white/20 rounded-full overflow-hidden">
+                                  <div className="w-full h-1.5 bg-neutral-800 rounded-full overflow-hidden">
                                       <div 
-                                          className={`h-full rounded-full transition-all duration-1000 ${isCompleted ? 'bg-green-500' : 'bg-red-500'}`}
+                                          className="h-full bg-emerald-500 rounded-full transition-all duration-1000"
                                           style={{ width: `${percent}%` }}
                                       ></div>
                                   </div>
@@ -188,38 +184,36 @@ export default async function PortalDashboard() {
             );
         })()
       ) : (
-        // STATE EMPTY (INJEÇÃO FUNCIONAL): Quando o usuário não tem nenhuma matrícula
-        <div className="h-[60vh] flex flex-col items-center justify-center text-white bg-[#0a0a0a] px-4 text-center">
-          <div className="p-4 bg-zinc-900 rounded-full mb-4">
-            <Lock className="w-8 h-8 text-zinc-500" />
+        // STATE EMPTY
+        <div className="h-[60vh] flex flex-col items-center justify-center text-white bg-neutral-950 px-4 text-center">
+          <div className="p-4 bg-neutral-900 rounded-full mb-4">
+            <Lock className="w-8 h-8 text-neutral-600" />
           </div>
           <h2 className="text-xl font-bold text-white mb-2">Nenhum curso disponível</h2>
-          <p className="text-zinc-400 max-w-md">
-            Você ainda não possui matrículas ativas. Se você faz parte do <span className="text-red-500 font-bold">Projeto Primeiro Emprego</span>, aguarde a liberação ou entre em contato com o suporte.
+          <p className="text-neutral-400 max-w-md">
+            Você ainda não possui matrículas ativas. Se você faz parte do <span className="text-emerald-500 font-bold">Projeto Primeiro Emprego</span>, aguarde a liberação ou entre em contato com o suporte.
           </p>
         </div>
       )}
 
       {/* TRILHAS DE CONTEÚDO */}
-      {/* Condicional do arquivo novo para não exibir bloco vazio, mas com a classe visual original -mt-15 */}
       {otherCourses.length > 0 && (
           <div className="relative z-20 -mt-15 px-6 md:px-8 w-full">
             <section>
-              <h3 className="text-xl font-bold text-white mb-6 pl-1 border-l-4 border-red-600 flex items-center gap-2">
+              <h3 className="text-xl font-bold text-white mb-6 pl-1 border-l-4 border-emerald-500 flex items-center gap-2">
                 Meus Cursos e Trilhas
               </h3>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
                   {otherCourses.map((course) => {
                     const { percent, completedCount, totalLessons } = getProgress(course);
-                    const hasStarted = percent > 0;
                     const isCompleted = percent === 100 && totalLessons > 0;
 
                     return (
                       <Link key={course.id} href={`/portal/watch/${course.slug}`}>
-                        <div className="group bg-zinc-900 border border-white/5 rounded-xl overflow-hidden hover:border-red-600/50 hover:shadow-2xl hover:shadow-red-900/10 transition-all duration-300 relative flex flex-col h-full">
+                        <div className="group bg-neutral-900 border border-neutral-800 rounded-xl overflow-hidden hover:border-emerald-500/50 hover:shadow-2xl hover:shadow-emerald-900/10 transition-all duration-300 relative flex flex-col h-full">
                           
-                          <div className="aspect-video relative overflow-hidden bg-zinc-800">
+                          <div className="aspect-video relative overflow-hidden bg-neutral-800">
                             {course.thumbnail_url ? (
                                 <img 
                                     src={course.thumbnail_url} 
@@ -227,7 +221,7 @@ export default async function PortalDashboard() {
                                     className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500" 
                                 />
                             ) : (
-                                <div className="w-full h-full flex items-center justify-center text-zinc-600">
+                                <div className="w-full h-full flex items-center justify-center text-neutral-600">
                                     <PlayCircle className="w-12 h-12" />
                                 </div>
                             )}
@@ -237,32 +231,32 @@ export default async function PortalDashboard() {
                             </div>
 
                             {isCompleted && (
-                                <div className="absolute top-2 right-2 bg-green-500 text-black text-[10px] font-bold px-2 py-0.5 rounded shadow">
+                                <div className="absolute top-2 right-2 bg-emerald-500 text-black text-[10px] font-bold px-2 py-0.5 rounded shadow">
                                     CONCLUÍDO
                                 </div>
                             )}
                           </div>
 
-                          <div className="p-5 flex-1 flex flex-col justify-between bg-zinc-900">
+                          <div className="p-5 flex-1 flex flex-col justify-between bg-neutral-900">
                             <div>
-                                <h4 className="text-base font-bold text-white group-hover:text-red-500 transition-colors line-clamp-1 mb-1">
+                                <h4 className="text-base font-bold text-white group-hover:text-emerald-400 transition-colors line-clamp-1 mb-1">
                                     {course.title}
                                 </h4>
-                                <p className="text-xs text-zinc-500 line-clamp-2 mb-4">
+                                <p className="text-xs text-neutral-500 line-clamp-2 mb-4">
                                     {course.description || "Sem descrição."}
                                 </p>
                             </div>
 
                             <div className="space-y-1.5">
-                                <div className="flex justify-between text-[10px] font-medium text-zinc-400">
+                                <div className="flex justify-between text-[10px] font-medium text-neutral-400">
                                     <span className="flex items-center gap-1">
                                         <Clock className="w-3 h-3" /> {completedCount}/{totalLessons} Aulas
                                     </span>
-                                    <span className={isCompleted ? "text-green-500" : "text-zinc-300"}>{percent}%</span>
+                                    <span className={isCompleted ? "text-emerald-500" : "text-neutral-300"}>{percent}%</span>
                                 </div>
-                                <div className="w-full h-1 bg-zinc-800 rounded-full overflow-hidden">
+                                <div className="w-full h-1 bg-neutral-800 rounded-full overflow-hidden">
                                     <div 
-                                        className={`h-full rounded-full transition-all ${isCompleted ? 'bg-green-500' : 'bg-red-600'}`}
+                                        className={`h-full rounded-full transition-all ${isCompleted ? 'bg-emerald-500' : 'bg-emerald-600'}`}
                                         style={{ width: `${percent}%` }}
                                     ></div>
                                 </div>
