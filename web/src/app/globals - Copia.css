@@ -1,0 +1,87 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* VaultMindOS - Global Design System */
+
+@layer base {
+  :root {
+    /* --- PALETA DE CORES (Baseada na Landing Page Primeiro Emprego) --- */
+    
+    /* Fundo: neutral-950 (RGB: 10, 10, 10 -> HSL: 0 0% 3.9%) */
+    --background: 0 0% 3.9%;
+    
+    /* Texto: neutral-100 (RGB: 245, 245, 245 -> HSL: 0 0% 98%) */
+    --foreground: 0 0% 98%;
+
+    /* Cards: neutral-900 */
+    --card: 0 0% 3.9%;
+    --card-foreground: 0 0% 98%;
+ 
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+ 
+    /* Primary: emerald-500 (RGB: 16, 185, 129 -> HSL: 158 64% 52%) */
+    --primary: 158 64% 52%;
+    --primary-foreground: 144 65% 15%; /* emerald-950 para contraste */
+ 
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+ 
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+ 
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
+ 
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+ 
+    /* Bordas: neutral-800 */
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 158 64% 52%;
+ 
+    --radius: 0.5rem;
+  }
+}
+
+@layer base {
+  * {
+    /* CORREÇÃO TÉCNICA: Usamos a variável direta em vez de @apply */
+    border-color: hsl(var(--border));
+  }
+  
+  body {
+    /* CORREÇÃO TÉCNICA: Usamos CSS nativo para garantir carregamento */
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Scrollbar Estilizada (Estilo Dark Mode) */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background-color: hsl(var(--background));
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--muted));
+    border-radius: 9999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: hsl(var(--muted-foreground));
+  }
+}
+
+/* Utilitários Globais */
+@layer utilities {
+  .text-glow {
+    text-shadow: 0 0 20px rgba(16, 185, 129, 0.5); /* Glow Emerald */
+  }
+}
