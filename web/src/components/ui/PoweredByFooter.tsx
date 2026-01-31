@@ -2,38 +2,41 @@ import Image from "next/image";
 
 export function PoweredByFooter() {
   return (
-    <footer className="w-full py-6 mt-auto border-t border-neutral-900/50 flex flex-col items-center justify-center gap-3 bg-neutral-950/30 backdrop-blur-sm">
-      
-      {/* Texto de Endosso */}
-      <p className="text-[10px] uppercase tracking-widest text-neutral-600 font-semibold">
-        Powered by ConnectionCyberOS Ecosystem
-      </p>
-
-      {/* Logos do Ecossistema (Aqui você adicionará o AutoZap no futuro) */}
-      <div className="flex items-center gap-4 opacity-50 hover:opacity-100 transition-opacity duration-300 grayscale hover:grayscale-0">
+    <footer className="w-full py-6 bg-neutral-950 border-t border-neutral-900">
+      {/* LAYOUT GLOBAL:
+         - flex-row: Mantém tudo na mesma linha.
+         - items-center: Alinhamento vertical perfeito.
+      */}
+      <div className="max-w-7xl mx-auto flex flex-row items-center justify-center gap-5 text-sm text-neutral-500">
         
-        {/* Logo da Holding (Mãe) */}
-        <div className="relative h-6 w-auto">
-             {/* Ajuste width/height conforme a proporção real da sua imagem */}
-             <Image 
-                src="/logo-connection-cyber.png" 
-                alt="ConnectionCyberOS" 
-                width={120} 
-                height={30} 
-                className="object-contain h-full w-auto"
-             />
+        {/* 1. TEXTO TRICOLOR (Connection = Verde, Cyber = Branco, OS = Vermelho) */}
+        <span className="opacity-90 tracking-wide flex items-center gap-1">
+          Powered by 
+          <span className="font-bold tracking-tight">
+            <span className="text-emerald-500">Connection</span>
+            <span className="text-white">Cyber</span>
+            <span className="text-red-600">OS</span>
+          </span>
+          Ecosystem
+        </span>
+
+        {/* 2. LOGO DO SISTEMA (Aumentado de w-24 para w-32) */}
+        <div className="relative w-32 h-8 grayscale hover:grayscale-0 transition-all opacity-80 hover:opacity-100 shrink-0">
+          <Image 
+            src="/logo-vaultmind.png" 
+            alt="VaultMindOS" 
+            fill 
+            className="object-contain"
+            priority
+          />
         </div>
 
-        {/* Separador Vertical (Quando tiver mais logos) */}
-        {/* <div className="h-3 w-px bg-neutral-800"></div> */}
+        {/* 3. COPYRIGHT */}
+        <span className="opacity-80 text-xs md:text-sm">
+          © 2026 ConnectionCyber Soluções em Tecnologia.
+        </span>
 
-        {/* Exemplo Futuro: <Image src="/logo-autozap.png" ... /> */}
-        
       </div>
-
-      <p className="text-[10px] text-neutral-700">
-        © 2026 ConnectionCyber Soluções em Tecnologia.
-      </p>
     </footer>
   );
 }

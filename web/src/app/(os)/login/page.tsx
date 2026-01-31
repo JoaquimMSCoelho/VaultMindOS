@@ -6,7 +6,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-neutral-950 flex flex-col relative overflow-hidden selection:bg-emerald-500/30">
       
-      {/* CONTEÚDO PRINCIPAL (Centralizado com flex-1 para empurrar o footer) */}
+      {/* CONTEÚDO PRINCIPAL (flex-1 garante que o footer fique embaixo) */}
       <div className="flex-1 flex flex-col items-center justify-center p-4 z-10">
         
         {/* Efeito de Fundo (Glow sutil) */}
@@ -14,11 +14,11 @@ export default function LoginPage() {
 
         <div className="w-full max-w-md space-y-8">
           
-          {/* CABEÇALHO DO PRODUTO (VaultMindOS) */}
-          <div className="flex flex-col items-center text-center space-y-4">
+          {/* CABEÇALHO DO PRODUTO */}
+          <div className="flex flex-col items-center text-center space-y-6">
             
-            {/* Logo Oficial do Produto (Substitui o SVG antigo) */}
-            <div className="relative w-48 h-16 transition-transform hover:scale-105 duration-500">
+            {/* Logo do Produto (VaultMindOS) */}
+            <div className="relative w-56 h-20 transition-transform hover:scale-105 duration-500">
                 <Image 
                     src="/logo-vaultmind.png" 
                     alt="VaultMindOS" 
@@ -28,10 +28,15 @@ export default function LoginPage() {
                 />
             </div>
             
-            {/* A ESTRATÉGIA DE SSO (Single Sign-On) */}
-            <div className="space-y-1">
-                <h1 className="text-xl font-medium text-white tracking-tight">
-                  Acesso Único <span className="text-emerald-500 font-bold">ConnectionCyberOS</span>
+            {/* Título com Cores Corretas (Tricolor) */}
+            <div className="space-y-2">
+                <h1 className="text-2xl font-medium text-white tracking-tight">
+                  Acesso Único <br />
+                  <span className="font-bold tracking-wide text-2xl">
+                    <span className="text-emerald-500">Connection</span>
+                    <span className="text-white">Cyber</span>
+                    <span className="text-red-600">OS</span>
+                  </span>
                 </h1>
                 <p className="text-neutral-500 text-xs max-w-xs mx-auto">
                   Utilize sua credencial universal para acessar o VaultMindOS, AutoZap e o CyberTreina.
@@ -89,7 +94,7 @@ export default function LoginPage() {
 
           </form>
 
-          {/* Footer de Segurança (Mantido do Original) */}
+          {/* Footer de Segurança Interno */}
           <div className="flex justify-center items-center gap-2 text-neutral-600 text-[10px]">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
@@ -99,7 +104,7 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* RODAPÉ GLOBAL DA HOLDING (Injeção Funcional) */}
+      {/* RODAPÉ GLOBAL DA HOLDING (Fixo no bottom via Flex) */}
       <PoweredByFooter />
       
     </div>
