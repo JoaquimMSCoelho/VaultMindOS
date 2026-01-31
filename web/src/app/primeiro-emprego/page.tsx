@@ -1,22 +1,33 @@
 import React from 'react';
 import Link from 'next/link';
-import Image from 'next/image'; // Importante para o logo
+import Image from 'next/image'; 
 import { LeadForm } from './form';
-import { PoweredByFooter } from "@/components/ui/PoweredByFooter"; // Rodapé Global (já com a nova linha única)
+import { PoweredByFooter } from "@/components/ui/PoweredByFooter"; 
+// Importamos o novo componente padronizado (Fusão Técnica)
+import { FeatureCard } from '@/components/ui/FeatureCard';
 import { 
   CheckCircle2, 
-  Rocket, 
-  Users, 
   ShieldCheck, 
   Monitor, 
-  Zap
+  Zap,
+  Users,
+  Rocket
 } from 'lucide-react';
 
 export default function PrimeiroEmpregoLanding() {
+  // Dados estruturados para o componente FeatureCard
+  const trilhas = [
+    { title: 'Administrativa 4.0', icon: Users, description: 'Gestão, ERP e Rotinas Digitais' },
+    { title: 'Segurança & Automação', icon: ShieldCheck, description: 'CFTV IP e Dispositivos IoT' },
+    { title: 'Redes & Conectividade', icon: Zap, description: 'Wi-Fi 6 e Infraestrutura' },
+    { title: 'Suporte & Hardware', icon: Monitor, description: 'Manutenção e Diagnóstico' },
+    { title: 'Elétrica Moderna', icon: Rocket, description: 'Instalações e Eficiência Solar' },
+  ];
+
   return (
     <div className="min-h-screen bg-neutral-950 text-neutral-100 selection:bg-emerald-500/30 flex flex-col">
       
-      {/* HEADER SIMPLIFICADO (RESTUARADO DO BACKUP) */}
+      {/* HEADER SIMPLIFICADO (MANTIDO DO ARQUIVO ORIGINAL - VALIDADO) */}
       <nav className="border-b border-neutral-800 bg-neutral-950/50 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
           
@@ -40,10 +51,10 @@ export default function PrimeiroEmpregoLanding() {
         </div>
       </nav>
 
-      {/* CONTEÚDO PRINCIPAL (MIOLO INTACTO) */}
+      {/* CONTEÚDO PRINCIPAL */}
       <main className="flex-1">
         
-        {/* Hero Section */}
+        {/* Hero Section (Mantido visualmente idêntico) */}
         <header className="relative py-24 px-4 overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(16,185,129,0.1),transparent)]" />
           <div className="max-w-4xl mx-auto text-center relative z-10 flex flex-col items-center">
@@ -74,7 +85,7 @@ export default function PrimeiroEmpregoLanding() {
           </div>
         </header>
 
-        {/* Trilhas de Formação */}
+        {/* Trilhas de Formação - REFATORADO PARA USAR COMPONENTE (VISUAL MANTIDO) */}
         <section className="py-20 px-4 bg-neutral-900/30 border-y border-neutral-900">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-16">
@@ -83,26 +94,14 @@ export default function PrimeiroEmpregoLanding() {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
-              {[
-                { title: 'Administrativa 4.0', icon: Users, desc: 'Gestão, ERP e Rotinas Digitais' },
-                { title: 'Segurança & Automação', icon: ShieldCheck, desc: 'CFTV IP e Dispositivos IoT' },
-                { title: 'Redes & Conectividade', icon: Zap, desc: 'Wi-Fi 6 e Infraestrutura' },
-                { title: 'Suporte & Hardware', icon: Monitor, desc: 'Manutenção e Diagnóstico' },
-                { title: 'Elétrica Moderna', icon: Rocket, desc: 'Instalações e Eficiência Solar' },
-              ].map((trilha, i) => (
-                <div key={i} className="p-6 bg-neutral-950 border border-neutral-800 rounded-2xl hover:border-emerald-500/50 transition-all group hover:-translate-y-1">
-                  <div className="w-12 h-12 bg-neutral-900 rounded-lg flex items-center justify-center mb-4 group-hover:bg-emerald-500/10 transition-colors">
-                      <trilha.icon className="w-6 h-6 text-neutral-400 group-hover:text-emerald-500 transition-colors" />
-                  </div>
-                  <h3 className="font-bold mb-2 text-neutral-200">{trilha.title}</h3>
-                  <p className="text-sm text-neutral-500">{trilha.desc}</p>
-                </div>
+              {trilhas.map((trilha, i) => (
+                <FeatureCard key={i} {...trilha} />
               ))}
             </div>
           </div>
         </section>
 
-        {/* O Diferencial VaultMind */}
+        {/* O Diferencial VaultMind (Mantido visualmente idêntico) */}
         <section className="py-24 px-4">
           <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-16 items-center">
             <div className="order-2 md:order-1">
@@ -136,7 +135,7 @@ export default function PrimeiroEmpregoLanding() {
 
       </main>
 
-      {/* RODAPÉ GLOBAL (LINHA ÚNICA) */}
+      {/* RODAPÉ GLOBAL */}
       <PoweredByFooter />
       
     </div>

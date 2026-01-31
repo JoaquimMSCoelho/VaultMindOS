@@ -1,108 +1,82 @@
 "use server";
 
-import { createClient } from "@/utils/supabase/server"; // Ajuste o path conforme sua estrutura de utils
-import { revalidatePath } from "next/cache";
-import { Resend } from "resend"; 
+import { createClient } from "@/utils/supabase/server";
+import { LeadProjeto, ActionResponse } from "@/types/database";
+import { Resend } from "resend";
 import { getWelcomeEmailTemplate } from "@/lib/emails";
+import { revalidatePath } from "next/cache";
 
-// Inicializa o Resend 
-// (Se a chave não existir, o código segue rodando, mas sem enviar e-mail)
-const resend = new Resend(process.env.RESEND_API_KEY);
-
-/**
- * Interface para os dados capturados na Landing Page
- */
-interface LeadData {
-  email: string;
-  perfil: "aluno" | "empresa";
-  trilha_interesse?: string;
-}
+// Inicialização segura do Resend
+const resend = process.env.RESEND_API_KEY 
+  ? new Resend(process.env.RESEND_API_KEY) 
+  : null;
 
 /**
- * Server Action para capturar leads do Projeto Primeiro Emprego
- * Esta ação valida o e-mail, insere na tabela 'leads_projeto_primeiro_emprego' e dispara o e-mail de boas-vindas.
+ * Server Action para o Formulário "Primeiro Emprego"
+ * Stack: Next.js 15 + Supabase + Resend
  */
-export async function registrarInteresse(formData: FormData) {
+export async function registrarInteresse(
+  prevState: ActionResponse | null,
+  formData: FormData
+): Promise<ActionResponse> {
   const supabase = await createClient();
 
-  // Captura de dados do formulário
-  const email = formData.get("email") as string;
-  const perfil = formData.get("perfil") as "aluno" | "empresa";
-  const trilha_interesse = formData.get("trilha") as string;
+  // 1. Extração e Sanitização
+  const rawData: LeadProjeto = {
+    email: (formData.get("email") as string).trim().toLowerCase(),
+    perfil: (formData.get("perfil") as string) || "nao_informado",
+    trilha_interesse: (formData.get("trilha") as string) || "geral",
+    origem: "landing_page_espera"
+  };
 
-  // Validação básica
-  if (!email || !email.includes("@")) {
-    return { success: false, message: "E-mail inválido." };
+  // 2. Validação Básica (Server-Side)
+  if (!rawData.email || !rawData.email.includes("@")) {
+    return { success: false, message: "Por favor, insira um e-mail válido." };
   }
 
   try {
-    // ---------------------------------------------------------
-    // 1. PERSISTÊNCIA: Salvar no Banco de Dados (Supabase)
-    // ---------------------------------------------------------
+    // 3. Inserção no Supabase (Banco de Dados)
     const { error } = await supabase
       .from("leads_projeto_primeiro_emprego")
-      .insert([
-        { 
-          email, 
-          perfil, 
-          trilha_interesse,
-          origem: "landing_page_espera"
-        },
-      ]);
+      .insert([rawData]);
 
-    // Tratamento de erro de duplicidade (usuário já cadastrado)
     if (error) {
+      // Tratamento de Erro: E-mail Duplicado (Unique Constraint)
       if (error.code === '23505') {
-        return { success: true, message: "Você já está na nossa lista! Avisaremos em breve." };
+        return { success: true, message: "Este e-mail já está na nossa lista de espera!" };
       }
+      console.error("Erro Supabase:", error);
       throw error;
     }
 
-    // ---------------------------------------------------------
-    // 2. COMUNICAÇÃO: Enviar E-mail via Resend (Injeção Funcional)
-    // ---------------------------------------------------------
-    if (process.env.RESEND_API_KEY) {
+    // 4. Injeção Funcional: Disparo de E-mail (Resend)
+    if (resend) {
         try {
-            // Gera o HTML do e-mail usando seu template
             const template = getWelcomeEmailTemplate({ 
                 nome: "Futuro Profissional", 
-                trilha: trilha_interesse 
+                trilha: rawData.trilha_interesse 
             });
             
-            // Dispara o e-mail real
             await resend.emails.send({
-                from: 'VaultMindOS <contatos@cyberconnection.com.br>', // Domínio verificado
-                to: email,
+                from: 'VaultMindOS <contatos@cyberconnection.com.br>',
+                to: rawData.email,
                 subject: template.subject,
                 html: template.html,
             });
-            
-            console.log(`[EMAIL SUCCESS] Enviado para ${email}`);
-
+            console.log(`[EMAIL SUCCESS] Enviado para ${rawData.email}`);
         } catch (emailError) {
-            // Se o e-mail falhar (ex: DNS ainda propagando), NÃO travamos o cadastro.
-            // O lead já está salvo no banco, então apenas logamos o erro.
+            // Falha no e-mail não deve travar o cadastro
             console.error("[EMAIL ERROR] Falha ao enviar:", emailError);
         }
     } else {
         console.warn("[SYSTEM WARN] RESEND_API_KEY não configurada. E-mail ignorado.");
     }
 
-    // ---------------------------------------------------------
-    // 3. FINALIZAÇÃO
-    // ---------------------------------------------------------
+    // 5. Finalização
     revalidatePath("/primeiro-emprego");
-
-    return { 
-      success: true, 
-      message: "Cadastro realizado! Verifique seu e-mail de boas-vindas." 
-    };
-
+    return { success: true, message: "Cadastro realizado! Verifique seu e-mail de boas-vindas." };
+    
   } catch (error) {
-    console.error("Erro ao registrar lead:", error);
-    return { 
-      success: false, 
-      message: "Erro interno ao processar sua solicitação. Tente novamente." 
-    };
+    return { success: false, message: "Erro ao conectar com o servidor. Tente novamente." };
   }
 }

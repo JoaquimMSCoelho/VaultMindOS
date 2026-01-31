@@ -1,6 +1,6 @@
 # 🎨 DIRETRIZES DE UI/UX E ARQUITETURA DE MARCA - CONNECTION CYBER OS
 
-> **Status:** V1.0 (Enterprise Emerald)
+> **Status:** V1.1 (Refactor: Tightening & Efficiency)
 > **Aplicação:** Obrigatória em todos os módulos (VaultMindOS, AutoZap, etc.)
 
 ---
@@ -24,18 +24,28 @@ O sistema segue o modelo de **Marca Endossada (Endorsed Branding)**.
 
 ---
 
-## 2. Design System: "Enterprise Emerald"
+## 2. Design System: "Enterprise Emerald" (Compact Mode)
 
-Abandonar paletas antigas (Azul/Ciano ou Vermelho/Netflix). O padrão agora é **Corporativo, Dark e Neon Verde**.
+O visual deve ser corporativo, denso e eficiente. Evitar o "Modo Cinema" (espaços excessivos) em favor de uma navegação fluida.
+
+### Tipografia & Escala (Equilíbrio Corporativo)
+* **H1 (Hero):** `text-3xl md:text-4xl` font-extrabold. (Não usar 5xl/7xl).
+* **H2 (Seções):** `text-3xl md:text-4xl` font-bold.
+* **Corpo:** `text-base` ou `text-lg` (Lead) text-neutral-400.
+
+### Espaçamento & Ritmo (Tightening)
+* **Hero Section:** Altura mínima `min-h-[60vh]` (Não usar 80vh/100vh).
+* **Padding de Seção:** Padrão `py-16` (Não usar py-24/32).
+* **Padding de Topo:** `pt-16` (para compensar Navbar fixa).
+* **Margens:** Títulos `mb-6`, Subtítulos `mb-8`.
 
 ### Paleta de Cores (Tailwind CSS)
-| Elemento | Classe Tailwind | Hex Code | Uso |
-| :--- | :--- | :--- | :--- |
-| **Fundo Global** | `bg-neutral-950` | `#0a0a0a` | Fundo de todas as páginas. |
-| **Cor Primária** | `text-emerald-500` | `#10b981` | Ícones, Links, Destaques, Botões Hover. |
-| **Botão Ação** | `bg-emerald-600` | `#059669` | Botões principais (CTA). |
-| **Bordas** | `border-neutral-800` | `#262626` | Divisórias e Cards. |
-| **Texto Base** | `text-neutral-400` | `#a3a3a3` | Parágrafos e descrições. |
+| Elemento | Classe Tailwind | Uso |
+| :--- | :--- | :--- |
+| **Fundo Global** | `bg-neutral-950` | Fundo de todas as páginas. |
+| **Cor Primária** | `text-emerald-500` | Ícones, Destaques, Links. |
+| **Botão Ação** | `bg-emerald-600` | CTA Principal. |
+| **Bordas** | `border-neutral-800` | Divisórias e Cards. |
 
 ---
 
@@ -44,31 +54,26 @@ Abandonar paletas antigas (Azul/Ciano ou Vermelho/Netflix). O padrão agora é *
 Nunca recriar manualmente esses elementos. Importar os componentes globais.
 
 ### A. Rodapé Global (`<PoweredByFooter />`)
-Deve estar presente no **Login**, **Landing Pages** e **Layouts Públicos**.
 * **Layout:** Linha Única (Flex-Row), centralizado.
-* **Elementos Visuais (Ordem Estrita):**
-    1.  Texto: *"Powered by"* + **ConnectionCyberOS** (Tricolor: Verde/Branco/Vermelho) + *"Ecosystem"*.
-    2.  Separador Central: **Logo do Produto Atual** (ex: VaultMindOS) - Tamanho ajustado (w-32).
-    3.  Texto: *Copyright ConnectionCyber Soluções em Tecnologia.*
-* **Comportamento:** Fundo `bg-neutral-950`, borda superior sutil.
+* **Elementos:** Powered by (Tricolor) + Logo Produto (w-32) + Copyright.
+* **REGRA CRÍTICA:** Nunca importar nas páginas (`page.tsx`). Ele deve estar **apenas** no `layout.tsx`.
 
-### B. Navbar Pública (`<Navbar />`)
-Uso em todas as páginas institucionais.
+### B. Cards de Recursos (`<FeatureCard />`)
+* **Uso:** Obrigatório para listar serviços, trilhas ou diferenciais.
+* **Path:** `@/components/ui/FeatureCard`
+* **Props:** `{ title, description, icon }`.
+
+### C. Navbar Pública (`<Navbar />`)
 * Deve conter o Logo do Produto (VaultMindOS) e botão de ação.
-* Em Landing Pages de conversão (Squeeze Pages), usar versão simplificada sem links de saída.
-
-### C. Sidebar do Portal
-Uso exclusivo dentro de `(academy)`.
-* Logo no topo: **Sempre o Logo do Produto** (VaultMindOS).
 
 ---
 
 ## 4. Regras de Código (Desenvolvimento)
 
-1.  **Imagens:** Proibido usar tag `<img>`. Usar sempre `import Image from "next/image"`.
+1.  **Imagens:** Proibido `<img>`. Usar `import Image from "next/image"`.
 2.  **Ícones:** Usar biblioteca `lucide-react`.
-3.  **Login Unificado:** A tela de login deve sempre exibir a frase *"Acesso Único ConnectionCyberOS"*.
+3.  **Layout vs Página:** O `layout.tsx` define a estrutura (Navbar + Footer). O `page.tsx` define apenas o miolo (`<main>`). **Jamais importar Navbar/Footer dentro de page.tsx em rotas públicas.**
 
 ---
 
-**⚠️ INSTRUÇÃO PARA IA:** Ao gerar novos códigos, verifique este documento. Se o código gerado violar as cores (ex: usar blue-500) ou a estrutura de marca, corrija imediatamente antes de apresentar.
+**⚠️ INSTRUÇÃO PARA IA:** Ao gerar novos layouts, priorize a eficiência de espaço (`min-h-[60vh]`, `py-16`) e a consistência de componentes (`FeatureCard`).
