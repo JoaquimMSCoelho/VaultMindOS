@@ -19,29 +19,39 @@ export async function registrarInteresse(
   prevState: ActionResponse | null,
   formData: FormData
 ): Promise<ActionResponse> {
+  
+  // ---------------------------------------------------------
+  // 🛡️ VALIDAÇÃO DE INTEGRIDADE (FIX PARA BUILD VERCEL)
+  // ---------------------------------------------------------
+  // Se por algum motivo o formData chegar nulo (erro de runtime anterior),
+  // nós interceptamos aqui antes de tentar ler ".get".
+  if (!formData || typeof formData.get !== 'function') {
+    console.error("[CRITICAL] FormData inválido ou ausente.");
+    return { success: false, message: "Erro técnico: Dados do formulário não recebidos." };
+  }
+
   const supabase = await createClient();
 
   // 1. Extração e Sanitização
   const rawData: LeadProjeto = {
-    email: (formData.get("email") as string).trim().toLowerCase(),
+    email: (formData.get("email") as string)?.trim().toLowerCase() || "",
     perfil: (formData.get("perfil") as string) || "nao_informado",
     trilha_interesse: (formData.get("trilha") as string) || "geral",
     origem: "landing_page_espera"
   };
 
-  // 2. Validação Básica (Server-Side)
+  // 2. Validação Básica
   if (!rawData.email || !rawData.email.includes("@")) {
     return { success: false, message: "Por favor, insira um e-mail válido." };
   }
 
   try {
-    // 3. Inserção no Supabase (Banco de Dados)
+    // 3. Inserção no Supabase
     const { error } = await supabase
       .from("leads_projeto_primeiro_emprego")
       .insert([rawData]);
 
     if (error) {
-      // Tratamento de Erro: E-mail Duplicado (Unique Constraint)
       if (error.code === '23505') {
         return { success: true, message: "Este e-mail já está na nossa lista de espera!" };
       }
@@ -49,7 +59,7 @@ export async function registrarInteresse(
       throw error;
     }
 
-    // 4. Injeção Funcional: Disparo de E-mail (Resend)
+    // 4. Disparo de E-mail (Resend)
     if (resend) {
         try {
             const template = getWelcomeEmailTemplate({ 
@@ -63,13 +73,9 @@ export async function registrarInteresse(
                 subject: template.subject,
                 html: template.html,
             });
-            console.log(`[EMAIL SUCCESS] Enviado para ${rawData.email}`);
         } catch (emailError) {
-            // Falha no e-mail não deve travar o cadastro
-            console.error("[EMAIL ERROR] Falha ao enviar:", emailError);
+            console.error("[EMAIL ERROR]", emailError);
         }
-    } else {
-        console.warn("[SYSTEM WARN] RESEND_API_KEY não configurada. E-mail ignorado.");
     }
 
     // 5. Finalização

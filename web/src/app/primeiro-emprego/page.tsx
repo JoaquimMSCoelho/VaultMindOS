@@ -1,9 +1,9 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image'; 
-import { LeadForm } from './form';
+// ATUALIZAÇÃO CRÍTICA: Importamos o novo formulário corrigido (Client Component)
+import { PrimeiroEmpregoForm } from './PrimeiroEmpregoForm';
 import { PoweredByFooter } from "@/components/ui/PoweredByFooter"; 
-// Importamos o novo componente padronizado (Fusão Técnica)
 import { FeatureCard } from '@/components/ui/FeatureCard';
 import { 
   CheckCircle2, 
@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 
 export default function PrimeiroEmpregoLanding() {
-  // Dados estruturados para o componente FeatureCard
+  // Dados das trilhas (Mantidos)
   const trilhas = [
     { title: 'Administrativa 4.0', icon: Users, description: 'Gestão, ERP e Rotinas Digitais' },
     { title: 'Segurança & Automação', icon: ShieldCheck, description: 'CFTV IP e Dispositivos IoT' },
@@ -27,11 +27,11 @@ export default function PrimeiroEmpregoLanding() {
   return (
     <div className="min-h-screen bg-neutral-950 text-neutral-100 selection:bg-emerald-500/30 flex flex-col">
       
-      {/* HEADER SIMPLIFICADO (MANTIDO DO ARQUIVO ORIGINAL - VALIDADO) */}
+      {/* HEADER (Mantido visualmente idêntico) */}
       <nav className="border-b border-neutral-800 bg-neutral-950/50 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
           
-          {/* Logo do Produto */}
+          {/* Logo */}
           <div className="flex items-center gap-2">
             <Link href="/" className="hover:opacity-80 transition-opacity relative w-40 h-10">
                  <Image 
@@ -44,7 +44,7 @@ export default function PrimeiroEmpregoLanding() {
             </Link>
           </div>
 
-          {/* Botão Único de Acesso */}
+          {/* Botão Login */}
           <Link href="/login" className="bg-neutral-900 border border-neutral-800 hover:bg-neutral-800 text-white px-5 py-2 rounded-full text-sm font-medium transition-all hover:border-emerald-500/50">
             Já sou Aluno
           </Link>
@@ -54,7 +54,7 @@ export default function PrimeiroEmpregoLanding() {
       {/* CONTEÚDO PRINCIPAL */}
       <main className="flex-1">
         
-        {/* Hero Section (Mantido visualmente idêntico) */}
+        {/* Hero Section */}
         <header className="relative py-24 px-4 overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(16,185,129,0.1),transparent)]" />
           <div className="max-w-4xl mx-auto text-center relative z-10 flex flex-col items-center">
@@ -73,8 +73,8 @@ export default function PrimeiroEmpregoLanding() {
             </p>
 
             <div className="flex flex-col items-center gap-6 w-full max-w-md">
-              {/* FORMULÁRIO */}
-              <LeadForm />
+              {/* AQUI ESTÁ A MUDANÇA: Usando o novo componente */}
+              <PrimeiroEmpregoForm />
               
               <p className="text-xs text-neutral-600">
                   Junte-se a lista de espera para receber novidades em 
@@ -85,7 +85,7 @@ export default function PrimeiroEmpregoLanding() {
           </div>
         </header>
 
-        {/* Trilhas de Formação - REFATORADO PARA USAR COMPONENTE (VISUAL MANTIDO) */}
+        {/* Trilhas de Formação */}
         <section className="py-20 px-4 bg-neutral-900/30 border-y border-neutral-900">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-16">
@@ -101,7 +101,7 @@ export default function PrimeiroEmpregoLanding() {
           </div>
         </section>
 
-        {/* O Diferencial VaultMind (Mantido visualmente idêntico) */}
+        {/* O Diferencial VaultMind */}
         <section className="py-24 px-4">
           <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-16 items-center">
             <div className="order-2 md:order-1">

@@ -1,41 +1,60 @@
-'use server'
+"use server";
 
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
 
-export async function updateProfile(formData: FormData) {
-  const supabase = await createClient();
+// Definição do tipo de retorno para consistência com o Client Component
+export type ActionResponse = {
+  success: boolean;
+  message: string;
+};
+
+export async function updateProfile(
+  prevState: ActionResponse | null, // OBRIGATÓRIO: Argumento exigido pelo useActionState
+  formData: FormData
+): Promise<ActionResponse> {
   
-  // 1. Segurança: Pega o usuário logado
+  const supabase = await createClient();
+
+  // 1. Validar Autenticação
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) {
-    return { error: "Usuário não autenticado" };
+    return { success: false, message: "Sessão expirada. Faça login novamente." };
   }
 
-  const fullName = formData.get("fullName") as string;
+  // 2. Extrair e Sanitizar Dados
+  // O uso de ?.trim() previne erros se o campo vier nulo e remove espaços extras
+  const fullName = (formData.get("fullName") as string)?.trim();
 
-  // 2. Validação Básica
   if (!fullName || fullName.length < 3) {
-    return { error: "O nome deve ter pelo menos 3 caracteres." };
+    return { success: false, message: "O nome deve ter pelo menos 3 caracteres." };
   }
 
-  // 3. Atualização no Banco
-  const { error } = await supabase
-    .from("profiles")
-    .upsert({
-      id: user.id,
-      full_name: fullName,
-      updated_at: new Date().toISOString(),
-    });
+  try {
+    // 3. Atualizar no Banco
+    // Fusão Técnica: Usamos 'update' (mais seguro para edição) mas mantemos
+    // o 'updated_at' do arquivo original para auditoria.
+    const { error } = await supabase
+      .from("profiles")
+      .update({ 
+        full_name: fullName,
+        updated_at: new Date().toISOString() 
+      })
+      .eq("id", user.id);
 
-  if (error) {
-    console.error("Erro ao atualizar perfil:", error);
-    return { error: "Erro ao salvar dados." };
+    if (error) {
+      console.error("Erro Supabase:", error);
+      return { success: false, message: "Erro ao atualizar perfil. Tente novamente." };
+    }
+
+    // 4. Revalidar Cache
+    revalidatePath("/portal/profile"); // Atualiza a página atual
+    revalidatePath("/portal");         // Atualiza o nome no Header/Sidebar (Recuperado do arquivo original)
+
+    return { success: true, message: "Perfil atualizado com sucesso!" };
+
+  } catch (error) {
+    console.error("Erro Interno:", error);
+    return { success: false, message: "Erro inesperado no servidor." };
   }
-
-  // 4. Revalidar Cache (Atualiza a interface)
-  revalidatePath("/portal/profile");
-  revalidatePath("/portal"); // Atualiza o nome no header do dashboard também
-  
-  return { success: "Perfil atualizado com sucesso!" };
 }

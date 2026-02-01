@@ -1,8 +1,8 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { ChevronLeft, User, Shield, Save, Mail, Award } from "lucide-react";
-import { updateProfile } from "./actions";
+import { ChevronLeft, User, Award } from "lucide-react"; 
+import { ProfileForm } from "./ProfileForm"; // Importação do novo componente
 
 export default async function ProfilePage() {
   const supabase = await createClient();
@@ -85,49 +85,17 @@ export default async function ProfilePage() {
           {/* COLUNA DIREITA: FORMULÁRIO E DETALHES */}
           <div className="col-span-1 md:col-span-2 space-y-6">
             
-            {/* FORMULÁRIO */}
+            {/* FORMULÁRIO (Refatorado para Client Component) */}
             <section className="bg-neutral-900/30 border border-neutral-800 rounded-xl p-6 md:p-8 backdrop-blur-sm">
                <h3 className="text-sm font-bold uppercase tracking-wider text-emerald-500 mb-6 flex items-center gap-2">
                  <User className="w-4 h-4" /> Dados Pessoais
                </h3>
                
-               <form action={updateProfile} className="space-y-5">
-                 <div>
-                   <label className="block text-xs font-medium text-neutral-400 mb-2 uppercase">Nome Completo</label>
-                   <input 
-                     type="text" 
-                     name="fullName"
-                     defaultValue={profile?.full_name || ""}
-                     className="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-3 text-neutral-200 focus:outline-none focus:ring-1 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all placeholder:text-neutral-700"
-                     placeholder="Como você quer ser chamado"
-                   />
-                 </div>
-                 
-                 <div>
-                   <label className="block text-xs font-medium text-neutral-400 mb-2 uppercase">E-mail de Acesso</label>
-                   <div className="relative">
-                       <input 
-                         type="text" 
-                         value={user.email} 
-                         disabled 
-                         className="w-full bg-neutral-950/50 border border-neutral-800/50 rounded-lg px-4 py-3 text-neutral-500 cursor-not-allowed pl-10"
-                       />
-                       <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-600" />
-                   </div>
-                   <p className="text-[10px] text-neutral-600 mt-2 flex items-center gap-1">
-                       <Shield className="w-3 h-3" /> Gerenciado pela ConnectionCyberOS Identity
-                   </p>
-                 </div>
-
-                 <div className="pt-4 flex justify-end">
-                   <button 
-                     type="submit"
-                     className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-2.5 rounded-lg font-bold text-sm transition-all shadow-lg shadow-emerald-900/20 transform hover:scale-105"
-                   >
-                     <Save className="w-4 h-4" /> Salvar Alterações
-                   </button>
-                 </div>
-               </form>
+               {/* Injeção do Componente Cliente */}
+               <ProfileForm 
+                  fullName={profile?.full_name || ""} 
+                  email={user.email || ""} 
+               />
             </section>
 
             {/* CURSOS */}
@@ -140,19 +108,19 @@ export default async function ProfilePage() {
                  <div className="space-y-3">
                     {enrollments.map((enrollment: any, index: number) => (
                       <div key={index} className="flex items-center justify-between p-4 bg-neutral-950 border border-neutral-800 rounded-lg group hover:border-emerald-500/30 transition-colors">
-                         <div>
+                          <div>
                            <p className="font-bold text-sm text-neutral-200 group-hover:text-emerald-400 transition-colors">{enrollment.courses.title}</p>
                            <p className="text-[10px] text-neutral-500 mt-1">Início: {new Date(enrollment.created_at).toLocaleDateString('pt-BR')}</p>
-                         </div>
-                         <div className="text-right">
-                            <span className={`text-[10px] font-bold px-2 py-1 rounded border ${
-                                enrollment.source === 'social_project' 
-                                ? 'bg-emerald-950 text-emerald-500 border-emerald-900' 
-                                : 'bg-neutral-800 text-neutral-400 border-neutral-700'
-                            }`}>
-                              {enrollment.source === 'social_project' ? 'BOLSA INTEGRAL' : 'PREMIUM'}
-                            </span>
-                         </div>
+                          </div>
+                          <div className="text-right">
+                             <span className={`text-[10px] font-bold px-2 py-1 rounded border ${
+                                 enrollment.source === 'social_project' 
+                                 ? 'bg-emerald-950 text-emerald-500 border-emerald-900' 
+                                 : 'bg-neutral-800 text-neutral-400 border-neutral-700'
+                             }`}>
+                               {enrollment.source === 'social_project' ? 'BOLSA INTEGRAL' : 'PREMIUM'}
+                             </span>
+                          </div>
                       </div>
                     ))}
                  </div>
