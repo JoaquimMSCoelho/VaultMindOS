@@ -1,5 +1,5 @@
 ﻿# SNAPSHOT DE CODIGO: VaultMindOS
-> Gerado em: 2026-01-31 23:05:23
+> Gerado em: 2026-02-01 23:27:12
 
 ---
 
@@ -5435,6 +5435,40 @@ def _ler_txt(path):
 
 ---
 
+## FILE: \docs\01_ABERTURA_DIARIA.md
+```markdown
+# ðŸŸ¢ PROTOCOLO DE INICIALIZAÃ‡ÃƒO DE AMBIENTE - VAULTMIND OS
+> **Objetivo:** Garantir que o ambiente de desenvolvimento esteja limpo, atualizado e seguro antes de escrever qualquer linha de cÃ³digo.
+
+## 1. NavegaÃ§Ã£o para a Raiz
+Abra o PowerShell como Administrador e execute:
+```powershell
+cd E:\Projetos\VaultMindOS
+
+## 2. VerificaÃ§Ã£o de Integridade (Git Status)
+cd web
+git status
+
+## 3. AtualizaÃ§Ã£o de DependÃªncias (Opcional, mas recomendado semanalmente)
+npm install
+
+##4. InicializaÃ§Ã£o do Servidor de Desenvolvimento
+npm run dev
+
+## 5. Abertura do Editor (VS Code)
+## Abra um segundo terminal (ou aba), volte para a raiz do projeto e lance o editor no contexto correto.
+cd E:\Projetos\VaultMindOS
+code .
+
+## 6. VerificaÃ§Ã£o Visual
+## Abra seu navegador em: http://localhost:3000
+## Verifique se a Home carrega.
+## Verifique se o Login (/login) carrega.
+## Status: Se tudo estiver verde, vocÃª estÃ¡ pronto para codar.
+```
+
+---
+
 ## FILE: \docs\checkpoint.md
 ```markdown
 # ðŸ“ Checkpoint do Projeto SaudeCicloDaVida - v0.1
@@ -5522,6 +5556,11 @@ Este checkpoint marca o inÃ­cio formal do projeto "SaudeCicloDaVida" sob a met
 ## PrÃ³ximo Passo
 - Implementar RAG (Retrieval-Augmented Generation) para que a IA possa ler PDFs e documentos da empresa, nÃ£o apenas conhecimentos gerais da internet.
 ```
+
+---
+
+## FILE: \docs\FULL_PROJECT_CONTEXT.md
+*[Lockfile/Log - Omitido]*
 
 ---
 
