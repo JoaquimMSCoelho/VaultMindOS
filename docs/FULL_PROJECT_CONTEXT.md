@@ -1,5 +1,5 @@
 ﻿# SNAPSHOT DE CODIGO: VaultMindOS
-> Gerado em: 2026-02-01 23:27:12
+> Gerado em: 2026-02-06 13:17:54
 
 ---
 
@@ -36,6 +36,41 @@ Thumbs.db
 # --- Supabase Local ---
 supabase/tmp/
 
+```
+
+---
+
+## FILE: \AUDIT_STRUCTURE.ps1
+```txt
+# ==============================================================================
+# PROJETO: VaultMindOS
+# SCRIPT: Auditoria de Estrutura de Arquivos
+# ==============================================================================
+
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+
+Write-Host "[AUDITORIA] Mapeando estrutura do VaultMindOS..." -ForegroundColor Cyan
+
+# Garante que estamos olhando para a pasta web onde estÃ¡ o src
+if (Test-Path ".\web\src") {
+    Set-Location ".\web"
+}
+
+# Caminho base para remover da visualizaÃ§Ã£o (Limpeza visual)
+$BaseRemoval = "E:\Projetos\VaultMindOS\web\"
+
+if (Test-Path "src") {
+    Get-ChildItem -Path "src" -Recurse | 
+    Where-Object { $_.PSIsContainer -eq $false } | 
+    Select-Object @{Name="Caminho"; Expression={$_.FullName.Replace($BaseRemoval, "")}}, 
+                  @{Name="Tamanho(KB)"; Expression={[math]::round($_.Length / 1KB, 2)}}, 
+                  LastWriteTime | 
+    Format-Table -AutoSize
+    
+    Write-Host "[OK] Auditoria concluida." -ForegroundColor Green
+} else {
+    Write-Host "[ERRO] Pasta 'src' nao encontrada. Voce esta na raiz correta?" -ForegroundColor Red
+}
 ```
 
 ---
@@ -294,6 +329,95 @@ if ($Host.Name -eq "ConsoleHost") {
     Read-Host "Pressione Enter para sair..."
 }
 ```
+
+---
+
+## FILE: \clear-all-cache.ps1
+```txt
+# ---------------------------------------------------------
+# VaultMindOS - Deep Purge Script
+# Objetivo: Reset total de infraestrutura antes de Builds CrÃ­ticos
+# ---------------------------------------------------------
+
+Write-Host "--- Iniciando Limpeza Profunda (Deep Purge) - VaultMindOS ---" -ForegroundColor Cyan
+
+# Navega para a pasta da aplicaÃ§Ã£o
+if (Test-Path ".\web") {
+    Set-Location ".\web"
+    Write-Host "[PATH] Entrando em /web para limpeza..." -ForegroundColor DarkGray
+}
+
+# 1. Limpeza de Pastas de CompilaÃ§Ã£o e Cache do Next.js
+if (Test-Path ".next") {
+    Write-Host "[1/4] Removendo pasta .next..." -ForegroundColor Yellow
+    Remove-Item -Recurse -Force .next
+}
+
+# 2. Limpeza de MÃ³dulos e Lockfiles
+if (Test-Path "node_modules") {
+    Write-Host "[2/4] Removendo node_modules..." -ForegroundColor Yellow
+    Remove-Item -Recurse -Force node_modules
+}
+
+if (Test-Path "package-lock.json") {
+    Write-Host "[3/4] Removendo package-lock.json..." -ForegroundColor Yellow
+    Remove-Item -Force package-lock.json
+}
+
+# 3. Limpeza de Caches Globais do NPM
+Write-Host "[4/4] Limpando cache do NPM..." -ForegroundColor Yellow
+npm cache clean --force
+
+Write-Host "--- Limpeza ConcluÃ­da. O sistema estÃ¡ pronto para uma instalaÃ§Ã£o limpa. ---" -ForegroundColor Green
+Write-Host "PrÃ³ximo passo recomendado: Volte para START_SESSION.ps1 ou execute 'npm install'" -ForegroundColor White
+```
+
+---
+
+## FILE: \CLOSE_SESSION.ps1
+```txt
+# ==============================================================================
+# PROJETO: VaultMindOS
+# SCRIPT: Protocolo de Encerramento e Backup (Versao Limpa)
+# ==============================================================================
+
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+
+Write-Host "[SISTEMA] Iniciando Protocolo de Selagem VaultMindOS..." -ForegroundColor Cyan
+
+# 1. PARADA DOS PROCESSOS
+Write-Host "[PROCESS] Encerrando processos Node.js..." -ForegroundColor White
+Get-Process node -ErrorAction SilentlyContinue | Stop-Process -Force
+
+# 2. CONSOLIDACAO NO GITHUB
+$Mensagem = Read-Host "Descreva a evolucao deste commit"
+Write-Host "[GITHUB] Sincronizando com GitHub..." -ForegroundColor Green
+git add .
+git commit -m "feat(vaultmind): $Mensagem"
+git push origin main
+
+# 3. BACKUP FISICO
+# Define o destino com ano corrente (baseado no contexto 2026)
+$Destino = "J:\VaultMindOS_BK2026"
+Write-Host "[BACKUP] Espelhando para o volume BACKUP (J:)..." -ForegroundColor Yellow
+
+if (-not (Test-Path $Destino)) {
+    New-Item -ItemType Directory -Path $Destino -Force
+}
+
+# Robocopy configurado para excluir node_modules e caches para economizar espaÃ§o e tempo
+# Backup da Raiz E:\Projetos\VaultMindOS
+robocopy "E:\Projetos\VaultMindOS" $Destino /E /Z /R:5 /W:5 /XD node_modules .next .git /V /MT:8
+
+# 4. STATUS FINAL
+$Data = Get-Date -Format "dd/MM/yyyy HH:mm"
+Write-Host "[OK] Sessao encerrada e blindada as $Data." -ForegroundColor Green
+```
+
+---
+
+## FILE: \FULL_PROJECT_CONTEXT.md
+*[Lockfile/Log - Omitido]*
 
 ---
 
@@ -588,6 +712,205 @@ def main():
 
 if __name__ == "__main__":
     main()
+```
+
+---
+
+## FILE: \PADROES_VISUAIS_V1.md
+```markdown
+# ðŸŽ¨ DIRETRIZES DE UI/UX E ARQUITETURA DE MARCA - CONNECTION CYBER OS
+
+> **Status:** V1.1 (Refactor: Tightening & Efficiency)
+> **AplicaÃ§Ã£o:** ObrigatÃ³ria em todos os mÃ³dulos (VaultMindOS, AutoZap, etc.)
+
+---
+
+## 1. Arquitetura de Marca (Hierarquia)
+
+O sistema segue o modelo de **Marca Endossada (Endorsed Branding)**.
+
+### A. A Holding (Nave-MÃ£e)
+* **Nome:** ConnectionCyberOS
+* **RepresentaÃ§Ã£o Visual:** Texto Tricolor estrito.
+    * `Connection` -> **Verde** (Emerald-500)
+    * `Cyber` -> **Branco** (White)
+    * `OS` -> **Vermelho** (Red-600)
+* **Logo Asset:** `/public/logo-connection-cyber.png`
+
+### B. Os Produtos (Ecossistema)
+* **Produto Atual:** VaultMindOS
+* **RepresentaÃ§Ã£o Visual:** Logo PrÃ³prio (Escudo/CÃ©rebro).
+* **Logo Asset:** `/public/logo-vaultmind.png`
+
+---
+
+## 2. Design System: "Enterprise Emerald" (Compact Mode)
+
+O visual deve ser corporativo, denso e eficiente. Evitar o "Modo Cinema" (espaÃ§os excessivos) em favor de uma navegaÃ§Ã£o fluida.
+
+### Tipografia & Escala (EquilÃ­brio Corporativo)
+* **H1 (Hero):** `text-3xl md:text-4xl` font-extrabold. (NÃ£o usar 5xl/7xl).
+* **H2 (SeÃ§Ãµes):** `text-3xl md:text-4xl` font-bold.
+* **Corpo:** `text-base` ou `text-lg` (Lead) text-neutral-400.
+
+### EspaÃ§amento & Ritmo (Tightening)
+* **Hero Section:** Altura mÃ­nima `min-h-[60vh]` (NÃ£o usar 80vh/100vh).
+* **Padding de SeÃ§Ã£o:** PadrÃ£o `py-16` (NÃ£o usar py-24/32).
+* **Padding de Topo:** `pt-16` (para compensar Navbar fixa).
+* **Margens:** TÃ­tulos `mb-6`, SubtÃ­tulos `mb-8`.
+
+### Paleta de Cores (Tailwind CSS)
+| Elemento | Classe Tailwind | Uso |
+| :--- | :--- | :--- |
+| **Fundo Global** | `bg-neutral-950` | Fundo de todas as pÃ¡ginas. |
+| **Cor PrimÃ¡ria** | `text-emerald-500` | Ãcones, Destaques, Links. |
+| **BotÃ£o AÃ§Ã£o** | `bg-emerald-600` | CTA Principal. |
+| **Bordas** | `border-neutral-800` | DivisÃ³rias e Cards. |
+
+---
+
+## 3. Componentes ObrigatÃ³rios (Building Blocks)
+
+Nunca recriar manualmente esses elementos. Importar os componentes globais.
+
+### A. RodapÃ© Global (`<PoweredByFooter />`)
+* **Layout:** Linha Ãšnica (Flex-Row), centralizado.
+* **Elementos:** Powered by (Tricolor) + Logo Produto (w-32) + Copyright.
+* **REGRA CRÃTICA:** Nunca importar nas pÃ¡ginas (`page.tsx`). Ele deve estar **apenas** no `layout.tsx`.
+
+### B. Cards de Recursos (`<FeatureCard />`)
+* **Uso:** ObrigatÃ³rio para listar serviÃ§os, trilhas ou diferenciais.
+* **Path:** `@/components/ui/FeatureCard`
+* **Props:** `{ title, description, icon }`.
+
+### C. Navbar PÃºblica (`<Navbar />`)
+* Deve conter o Logo do Produto (VaultMindOS) e botÃ£o de aÃ§Ã£o.
+
+---
+
+## 4. Regras de CÃ³digo (Desenvolvimento)
+
+1.  **Imagens:** Proibido `<img>`. Usar `import Image from "next/image"`.
+2.  **Ãcones:** Usar biblioteca `lucide-react`.
+3.  **Layout vs PÃ¡gina:** O `layout.tsx` define a estrutura (Navbar + Footer). O `page.tsx` define apenas o miolo (`<main>`). **Jamais importar Navbar/Footer dentro de page.tsx em rotas pÃºblicas.**
+
+---
+
+**âš ï¸ INSTRUÃ‡ÃƒO PARA IA:** Ao gerar novos layouts, priorize a eficiÃªncia de espaÃ§o (`min-h-[60vh]`, `py-16`) e a consistÃªncia de componentes (`FeatureCard`).
+```
+
+---
+
+## FILE: \PROMPT_MESTRE_V1.2.md
+```markdown
+# ðŸ§  VAULTMIND OS - PROMPT MESTRE DE ARQUITETURA (V1.2)
+
+> **ATENÃ‡ÃƒO:** Este documento define a "Personalidade TÃ©cnica e Visual" da IA para este projeto.
+> **ORDEM DE EXECUÃ‡ÃƒO:** Leia este arquivo + o arquivo `PADROES_VISUAIS_V1.md`.
+
+---
+
+## 1. PERSONA E FUNÃ‡ÃƒO
+**ATUAR COMO:** Chief Integrated Systems Architect & Senior Dev Full Stack.
+**PROJETO:** VaultMindOS (Plataforma de EducaÃ§Ã£o e GestÃ£o Corporativa).
+**TOM DE VOZ:** Profissional, TÃ©cnico, Preciso e Seguro (Estilo "Enterprise").
+
+**Atributos Comportamentais:**
+* **Protetor:** VocÃª defende a integridade do cÃ³digo. Se o usuÃ¡rio pedir algo que quebre o padrÃ£o (ex: CSS inline), vocÃª alerta e corrige.
+* **AnalÃ­tico:** Antes de codar, vocÃª analisa o impacto no sistema global.
+
+---
+
+## 2. A REGRA DE OURO (ESTRUTURA & CAMINHOS)
+**CRÃTICO:** O nÃ£o cumprimento desta regra quebra o projeto.
+1.  **Raiz Absoluta:** `E:\Projetos\VaultMindOS`
+2.  **AplicaÃ§Ã£o Next.js:** `E:\Projetos\VaultMindOS\web`
+3.  **DiretÃ³rio de CÃ³digo:** TODO cÃ³digo (componentes, pÃ¡ginas, aÃ§Ãµes) deve residir em `web/src/...`.
+4.  **Comandos de Terminal:**
+    * Ao sugerir comandos (`npm`, `code`), sempre considere que o usuÃ¡rio pode estar na raiz.
+    * Use `cd web` antes de comandos npm.
+    * Use o caminho completo para abrir arquivos: `code web/src/...`
+
+**LÃ³gica de Layouts (Next.js 15):**
+* `app/(public)/layout.tsx`: ContÃ©m `<Navbar>` e `<PoweredByFooter>`.
+* `app/(public)/page.tsx`: ContÃ©m APENAS o conteÃºdo principal (`main`). **NÃ£o importe o Footer aqui.**
+* `app/(academy)/layout.tsx`: Layout especÃ­fico para a Ã¡rea logada (Sidebar).
+
+---
+
+## 3. STACK TECNOLÃ“GICA (IMUTÃVEL)
+* **Framework:** Next.js 15 (App Router) + TypeScript.
+* **Backend/Auth:** Supabase (PostgreSQL) com RLS.
+* **EstilizaÃ§Ã£o:** Tailwind CSS + Lucide React.
+* **Email:** Resend.
+* **Componentes:** Server Components por padrÃ£o.
+
+### 3.1 Arquitetura de FormulÃ¡rios (Strict Mode)
+* **Server Actions com Retorno:** Se uma action retorna mensagens (sucesso/erro), ela OBRIGATORIAMENTE deve ser consumida via hook `useActionState`.
+* **PadrÃ£o de ImplementaÃ§Ã£o:** Separe sempre em dois arquivos:
+    1. `Page.tsx` (Server): Busca dados.
+    2. `Form.tsx` (Client): Gerencia o `useActionState` e UI.
+
+---
+
+## 4. CONSTITUIÃ‡ÃƒO VISUAL ("ENTERPRISE EMERALD")
+*Consulte `PADROES_VISUAIS_V1.md` para detalhes finos.*
+
+1.  **Paleta:** Fundo `bg-neutral-950` e Acentos `text-emerald-500`.
+2.  **Tight Layouts (Compact Mode):** Prefira layouts eficientes (`py-16`, `min-h-[60vh]`).
+3.  **ComponentizaÃ§Ã£o:** Reutilize componentes (`FeatureCard`).
+4.  **Imagens:** Sempre usar `next/image`.
+
+---
+
+## 5. ESTADO ATUAL E FUNCIONALIDADES CHAVE
+* **MÃ³dulo Academy:** Rota `/portal/watch/[slug]`.
+* **Holding:** ConnectionCyberOS. Produto: VaultMindOS.
+* **Login:** "Acesso Ãšnico ConnectionCyberOS".
+
+---
+
+## 6. PROTOCOLOS DE SEGURANÃ‡A E OPERAÃ‡ÃƒO
+1.  **Backup:** Antes de grandes refatoraÃ§Ãµes, lembrar de rodar:
+    `.\backup_fisico.ps1` (Na raiz `E:\Projetos`).
+2.  **Dados:** Nunca "mockar" IDs. Usar `supabase.auth.getUser()`.
+3.  **Server Actions:** Use `"use server"` no topo e trate erros `23505` (duplicidade).
+
+---
+
+## 7. PROTOCOLO DE RESPOSTA (WORKFLOW)
+1.  **AnÃ¡lise:** Entenda o contexto (Home, Landing Page, Portal).
+2.  **VerificaÃ§Ã£o:** Cheque componentes existentes (`FeatureCard`, `PoweredByFooter`).
+3.  **FusÃ£o:** Mantenha o que funciona. NÃ£o reescreva do zero.
+4.  **Entrega:** ForneÃ§a o cÃ³digo completo.
+
+---
+
+## 8. PROTOCOLO DE EXECUÃ‡ÃƒO BLINDADA (NOVO)
+**CRITÃ‰RIO DE ALTERAÃ‡ÃƒO RIGOROSO:**
+As alteraÃ§Ãµes devem ser feitas obedecendo a seguinte granularidade, sem exceÃ§Ãµes:
+* MÃ³dulo por MÃ³dulo.
+* TÃ³pico por TÃ³pico.
+* SessÃ£o por SessÃ£o.
+* Passo a Passo (Step-by-Step).
+* Linha por Linha.
+* Comando a Comando.
+* Caminho Exato: Sempre especificar o local discriminado (ex: `web/src/app/...`).
+
+**CRITÃ‰RIO DE PRIORIDADE:**
+* Sempre que houver mÃºltiplas opÃ§Ãµes, verificar a **Prioridade TÃ©cnica e CronolÃ³gica**.
+* Ã‰ **expressamente proibido** iniciar um mÃ³dulo sem ter validado e consolidado o mÃ³dulo anterior na fila de prioridade.
+* A execuÃ§Ã£o deve ser linear e validada a cada etapa.
+
+---
+
+**COMANDO DE INICIALIZAÃ‡ÃƒO:**
+Se vocÃª compreendeu sua Persona, a Estrutura de Pastas (WEB) e as Regras Visuais, responda APENAS:
+"ðŸš€ **Sistema VaultMindOS Carregado (V1.2).**
+- Modo: Senior Architect
+- Visual: Enterprise Emerald (Compact) ðŸŸ¢
+- Backup: Monitorado ðŸ›¡ï¸
+Qual a prÃ³xima missÃ£o, Arquiteto?"
 ```
 
 ---
@@ -4928,6 +5251,49 @@ var elementorFrontendConfig = {"environmentMode":{"edit":false,"wpPreview":false
 
 ---
 
+## FILE: \START_SESSION.ps1
+```txt
+# ==============================================================================
+# PROJETO: VaultMindOS
+# SCRIPT: Protocolo de Abertura de Sessao (Versao Adaptada /web)
+# ==============================================================================
+
+# Forca o uso de UTF8 para evitar erros de caracteres
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+
+Write-Host "[SISTEMA] Iniciando Protocolo de Abertura VaultMindOS..." -ForegroundColor Cyan
+
+# Navega para a pasta da aplicaÃ§Ã£o Next.js
+if (Test-Path ".\web") {
+    Set-Location ".\web"
+    Write-Host "[PATH] Contexto definido para: /web" -ForegroundColor DarkGray
+} else {
+    Write-Host "[ALERTA] Pasta /web nÃ£o encontrada. Executando na raiz." -ForegroundColor Yellow
+}
+
+# 1. LIMPEZA TECNICA
+Write-Host "[CACHE] Limpando cache do Turbopack..." -ForegroundColor White
+if (Test-Path ".next") {
+    Remove-Item -Recurse -Force .next
+}
+
+# 2. VALIDACAO DE AMBIENTE
+Write-Host "[ENV] Verificando variaveis de ambiente (.env.local)..." -ForegroundColor White
+if (-not (Test-Path ".env.local")) {
+    Write-Host "[ERRO] Arquivo .env.local nao localizado!" -ForegroundColor Red
+}
+
+# 3. SINCRONIZACAO
+Write-Host "[NPM] Validando pacotes..." -ForegroundColor White
+npm install --quiet
+
+# 4. START DO MOTOR
+Write-Host "[MOTOR] Inicializando VaultMindOS..." -ForegroundColor Cyan
+npm run dev
+```
+
+---
+
 ## FILE: \.github\workflows\deploy.yml
 ```txt
 name: Deploy
@@ -5953,6 +6319,267 @@ Qual a prÃ³xima missÃ£o, Arquiteto?"
 
 ---
 
+## FILE: \docs\vaultmindos-apresentacao.html
+```txt
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>VaultMindOS by ConnectionCyber â€“ ApresentaÃ§Ã£o Comercial</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #050810;
+      color: #f5f5f5;
+      line-height: 1.6;
+    }
+    .page {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 32px 20px 64px;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 32px;
+      border-bottom: 1px solid #222;
+      padding-bottom: 16px;
+    }
+    header img {
+      height: 56px;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 1.8rem;
+    }
+    header p {
+      margin: 4px 0 0;
+      color: #9ca3af;
+      font-size: 0.95rem;
+    }
+    h2 {
+      margin-top: 32px;
+      font-size: 1.4rem;
+      color: #a5f3fc;
+    }
+    h3 {
+      margin-top: 20px;
+      font-size: 1.1rem;
+      color: #f97316;
+    }
+    p {
+      margin: 8px 0;
+    }
+    ul {
+      margin: 8px 0 8px 20px;
+      padding: 0;
+    }
+    li {
+      margin: 4px 0;
+    }
+    .tagline {
+      font-size: 1.05rem;
+      color: #e5e7eb;
+      margin-bottom: 16px;
+    }
+    .highlight {
+      color: #22c55e;
+      font-weight: 600;
+    }
+    .section-divider {
+      margin: 32px 0;
+      border-top: 1px solid #1f2933;
+    }
+    .footer {
+      margin-top: 40px;
+      font-size: 0.85rem;
+      color: #6b7280;
+      border-top: 1px solid #111827;
+      padding-top: 16px;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .badge {
+      border-radius: 999px;
+      border: 1px solid #1f2937;
+      padding: 4px 10px;
+      font-size: 0.8rem;
+      color: #d1d5db;
+      background: rgba(15,23,42,0.8);
+    }
+    .icons-row {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+    .icons-row img {
+      height: 40px;
+    }
+    @media print {
+      body {
+        background: #ffffff;
+        color: #111827;
+      }
+      .page {
+        padding: 24px 32px;
+      }
+      header, .footer {
+        border-color: #d1d5db;
+      }
+      .section-divider {
+        border-color: #e5e7eb;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <!-- Substitua os src abaixo pelos caminhos dos seus arquivos de logo -->
+      <img src="vaultmind-logo.png" alt="VaultMindOS Logo" />
+      <div>
+        <h1>VaultMindOS by ConnectionCyber</h1>
+        <p>Portal de informaÃ§Ã£o, formaÃ§Ã£o e oportunidade para o primeiro emprego.</p>
+      </div>
+    </header>
+
+    <p class="tagline">
+      <span class="highlight">Todo jovem merece uma primeira chance.</span>  
+      O VaultMindOS existe para abrir essa porta.
+    </p>
+
+    <div class="section-divider"></div>
+
+    <h2>1. O problema que queremos resolver</h2>
+    <p>
+      Milhares de jovens chegam ao mercado de trabalho sem orientaÃ§Ã£o, sem preparo e sem saber por onde comeÃ§ar.
+      Isso gera inseguranÃ§a, frustraÃ§Ã£o e, muitas vezes, desistÃªncia antes mesmo da primeira oportunidade.
+    </p>
+    <h3>Desafios do primeiro emprego</h3>
+    <ul>
+      <li>NÃ£o saber como montar um currÃ­culo.</li>
+      <li>Medo de entrevistas e processos seletivos.</li>
+      <li>Falta de referÃªncias e exemplos prÃ¡ticos.</li>
+      <li>DÃºvidas sobre comportamento profissional.</li>
+      <li>Pouco ou nenhum acesso a oportunidades reais.</li>
+    </ul>
+
+    <div class="section-divider"></div>
+
+    <h2>2. O que Ã© o VaultMindOS</h2>
+    <p>
+      O <strong>VaultMindOS by ConnectionCyber</strong> Ã© um portal digital criado para orientar, capacitar e conectar
+      jovens que estÃ£o em busca do seu primeiro emprego. Ele reÃºne, em um Ãºnico ambiente:
+    </p>
+    <ul>
+      <li>ConteÃºdos claros e objetivos sobre mercado de trabalho.</li>
+      <li>Trilhas de aprendizado focadas no primeiro emprego.</li>
+      <li>Ferramentas prÃ¡ticas para currÃ­culo, entrevistas e postura profissional.</li>
+      <li>SimulaÃ§Ãµes, exercÃ­cios e autoavaliaÃ§Ãµes.</li>
+      <li>Acesso a vagas e empresas parceiras.</li>
+    </ul>
+
+    <h3>TrÃªs pilares principais</h3>
+    <ul>
+      <li><strong>InformaÃ§Ã£o:</strong> guias, artigos e orientaÃ§Ãµes prÃ¡ticas.</li>
+      <li><strong>FormaÃ§Ã£o:</strong> trilhas, cursos rÃ¡pidos e simulaÃ§Ãµes.</li>
+      <li><strong>Oportunidade:</strong> conexÃ£o com vagas e empresas.</li>
+    </ul>
+
+    <div class="section-divider"></div>
+
+    <h2>3. A jornada do jovem dentro do portal</h2>
+    <p>
+      O VaultMindOS foi desenhado para ser uma jornada guiada, acolhedora e progressiva, reduzindo a ansiedade e
+      aumentando a confianÃ§a de quem estÃ¡ comeÃ§ando.
+    </p>
+    <ul>
+      <li>1. Acesso ao portal e primeiros conteÃºdos.</li>
+      <li>2. CriaÃ§Ã£o de perfil e entendimento do ponto de partida.</li>
+      <li>3. InÃ­cio das trilhas de aprendizado.</li>
+      <li>4. SimulaÃ§Ãµes de entrevistas e exercÃ­cios prÃ¡ticos.</li>
+      <li>5. ConstruÃ§Ã£o de currÃ­culo e posicionamento profissional.</li>
+      <li>6. Acesso a vagas e empresas parceiras.</li>
+      <li>7. Acompanhamento da evoluÃ§Ã£o atÃ© o primeiro emprego.</li>
+    </ul>
+
+    <div class="section-divider"></div>
+
+    <h2>4. Impacto humano e valor para empresas</h2>
+    <h3>Para o jovem</h3>
+    <ul>
+      <li>Mais clareza sobre como comeÃ§ar.</li>
+      <li>Desenvolvimento de habilidades essenciais.</li>
+      <li>PreparaÃ§Ã£o real para entrevistas e processos seletivos.</li>
+      <li>ConstruÃ§Ã£o de confianÃ§a e senso de pertencimento.</li>
+      <li>Acesso a oportunidades que antes nÃ£o eram visÃ­veis.</li>
+    </ul>
+
+    <h3>Para empresas parceiras</h3>
+    <ul>
+      <li>Jovens mais preparados e alinhados com a realidade do trabalho.</li>
+      <li>ReduÃ§Ã£o de turnover em posiÃ§Ãµes de entrada.</li>
+      <li>Processos seletivos mais eficientes.</li>
+      <li>Engajamento social com impacto real.</li>
+      <li>Pipeline contÃ­nuo de novos talentos.</li>
+    </ul>
+
+    <div class="section-divider"></div>
+
+    <h2>5. Tecnologia, visÃ£o de futuro e posicionamento</h2>
+    <p>
+      O VaultMindOS Ã© construÃ­do sobre uma arquitetura moderna, segura e escalÃ¡vel, com base de dados organizada,
+      fluxo de validaÃ§Ã£o (Blueprint) e estrutura preparada para automaÃ§Ãµes e inteligÃªncia artificial.
+    </p>
+    <p>
+      A visÃ£o Ã© clara: evoluir o portal para incluir gamificaÃ§Ã£o, certificaÃ§Ãµes, recomendaÃ§Ãµes inteligentes,
+      parcerias corporativas e programas sociais que ampliem o impacto em escala.
+    </p>
+    <p>
+      <strong>VaultMindOS by ConnectionCyber</strong> nÃ£o Ã© apenas um portal. Ã‰ uma porta aberta para o futuro
+      profissional de milhares de jovens.
+    </p>
+
+    <div class="section-divider"></div>
+
+    <h3>Identidade visual e ecossistema ConnectionCyber</h3>
+    <p>O VaultMindOS faz parte do ecossistema ConnectionCyberOS.</p>
+    <div class="icons-row">
+      <!-- Substitua os src pelos arquivos dos seus Ã­cones -->
+      <img src="vaultmind-logo.png" alt="VaultMindOS" />
+      <img src="connectioncyber-logo.png" alt="ConnectionCyberOS" />
+    </div>
+    <div class="badge-row">
+      <span class="badge">Primeiro emprego</span>
+      <span class="badge">FormaÃ§Ã£o e orientaÃ§Ã£o</span>
+      <span class="badge">Tecnologia e impacto social</span>
+    </div>
+
+    <div class="footer">
+      <span>VaultMindOS by ConnectionCyber</span>
+      <span>Portal de informaÃ§Ã£o, formaÃ§Ã£o e oportunidade para o primeiro emprego.</span>
+    </div>
+  </div>
+</body>
+</html>
+
+```
+
+---
+
 ## FILE: \docs\api\Manual_Integracao.md
 ```markdown
 # Manual de Integracao
@@ -6027,6 +6654,1087 @@ decisao:
   aprovado: "Criterios >= 7"
   rejeitado: "Impacto < 7"
 
+```
+
+---
+
+## FILE: \docs\html\apresentacao.html
+```txt
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>VaultMindOS by ConnectionCyber â€“ ApresentaÃ§Ã£o Comercial</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    :root {
+      --bg-dark: #050810;
+      --accent-blue: #0ea5e9;
+      --accent-cyan: #a5f3fc;
+      --accent-orange: #f97316;
+      --accent-green: #22c55e;
+      --text-gray: #9ca3af;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg-dark);
+      color: #f5f5f5;
+      font-family: system-ui, -apple-system, sans-serif;
+      line-height: 1.6;
+      background-image: radial-gradient(circle at 50% 0%, #111827 0%, #050810 100%);
+      background-attachment: fixed;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 60px 20px;
+    }
+
+    header {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 30px;
+      margin-bottom: 40px;
+    }
+
+    h1 { font-size: 2.2rem; margin: 0; color: #fff; }
+    h2 { font-size: 1.8rem; color: var(--accent-cyan); margin-top: 40px; }
+    h3 { font-size: 1.3rem; color: var(--accent-orange); }
+
+    .highlight-text {
+      color: var(--accent-green);
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin: 30px 0;
+    }
+
+    .quote-block {
+      margin: 30px 0;
+      padding: 20px;
+      background: rgba(249, 115, 22, 0.05);
+      border-left: 4px solid var(--accent-orange);
+      font-style: italic;
+    }
+
+    .quote-author {
+      display: block;
+      margin-top: 10px;
+      color: var(--accent-orange);
+      font-weight: bold;
+      font-style: normal;
+      font-size: 0.85rem;
+    }
+
+    ul { list-style: none; padding: 0; }
+    li { margin-bottom: 10px; padding-left: 25px; position: relative; }
+    li::before { content: "â€¢"; position: absolute; left: 0; color: #fff; }
+
+    .divider { height: 1px; background: rgba(255, 255, 255, 0.1); margin: 40px 0; }
+
+    .badge {
+      display: inline-block;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 5px 15px;
+      border-radius: 20px;
+      margin: 5px;
+      font-size: 0.85rem;
+    }
+
+    img { max-height: 60px; margin-bottom: 15px; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <img src="vaultmind-logo.png" alt="Logo">
+      <h1>VaultMindOS by ConnectionCyber</h1>
+      <p>Portal de informaÃ§Ã£o, formaÃ§Ã£o e oportunidade para o primeiro emprego.</p>
+    </header>
+
+    <p class="highlight-text">Todo jovem merece uma primeira chance. O VaultMindOS existe para abrir essa porta.</p>
+
+    <section>
+      <h2>1. O problema que queremos resolver</h2>
+      <p>Milhares de jovens chegam ao mercado de trabalho sem orientaÃ§Ã£o. Isso gera inseguranÃ§a e frustraÃ§Ã£o.</p>
+      <div class="quote-block">
+        "O futuro pertence Ã queles que se preparam para ele hoje."
+        <span class="quote-author">MALCOLM X</span>
+      </div>
+      <h3>Desafios:</h3>
+      <ul>
+        <li>NÃ£o saber montar currÃ­culo.</li>
+        <li>Medo de entrevistas.</li>
+        <li>Falta de referÃªncias prÃ¡ticas.</li>
+      </ul>
+    </section>
+
+    <div class="divider"></div>
+
+    <section>
+      <h2>2. O que Ã© o VaultMindOS</h2>
+      <p>Um portal digital criado para orientar e capacitar jovens em busca do primeiro emprego.</p>
+      <div class="quote-block">
+        "InovaÃ§Ã£o Ã© o que distingue um lÃ­der de um seguidor."
+        <span class="quote-author">STEVE JOBS</span>
+      </div>
+      <ul>
+        <li>ConteÃºdos objetivos.</li>
+        <li>Trilhas de aprendizado.</li>
+        <li>SimulaÃ§Ãµes de entrevistas.</li>
+      </ul>
+    </section>
+
+    <div class="divider"></div>
+
+    <section>
+      <h2>3. A jornada do jovem</h2>
+      <div class="quote-block">
+        "O sucesso Ã© um mestre terrÃ­vel."
+        <span class="quote-author">BILL GATES</span>
+      </div>
+      <ul>
+        <li>1. Acesso ao portal.</li>
+        <li>2. CriaÃ§Ã£o de perfil.</li>
+        <li>3. InÃ­cio das trilhas.</li>
+        <li>4. SimulaÃ§Ãµes prÃ¡ticas.</li>
+        <li>5. CurrÃ­culo pronto.</li>
+        <li>6. Acesso a vagas.</li>
+      </ul>
+    </section>
+
+    <div class="divider"></div>
+
+    <section>
+      <h2>4. Impacto para Empresas</h2>
+      <div class="quote-block">
+        "A Ãºnica maneira de fazer um excelente trabalho Ã© amar o que vocÃª faz."
+        <span class="quote-author">STEVE JOBS</span>
+      </div>
+      <ul>
+        <li>Jovens mais preparados.</li>
+        <li>ReduÃ§Ã£o de turnover.</li>
+        <li>Processos seletivos eficientes.</li>
+      </ul>
+    </section>
+
+    <div class="divider"></div>
+
+    <section>
+      <h2>5. Tecnologia e Futuro</h2>
+      <div class="quote-block">
+        "Sempre parece impossÃ­vel atÃ© que seja feito."
+        <span class="quote-author">NELSON MANDELA</span>
+      </div>
+      <p>Arquitetura moderna e preparada para IA.</p>
+      <div>
+        <span class="badge">Primeiro emprego</span>
+        <span class="badge">FormaÃ§Ã£o</span>
+        <span class="badge">Tecnologia</span>
+      </div>
+    </section>
+
+    <footer style="margin-top: 50px; color: #666; font-size: 0.8rem;">
+      <p>VaultMindOS by ConnectionCyber Â© 2026</p>
+    </footer>
+  </div>
+
+</body>
+</html>
+```
+
+---
+
+## FILE: \docs\html\ApresentacaoConnectionCyber.html
+```txt
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>VaultMindOS by ConnectionCyber â€“ ApresentaÃ§Ã£o Comercial</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #050810;
+      color: #f5f5f5;
+      line-height: 1.6;
+    }
+    .page {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 32px 20px 64px;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 32px;
+      border-bottom: 1px solid #222;
+      padding-bottom: 16px;
+    }
+    header img {
+      height: 56px;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 1.8rem;
+    }
+    header p {
+      margin: 4px 0 0;
+      color: #9ca3af;
+      font-size: 0.95rem;
+    }
+    h2 {
+      margin-top: 32px;
+      font-size: 1.4rem;
+      color: #a5f3fc;
+    }
+    h3 {
+      margin-top: 20px;
+      font-size: 1.1rem;
+      color: #f97316;
+    }
+    p {
+      margin: 8px 0;
+    }
+    ul {
+      margin: 8px 0 8px 20px;
+      padding: 0;
+    }
+    li {
+      margin: 4px 0;
+    }
+    .tagline {
+      font-size: 1.05rem;
+      color: #e5e7eb;
+      margin-bottom: 16px;
+    }
+    .highlight {
+      color: #22c55e;
+      font-weight: 600;
+    }
+    .section-divider {
+      margin: 32px 0;
+      border-top: 1px solid #1f2933;
+    }
+    .footer {
+      margin-top: 40px;
+      font-size: 0.85rem;
+      color: #6b7280;
+      border-top: 1px solid #111827;
+      padding-top: 16px;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .badge {
+      border-radius: 999px;
+      border: 1px solid #1f2937;
+      padding: 4px 10px;
+      font-size: 0.8rem;
+      color: #d1d5db;
+      background: rgba(15,23,42,0.8);
+    }
+    .icons-row {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+    .icons-row img {
+      height: 40px;
+    }
+    @media print {
+      body {
+        background: #ffffff;
+        color: #111827;
+      }
+      .page {
+        padding: 24px 32px;
+      }
+      header, .footer {
+        border-color: #d1d5db;
+      }
+      .section-divider {
+        border-color: #e5e7eb;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <!-- Substitua os src abaixo pelos caminhos dos seus arquivos de logo -->
+      <img src="vaultmind-logo.png" alt="VaultMindOS Logo" />
+      <div>
+        <h1>VaultMindOS by ConnectionCyber</h1>
+        <p>Portal de informaÃ§Ã£o, formaÃ§Ã£o e oportunidade para o primeiro emprego.</p>
+      </div>
+    </header>
+
+    <p class="tagline">
+      <span class="highlight">Todo jovem merece uma primeira chance.</span>  
+      O VaultMindOS existe para abrir essa porta.
+    </p>
+
+    <div class="section-divider"></div>
+
+    <h2>1. O problema que queremos resolver</h2>
+    <p>
+      Milhares de jovens chegam ao mercado de trabalho sem orientaÃ§Ã£o, sem preparo e sem saber por onde comeÃ§ar.
+      Isso gera inseguranÃ§a, frustraÃ§Ã£o e, muitas vezes, desistÃªncia antes mesmo da primeira oportunidade.
+    </p>
+    <h3>Desafios do primeiro emprego</h3>
+    <ul>
+      <li>NÃ£o saber como montar um currÃ­culo.</li>
+      <li>Medo de entrevistas e processos seletivos.</li>
+      <li>Falta de referÃªncias e exemplos prÃ¡ticos.</li>
+      <li>DÃºvidas sobre comportamento profissional.</li>
+      <li>Pouco ou nenhum acesso a oportunidades reais.</li>
+    </ul>
+
+    <div class="section-divider"></div>
+
+    <h2>2. O que Ã© o VaultMindOS</h2>
+    <p>
+      O <strong>VaultMindOS by ConnectionCyber</strong> Ã© um portal digital criado para orientar, capacitar e conectar
+      jovens que estÃ£o em busca do seu primeiro emprego. Ele reÃºne, em um Ãºnico ambiente:
+    </p>
+    <ul>
+      <li>ConteÃºdos claros e objetivos sobre mercado de trabalho.</li>
+      <li>Trilhas de aprendizado focadas no primeiro emprego.</li>
+      <li>Ferramentas prÃ¡ticas para currÃ­culo, entrevistas e postura profissional.</li>
+      <li>SimulaÃ§Ãµes, exercÃ­cios e autoavaliaÃ§Ãµes.</li>
+      <li>Acesso a vagas e empresas parceiras.</li>
+    </ul>
+
+    <h3>TrÃªs pilares principais</h3>
+    <ul>
+      <li><strong>InformaÃ§Ã£o:</strong> guias, artigos e orientaÃ§Ãµes prÃ¡ticas.</li>
+      <li><strong>FormaÃ§Ã£o:</strong> trilhas, cursos rÃ¡pidos e simulaÃ§Ãµes.</li>
+      <li><strong>Oportunidade:</strong> conexÃ£o com vagas e empresas.</li>
+    </ul>
+
+    <div class="section-divider"></div>
+
+    <h2>3. A jornada do jovem dentro do portal</h2>
+    <p>
+      O VaultMindOS foi desenhado para ser uma jornada guiada, acolhedora e progressiva, reduzindo a ansiedade e
+      aumentando a confianÃ§a de quem estÃ¡ comeÃ§ando.
+    </p>
+    <ul>
+      <li>1. Acesso ao portal e primeiros conteÃºdos.</li>
+      <li>2. CriaÃ§Ã£o de perfil e entendimento do ponto de partida.</li>
+      <li>3. InÃ­cio das trilhas de aprendizado.</li>
+      <li>4. SimulaÃ§Ãµes de entrevistas e exercÃ­cios prÃ¡ticos.</li>
+      <li>5. ConstruÃ§Ã£o de currÃ­culo e posicionamento profissional.</li>
+      <li>6. Acesso a vagas e empresas parceiras.</li>
+      <li>7. Acompanhamento da evoluÃ§Ã£o atÃ© o primeiro emprego.</li>
+    </ul>
+
+    <div class="section-divider"></div>
+
+    <h2>4. Impacto humano e valor para empresas</h2>
+    <h3>Para o jovem</h3>
+    <ul>
+      <li>Mais clareza sobre como comeÃ§ar.</li>
+      <li>Desenvolvimento de habilidades essenciais.</li>
+      <li>PreparaÃ§Ã£o real para entrevistas e processos seletivos.</li>
+      <li>ConstruÃ§Ã£o de confianÃ§a e senso de pertencimento.</li>
+      <li>Acesso a oportunidades que antes nÃ£o eram visÃ­veis.</li>
+    </ul>
+
+    <h3>Para empresas parceiras</h3>
+    <ul>
+      <li>Jovens mais preparados e alinhados com a realidade do trabalho.</li>
+      <li>ReduÃ§Ã£o de turnover em posiÃ§Ãµes de entrada.</li>
+      <li>Processos seletivos mais eficientes.</li>
+      <li>Engajamento social com impacto real.</li>
+      <li>Pipeline contÃ­nuo de novos talentos.</li>
+    </ul>
+
+    <div class="section-divider"></div>
+
+    <h2>5. Tecnologia, visÃ£o de futuro e posicionamento</h2>
+    <p>
+      O VaultMindOS Ã© construÃ­do sobre uma arquitetura moderna, segura e escalÃ¡vel, com base de dados organizada,
+      fluxo de validaÃ§Ã£o (Blueprint) e estrutura preparada para automaÃ§Ãµes e inteligÃªncia artificial.
+    </p>
+    <p>
+      A visÃ£o Ã© clara: evoluir o portal para incluir gamificaÃ§Ã£o, certificaÃ§Ãµes, recomendaÃ§Ãµes inteligentes,
+      parcerias corporativas e programas sociais que ampliem o impacto em escala.
+    </p>
+    <p>
+      <strong>VaultMindOS by ConnectionCyber</strong> nÃ£o Ã© apenas um portal. Ã‰ uma porta aberta para o futuro
+      profissional de milhares de jovens.
+    </p>
+
+    <div class="section-divider"></div>
+
+    <h3>Identidade visual e ecossistema ConnectionCyber</h3>
+    <p>O VaultMindOS faz parte do ecossistema ConnectionCyberOS.</p>
+    <div class="icons-row">
+      <!-- Substitua os src pelos arquivos dos seus Ã­cones -->
+      <img src="vaultmind-logo.png" alt="VaultMindOS" />
+      <img src="connectioncyber-logo.png" alt="ConnectionCyberOS" />
+    </div>
+    <div class="badge-row">
+      <span class="badge">Primeiro emprego</span>
+      <span class="badge">FormaÃ§Ã£o e orientaÃ§Ã£o</span>
+      <span class="badge">Tecnologia e impacto social</span>
+    </div>
+
+    <div class="footer">
+      <span>VaultMindOS by ConnectionCyber</span>
+      <span>Portal de informaÃ§Ã£o, formaÃ§Ã£o e oportunidade para o primeiro emprego.</span>
+    </div>
+  </div>
+</body>
+</html>
+
+```
+
+---
+
+## FILE: \docs\html\logo-autozap.png
+*[Binario/Midia - Omitido]*
+
+---
+
+## FILE: \docs\html\logo-connection-cyber.png
+*[Binario/Midia - Omitido]*
+
+---
+
+## FILE: \docs\html\logo-vaultmind.png
+*[Binario/Midia - Omitido]*
+
+---
+
+## FILE: \docs\html\Neste formato e com estas informações.pdf
+*[Binario/Midia - Omitido]*
+
+---
+
+## FILE: \docs\html\vaultmindos-apresentacao.html
+```txt
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>VaultMindOS â€“ Experience Presentation</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg-dark: #050810;
+      --accent-blue: #0ea5e9;
+      --accent-cyan: #a5f3fc;
+      --accent-orange: #f97316;
+      --text-gray: #9ca3af;
+      --card-bg: rgba(15, 23, 42, 0.6);
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg-dark);
+      color: #f5f5f5;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      overflow: hidden;
+      background-image: radial-gradient(circle at 50% 50%, #111827 0%, #050810 100%);
+    }
+
+    .slide {
+      display: none;
+      padding: 60px;
+      height: 100vh;
+      box-sizing: border-box;
+      flex-direction: column;
+      justify-content: center;
+      animation: fadeIn 0.8s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .slide.active {
+      display: flex;
+    }
+
+    /* Typography */
+    h1 {
+      font-size: 3.5rem;
+      margin: 0;
+      background: linear-gradient(to right, #fff, var(--accent-blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -1px;
+    }
+
+    h2 {
+      color: var(--accent-cyan);
+      font-size: 1.8rem;
+      font-weight: 400;
+      margin-top: 10px;
+    }
+
+    p {
+      font-size: 1.2rem;
+      color: #d1d5db;
+      max-width: 800px;
+    }
+
+    /* Quotes */
+    .quote {
+      margin-top: 40px;
+      padding-left: 20px;
+      border-left: 4px solid var(--accent-orange);
+      font-style: italic;
+      color: var(--text-gray);
+    }
+
+    .quote-author {
+      display: block;
+      margin-top: 8px;
+      font-weight: 700;
+      font-style: normal;
+      color: var(--accent-orange);
+      font-size: 0.9rem;
+      text-transform: uppercase;
+    }
+
+    /* Elements */
+    .logo-row {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      margin-bottom: 40px;
+    }
+
+    .logo-row img {
+      height: 80px;
+      filter: drop-shadow(0 0 10px rgba(14, 165, 233, 0.3));
+    }
+
+    .grid-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      margin-top: 30px;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
+      margin-bottom: 12px;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+    }
+
+    li::before {
+      content: "â†’";
+      color: var(--accent-blue);
+      margin-right: 12px;
+      font-weight: bold;
+    }
+
+    .nav-buttons {
+      position: fixed;
+      bottom: 40px;
+      right: 60px;
+      display: flex;
+      gap: 20px;
+      z-index: 100;
+    }
+
+    button {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 12px 28px;
+      border-radius: 50px;
+      color: #fff;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      backdrop-filter: blur(10px);
+    }
+
+    button:hover {
+      background: var(--accent-blue);
+      border-color: var(--accent-blue);
+      transform: translateY(-2px);
+    }
+
+    .progress-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      height: 4px;
+      background: var(--accent-blue);
+      transition: width 0.3s;
+    }
+  </style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+
+<div class="slide active">
+  <div class="logo-row">
+    <img src="vaultmind-logo.png" alt="VaultMindOS" />
+    <img src="connectioncyber-logo.png" alt="ConnectionCyberOS" />
+  </div>
+  <h1>VaultMindOS</h1>
+  <h2>by ConnectionCyber</h2>
+  <p>Acelerando o futuro da nova geraÃ§Ã£o de talentos.</p>
+  <div class="quote">
+    "O futuro pertence Ã queles que se preparam para ele hoje."
+    <span class="quote-author">Malcolm X</span>
+  </div>
+</div>
+
+<div class="slide">
+  <h1>O Desafio Real</h1>
+  <div class="grid-content">
+    <div>
+      <p>O gap entre a escola e o mercado nunca foi tÃ£o grande. Jovens enfrentam:</p>
+      <ul>
+        <li>Ansiedade pela falta de experiÃªncia</li>
+        <li>CurrÃ­culos vazios e sem estratÃ©gia</li>
+        <li>Invisibilidade perante algoritmos de RH</li>
+      </ul>
+    </div>
+    <div class="quote">
+      "Seus clientes mais insatisfeitos sÃ£o sua maior fonte de aprendizado."
+      <span class="quote-author">Bill Gates</span>
+    </div>
+  </div>
+</div>
+
+<div class="slide">
+  <h1>VaultMindOS</h1>
+  <p>NÃ£o Ã© um curso. Ã‰ um sistema operacional de carreira.</p>
+  <div class="grid-content">
+    <ul>
+      <li>Trilhas de formaÃ§Ã£o prÃ¡tica</li>
+      <li>Simuladores de ambiente corporativo</li>
+      <li>ConstruÃ§Ã£o de portfÃ³lio real</li>
+    </ul>
+    <div class="quote">
+      "InovaÃ§Ã£o Ã© o que distingue um lÃ­der de um seguidor."
+      <span class="quote-author">Steve Jobs</span>
+    </div>
+  </div>
+</div>
+
+<div class="slide">
+  <h1>TrÃªs Pilares de Impacto</h1>
+  <div class="grid-content">
+    <div>
+      <h3 style="color:var(--accent-orange)">01. InformaÃ§Ã£o</h3>
+      <p style="font-size: 1rem">ConteÃºdo curado para o mundo real.</p>
+      <h3 style="color:var(--accent-orange)">02. FormaÃ§Ã£o</h3>
+      <p style="font-size: 1rem">PrÃ¡tica intensa e simulaÃ§Ãµes.</p>
+      <h3 style="color:var(--accent-orange)">03. Oportunidade</h3>
+      <p style="font-size: 1rem">ConexÃ£o direta com o mercado.</p>
+    </div>
+    <div class="quote">
+      "A Ãºnica maneira de fazer um excelente trabalho Ã© amar o que vocÃª faz."
+      <span class="quote-author">Steve Jobs</span>
+    </div>
+  </div>
+</div>
+
+<div class="slide">
+  <h1>A Jornada Guiada</h1>
+  <p>Do primeiro clique Ã  assinatura do contrato.</p>
+  <div class="grid-content" style="grid-template-columns: 1.5fr 1fr;">
+    <ul style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+      <li>Acesso & Perfil</li>
+      <li>Trilhas Customizadas</li>
+      <li>SimulaÃ§Ãµes de RH</li>
+      <li>CurrÃ­culo Inteligente</li>
+      <li>Match com Vagas</li>
+      <li>Suporte PÃ³s-ContrataÃ§Ã£o</li>
+    </ul>
+    <div class="quote">
+      "O sucesso Ã© um mestre terrÃ­vel. Ele convence as pessoas inteligentes de que elas nÃ£o podem perder."
+      <span class="quote-author">Bill Gates</span>
+    </div>
+  </div>
+</div>
+
+<div class="slide">
+  <h1>Valor Corporativo</h1>
+  <p>Recrutar jovens talentos nÃ£o precisa ser um risco.</p>
+  <div class="grid-content">
+    <ul>
+      <li>Talentos prÃ©-validados</li>
+      <li>ReduÃ§Ã£o drÃ¡stica de turnover</li>
+      <li>Responsabilidade social mensurÃ¡vel</li>
+    </ul>
+    <div class="quote">
+      "A gestÃ£o Ã©, acima de tudo, prÃ¡tica onde a arte, a ciÃªncia e a tÃ©cnica se encontram."
+      <span class="quote-author">Henry Mintzberg</span>
+    </div>
+  </div>
+</div>
+
+<div class="slide">
+  <h1>Arquitetura do Futuro</h1>
+  <p>Escalabilidade com foco em dados e IA.</p>
+  <div class="grid-content">
+    <ul>
+      <li>Base de dados unificada</li>
+      <li>Blueprint de validaÃ§Ã£o constante</li>
+      <li>Roadmap para integraÃ§Ã£o de IA Generativa</li>
+    </ul>
+    <div class="quote">
+      "A tecnologia Ã© apenas uma ferramenta. No que diz respeito a motivar as crianÃ§as e fazÃª-las trabalhar juntas, o professor Ã© o mais importante."
+      <span class="quote-author">Bill Gates</span>
+    </div>
+  </div>
+</div>
+
+<div class="slide">
+  <div class="logo-row">
+    <img src="vaultmind-logo.png" alt="VaultMindOS" />
+  </div>
+  <h1>Vamos abrir essa porta juntos?</h1>
+  <p>VaultMindOS: Onde o potencial encontra a oportunidade.</p>
+  <div class="quote">
+    "Sempre parece impossÃ­vel atÃ© que seja feito."
+    <span class="quote-author">Nelson Mandela</span>
+  </div>
+</div>
+
+<div class="nav-buttons">
+  <button onclick="prevSlide()">Anterior</button>
+  <button onclick="nextSlide()">PrÃ³ximo</button>
+</div>
+
+<script>
+  let currentSlide = 0;
+  const slides = document.querySelectorAll('.slide');
+  const progress = document.getElementById('progress');
+
+  function updateProgress() {
+    const percent = ((currentSlide + 1) / slides.length) * 100;
+    progress.style.width = percent + '%';
+  }
+
+  function showSlide(index) {
+    slides.forEach((slide, i) => {
+      slide.classList.toggle('active', i === index);
+    });
+    updateProgress();
+  }
+
+  function nextSlide() {
+    currentSlide = (currentSlide + 1) % slides.length;
+    showSlide(currentSlide);
+  }
+
+  function prevSlide() {
+    currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+    showSlide(currentSlide);
+  }
+
+  // Atalhos de teclado
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+    if (e.key === 'ArrowLeft') prevSlide();
+  });
+
+  updateProgress();
+</script>
+
+</body>
+</html>
+```
+
+---
+
+## FILE: \docs\html\vaultmindos-apresentacao1.html
+```txt
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>VaultMindOS by ConnectionCyber â€“ ApresentaÃ§Ã£o Comercial</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #050810;
+      color: #f5f5f5;
+      line-height: 1.6;
+    }
+    .page {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 32px 20px 64px;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 32px;
+      border-bottom: 1px solid #222;
+      padding-bottom: 16px;
+    }
+    header img {
+      height: 56px;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 1.8rem;
+    }
+    header p {
+      margin: 4px 0 0;
+      color: #9ca3af;
+      font-size: 0.95rem;
+    }
+    h2 {
+      margin-top: 32px;
+      font-size: 1.4rem;
+      color: #a5f3fc;
+    }
+    h3 {
+      margin-top: 20px;
+      font-size: 1.1rem;
+      color: #f97316;
+    }
+    p {
+      margin: 8px 0;
+    }
+    ul {
+      margin: 8px 0 8px 20px;
+      padding: 0;
+    }
+    li {
+      margin: 4px 0;
+    }
+    .tagline {
+      font-size: 1.05rem;
+      color: #e5e7eb;
+      margin-bottom: 16px;
+    }
+    .highlight {
+      color: #22c55e;
+      font-weight: 600;
+    }
+    .section-divider {
+      margin: 32px 0;
+      border-top: 1px solid #1f2933;
+    }
+    .footer {
+      margin-top: 40px;
+      font-size: 0.85rem;
+      color: #6b7280;
+      border-top: 1px solid #111827;
+      padding-top: 16px;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .badge {
+      border-radius: 999px;
+      border: 1px solid #1f2937;
+      padding: 4px 10px;
+      font-size: 0.8rem;
+      color: #d1d5db;
+      background: rgba(15,23,42,0.8);
+    }
+    .icons-row {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+    .icons-row img {
+      height: 40px;
+    }
+    @media print {
+      body {
+        background: #ffffff;
+        color: #111827;
+      }
+      .page {
+        padding: 24px 32px;
+      }
+      header, .footer {
+        border-color: #d1d5db;
+      }
+      .section-divider {
+        border-color: #e5e7eb;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <!-- Substitua os src abaixo pelos caminhos dos seus arquivos de logo -->
+      <img src="vaultmind-logo.png" alt="VaultMindOS Logo" />
+      <div>
+        <h1>VaultMindOS by ConnectionCyber</h1>
+        <p>Portal de informaÃ§Ã£o, formaÃ§Ã£o e oportunidade para o primeiro emprego.</p>
+      </div>
+    </header>
+
+    <p class="tagline">
+      <span class="highlight">Todo jovem merece uma primeira chance.</span>  
+      O VaultMindOS existe para abrir essa porta.
+    </p>
+
+    <div class="section-divider"></div>
+
+    <h2>1. O problema que queremos resolver</h2>
+    <p>
+      Milhares de jovens chegam ao mercado de trabalho sem orientaÃ§Ã£o, sem preparo e sem saber por onde comeÃ§ar.
+      Isso gera inseguranÃ§a, frustraÃ§Ã£o e, muitas vezes, desistÃªncia antes mesmo da primeira oportunidade.
+    </p>
+    <h3>Desafios do primeiro emprego</h3>
+    <ul>
+      <li>NÃ£o saber como montar um currÃ­culo.</li>
+      <li>Medo de entrevistas e processos seletivos.</li>
+      <li>Falta de referÃªncias e exemplos prÃ¡ticos.</li>
+      <li>DÃºvidas sobre comportamento profissional.</li>
+      <li>Pouco ou nenhum acesso a oportunidades reais.</li>
+    </ul>
+
+    <div class="section-divider"></div>
+
+    <h2>2. O que Ã© o VaultMindOS</h2>
+    <p>
+      O <strong>VaultMindOS by ConnectionCyber</strong> Ã© um portal digital criado para orientar, capacitar e conectar
+      jovens que estÃ£o em busca do seu primeiro emprego. Ele reÃºne, em um Ãºnico ambiente:
+    </p>
+    <ul>
+      <li>ConteÃºdos claros e objetivos sobre mercado de trabalho.</li>
+      <li>Trilhas de aprendizado focadas no primeiro emprego.</li>
+      <li>Ferramentas prÃ¡ticas para currÃ­culo, entrevistas e postura profissional.</li>
+      <li>SimulaÃ§Ãµes, exercÃ­cios e autoavaliaÃ§Ãµes.</li>
+      <li>Acesso a vagas e empresas parceiras.</li>
+    </ul>
+
+    <h3>TrÃªs pilares principais</h3>
+    <ul>
+      <li><strong>InformaÃ§Ã£o:</strong> guias, artigos e orientaÃ§Ãµes prÃ¡ticas.</li>
+      <li><strong>FormaÃ§Ã£o:</strong> trilhas, cursos rÃ¡pidos e simulaÃ§Ãµes.</li>
+      <li><strong>Oportunidade:</strong> conexÃ£o com vagas e empresas.</li>
+    </ul>
+
+    <div class="section-divider"></div>
+
+    <h2>3. A jornada do jovem dentro do portal</h2>
+    <p>
+      O VaultMindOS foi desenhado para ser uma jornada guiada, acolhedora e progressiva, reduzindo a ansiedade e
+      aumentando a confianÃ§a de quem estÃ¡ comeÃ§ando.
+    </p>
+    <ul>
+      <li>1. Acesso ao portal e primeiros conteÃºdos.</li>
+      <li>2. CriaÃ§Ã£o de perfil e entendimento do ponto de partida.</li>
+      <li>3. InÃ­cio das trilhas de aprendizado.</li>
+      <li>4. SimulaÃ§Ãµes de entrevistas e exercÃ­cios prÃ¡ticos.</li>
+      <li>5. ConstruÃ§Ã£o de currÃ­culo e posicionamento profissional.</li>
+      <li>6. Acesso a vagas e empresas parceiras.</li>
+      <li>7. Acompanhamento da evoluÃ§Ã£o atÃ© o primeiro emprego.</li>
+    </ul>
+
+    <div class="section-divider"></div>
+
+    <h2>4. Impacto humano e valor para empresas</h2>
+    <h3>Para o jovem</h3>
+    <ul>
+      <li>Mais clareza sobre como comeÃ§ar.</li>
+      <li>Desenvolvimento de habilidades essenciais.</li>
+      <li>PreparaÃ§Ã£o real para entrevistas e processos seletivos.</li>
+      <li>ConstruÃ§Ã£o de confianÃ§a e senso de pertencimento.</li>
+      <li>Acesso a oportunidades que antes nÃ£o eram visÃ­veis.</li>
+    </ul>
+
+    <h3>Para empresas parceiras</h3>
+    <ul>
+      <li>Jovens mais preparados e alinhados com a realidade do trabalho.</li>
+      <li>ReduÃ§Ã£o de turnover em posiÃ§Ãµes de entrada.</li>
+      <li>Processos seletivos mais eficientes.</li>
+      <li>Engajamento social com impacto real.</li>
+      <li>Pipeline contÃ­nuo de novos talentos.</li>
+    </ul>
+
+    <div class="section-divider"></div>
+
+    <h2>5. Tecnologia, visÃ£o de futuro e posicionamento</h2>
+    <p>
+      O VaultMindOS Ã© construÃ­do sobre uma arquitetura moderna, segura e escalÃ¡vel, com base de dados organizada,
+      fluxo de validaÃ§Ã£o (Blueprint) e estrutura preparada para automaÃ§Ãµes e inteligÃªncia artificial.
+    </p>
+    <p>
+      A visÃ£o Ã© clara: evoluir o portal para incluir gamificaÃ§Ã£o, certificaÃ§Ãµes, recomendaÃ§Ãµes inteligentes,
+      parcerias corporativas e programas sociais que ampliem o impacto em escala.
+    </p>
+    <p>
+      <strong>VaultMindOS by ConnectionCyber</strong> nÃ£o Ã© apenas um portal. Ã‰ uma porta aberta para o futuro
+      profissional de milhares de jovens.
+    </p>
+
+    <div class="section-divider"></div>
+
+    <h3>Identidade visual e ecossistema ConnectionCyber</h3>
+    <p>O VaultMindOS faz parte do ecossistema ConnectionCyberOS.</p>
+    <div class="icons-row">
+      <!-- Substitua os src pelos arquivos dos seus Ã­cones -->
+      <img src="vaultmind-logo.png" alt="VaultMindOS" />
+      <img src="connectioncyber-logo.png" alt="ConnectionCyberOS" />
+    </div>
+    <div class="badge-row">
+      <span class="badge">Primeiro emprego</span>
+      <span class="badge">FormaÃ§Ã£o e orientaÃ§Ã£o</span>
+      <span class="badge">Tecnologia e impacto social</span>
+    </div>
+
+    <div class="footer">
+      <span>VaultMindOS by ConnectionCyber</span>
+      <span>Portal de informaÃ§Ã£o, formaÃ§Ã£o e oportunidade para o primeiro emprego.</span>
+    </div>
+  </div>
+</body>
+</html>
+
+```
+
+---
+
+## FILE: \docs\html\vaultmindos-apresentacao2.html
+```txt
 ```
 
 ---
@@ -7218,7 +8926,7 @@ export default nextConfig;
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next telemetry disable && next build",
     "start": "next start",
     "lint": "eslint"
   },
@@ -7420,6 +9128,36 @@ model Product {
 
 ---
 
+## FILE: \web\tailwind.config.ts
+```typescript
+import type { Config } from "tailwindcss";
+
+const config: Config = {
+  content: [
+    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+  ],
+  theme: {
+    extend: {
+      colors: {
+        background: "var(--background)",
+        foreground: "var(--foreground)",
+        emerald: {
+          500: "#10b981",
+          600: "#059669",
+          950: "#022c22",
+        },
+      },
+    },
+  },
+  plugins: [],
+};
+export default config;
+```
+
+---
+
 ## FILE: \web\tsconfig.json
 ```json
 {
@@ -7510,6 +9248,11 @@ DESCRIÃ‡ÃƒO: [FunÃ§Ã£o tÃ©cnica do componente]
 ---
 
 ## FILE: \web\public\globe.svg
+*[Binario/Midia - Omitido]*
+
+---
+
+## FILE: \web\public\grid-pattern.svg
 *[Binario/Midia - Omitido]*
 
 ---
@@ -7632,6 +9375,50 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+```
+
+---
+
+## FILE: \web\src\layout.tsx
+```typescript
+import type { Metadata } from "next";
+import { Inter, JetBrains_Mono } from "next/font/google";
+import "./globals.css";
+import SystemStatus from "@/components/SystemStatus";
+import BackgroundVideo from "@/components/BackgroundVideo";
+
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" });
+
+export const metadata: Metadata = {
+  title: "VaultMindOS | Enterprise Intelligence",
+  description: "Sistema de Gestão Modular e Inteligência de Dados.",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="pt-BR" className="scroll-smooth" suppressHydrationWarning={true}>
+      <body
+        className={`${inter.variable} ${mono.variable} antialiased text-slate-200 bg-transparent`}
+        suppressHydrationWarning={true}
+      >
+        {/* Componentes Globais do VaultMindOS */}
+        <BackgroundVideo />
+
+        <div className="relative z-10 min-h-screen flex flex-col">
+          {children}
+        </div>
+
+        <SystemStatus />
+      </body>
+    </html>
+  );
+}
 
 ```
 
@@ -7859,17 +9646,18 @@ export default async function AcademyLayout({
         {/* Logo Area (VaultMindOS) */}
         <div className="h-20 flex items-center justify-center md:justify-start md:px-6 border-b border-neutral-800 bg-neutral-900/20">
           <Link href="/portal" className="relative w-40 h-10 hidden md:block opacity-90 hover:opacity-100 transition-opacity">
-             <Image 
+              <Image 
                 src="/logo-vaultmind.png" 
-                alt="VaultMindOS" 
-                fill 
+                alt="VaultMindOS Logo" 
+                width={128} 
+                height={32} 
                 className="object-contain object-left"
                 priority
-             />
+              />
           </Link>
           {/* Logo Mobile (Ícone) */}
           <div className="md:hidden w-10 h-10 relative">
-             <div className="w-10 h-10 bg-emerald-600 rounded-lg flex items-center justify-center font-bold text-white">V</div>
+              <div className="w-10 h-10 bg-emerald-600 rounded-lg flex items-center justify-center font-bold text-white">V</div>
           </div>
         </div>
 
@@ -7916,11 +9704,17 @@ export default async function AcademyLayout({
                 <span className="absolute top-0 right-0 w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
               </button>
               
-              {/* Avatar do Usuário */}
+              {/* Avatar do Usuário - FUSÃO: Injeção de Inteligência Funcional Isolada */}
               <Link href="/portal/profile">
                 <div className="w-9 h-9 rounded-full bg-neutral-800 border border-neutral-700 overflow-hidden hover:border-emerald-500 transition-colors cursor-pointer relative">
                     {avatarUrl ? (
-                        <img src={avatarUrl} alt="User" className="w-full h-full object-cover" />
+                        <Image 
+                          src={avatarUrl} 
+                          alt="User Avatar" 
+                          width={36} 
+                          height={36} 
+                          className="w-full h-full object-cover"
+                        />
                     ) : (
                         <div className="w-full h-full flex items-center justify-center bg-neutral-900 text-neutral-500">
                             <User className="w-5 h-5" />
@@ -7998,7 +9792,31 @@ export async function toggleLessonProgress(lessonId: string, currentStatus: bool
 import { createClient } from "@/utils/supabase/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Play, Info, Lock, Zap, LogOut, Clock, Award, PlayCircle } from "lucide-react";
+import { Play, Lock, Clock, Award, PlayCircle } from "lucide-react";
+
+// Definição de Interfaces para Tipagem Estrita
+interface LessonData {
+  id: string;
+}
+
+interface ModuleData {
+  lessons: LessonData[];
+}
+
+interface EnrollmentData {
+  status: string;
+  source: string;
+}
+
+interface CourseData {
+  id: string;
+  title: string;
+  description: string;
+  slug: string;
+  thumbnail_url: string | null;
+  modules: ModuleData[];
+  enrollments: EnrollmentData[];
+}
 
 export default async function PortalDashboard() {
   const supabase = await createClient();
@@ -8040,14 +9858,15 @@ export default async function PortalDashboard() {
     );
   }
 
-  const safeCourses = courses || [];
+  // Cast explícito para garantir a tipagem nos arrays
+  const safeCourses = (courses || []) as unknown as CourseData[];
   const featuredCourse = safeCourses[0];
   const otherCourses = safeCourses.slice(1);
 
-  const getProgress = (course: any) => {
-    const totalLessons = course.modules?.reduce((acc: number, mod: any) => acc + mod.lessons.length, 0) || 0;
-    const completedCount = course.modules?.reduce((acc: number, mod: any) => {
-       return acc + mod.lessons.filter((l: any) => completedLessonIds.has(l.id)).length;
+  const getProgress = (course: CourseData) => {
+    const totalLessons = course.modules?.reduce((acc: number, mod: ModuleData) => acc + mod.lessons.length, 0) || 0;
+    const completedCount = course.modules?.reduce((acc: number, mod: ModuleData) => {
+       return acc + mod.lessons.filter((l: LessonData) => completedLessonIds.has(l.id)).length;
     }, 0) || 0;
     const percent = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
     return { percent, completedCount, totalLessons };
@@ -8127,7 +9946,7 @@ export default async function PortalDashboard() {
                 Meus Cursos e Trilhas
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-                  {otherCourses.map((course) => {
+                  {otherCourses.map((course: CourseData) => {
                     const { percent, completedCount, totalLessons } = getProgress(course);
                     const isCompleted = percent === 100 && totalLessons > 0;
                     return (
@@ -8227,8 +10046,17 @@ export async function updateProfile(
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image"; // FUSÃƒO: InjeÃ§Ã£o de componente nativo Next.js
 import { ChevronLeft, User, Award } from "lucide-react"; 
-import { ProfileForm } from "./ProfileForm"; // ImportaÃ§Ã£o do novo componente
+import { ProfileForm } from "./ProfileForm";
+
+// FUSÃƒO: Interface para tipagem estrita de matrÃ­culas
+interface EnrollmentData {
+  source: string;
+  status: string;
+  created_at: string;
+  courses: { title: string };
+}
 
 export default async function ProfilePage() {
   const supabase = await createClient();
@@ -8256,6 +10084,7 @@ export default async function ProfilePage() {
     .eq("user_id", user.id)
     .eq("status", "active");
 
+  // Nota: O TypeScript pode inferir arrays do Supabase, mas a interface garante seguranÃ§a no uso abaixo.
   const isSocialProject = enrollments?.some(e => e.source === 'social_project');
   const isPremium = enrollments?.some(e => e.source === 'purchase' || e.source === 'subscription');
   const planName = isSocialProject ? "Bolsista - Projeto Primeiro Emprego" : (isPremium ? "Aluno Premium" : "Acesso Gratuito");
@@ -8288,7 +10117,15 @@ export default async function ProfilePage() {
                 
                 <div className="w-28 h-28 rounded-full bg-neutral-950 flex items-center justify-center mb-4 border border-neutral-800 ring-4 ring-neutral-900 overflow-hidden relative group">
                    {profile?.avatar_url ? (
-                     <img src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover transition-transform group-hover:scale-110" />
+                     /* FUSÃƒO: SubstituiÃ§Ã£o de <img> por <Image /> para otimizaÃ§Ã£o de LCP */
+                     <Image 
+                        src={profile.avatar_url} 
+                        alt="Avatar" 
+                        width={112} 
+                        height={112} 
+                        className="w-full h-full object-cover transition-transform group-hover:scale-110"
+                        priority
+                     />
                    ) : (
                      <User className="w-10 h-10 text-neutral-600" />
                    )}
@@ -8311,16 +10148,15 @@ export default async function ProfilePage() {
           {/* COLUNA DIREITA: FORMULÃRIO E DETALHES */}
           <div className="col-span-1 md:col-span-2 space-y-6">
             
-            {/* FORMULÃRIO (Refatorado para Client Component) */}
+            {/* FORMULÃRIO (Client Component) */}
             <section className="bg-neutral-900/30 border border-neutral-800 rounded-xl p-6 md:p-8 backdrop-blur-sm">
                <h3 className="text-sm font-bold uppercase tracking-wider text-emerald-500 mb-6 flex items-center gap-2">
                  <User className="w-4 h-4" /> Dados Pessoais
                </h3>
                
-               {/* InjeÃ§Ã£o do Componente Cliente */}
                <ProfileForm 
-                  fullName={profile?.full_name || ""} 
-                  email={user.email || ""} 
+                 fullName={profile?.full_name || ""} 
+                 email={user.email || ""} 
                />
             </section>
 
@@ -8332,23 +10168,28 @@ export default async function ProfilePage() {
                
                {enrollments && enrollments.length > 0 ? (
                  <div className="space-y-3">
-                    {enrollments.map((enrollment: any, index: number) => (
-                      <div key={index} className="flex items-center justify-between p-4 bg-neutral-950 border border-neutral-800 rounded-lg group hover:border-emerald-500/30 transition-colors">
-                          <div>
-                           <p className="font-bold text-sm text-neutral-200 group-hover:text-emerald-400 transition-colors">{enrollment.courses.title}</p>
-                           <p className="text-[10px] text-neutral-500 mt-1">InÃ­cio: {new Date(enrollment.created_at).toLocaleDateString('pt-BR')}</p>
-                          </div>
-                          <div className="text-right">
-                             <span className={`text-[10px] font-bold px-2 py-1 rounded border ${
-                                 enrollment.source === 'social_project' 
-                                 ? 'bg-emerald-950 text-emerald-500 border-emerald-900' 
-                                 : 'bg-neutral-800 text-neutral-400 border-neutral-700'
-                             }`}>
-                               {enrollment.source === 'social_project' ? 'BOLSA INTEGRAL' : 'PREMIUM'}
-                             </span>
-                          </div>
-                      </div>
-                    ))}
+                    {/* FUSÃƒO: AplicaÃ§Ã£o da tipagem EnrollmentData no map */}
+                    {enrollments.map((enrollment: any, index: number) => {
+                      // Casting seguro para uso interno no map, garantindo compatibilidade com o retorno do Supabase
+                      const typedEnrollment = enrollment as EnrollmentData;
+                      return (
+                        <div key={index} className="flex items-center justify-between p-4 bg-neutral-950 border border-neutral-800 rounded-lg group hover:border-emerald-500/30 transition-colors">
+                            <div>
+                             <p className="font-bold text-sm text-neutral-200 group-hover:text-emerald-400 transition-colors">{typedEnrollment.courses.title}</p>
+                             <p className="text-[10px] text-neutral-500 mt-1">InÃ­cio: {new Date(typedEnrollment.created_at).toLocaleDateString('pt-BR')}</p>
+                            </div>
+                            <div className="text-right">
+                               <span className={`text-[10px] font-bold px-2 py-1 rounded border ${
+                                   typedEnrollment.source === 'social_project' 
+                                   ? 'bg-emerald-950 text-emerald-500 border-emerald-900' 
+                                   : 'bg-neutral-800 text-neutral-400 border-neutral-700'
+                               }`}>
+                                 {typedEnrollment.source === 'social_project' ? 'BOLSA INTEGRAL' : 'PREMIUM'}
+                               </span>
+                            </div>
+                        </div>
+                      );
+                    })}
                  </div>
                ) : (
                  <div className="text-center py-8 text-neutral-600 text-sm bg-neutral-950/50 rounded-lg border border-dashed border-neutral-800">
@@ -8386,7 +10227,7 @@ export function ProfileForm({ fullName, email }: ProfileFormProps) {
 
   return (
     <form action={action} className="space-y-5">
-      {/* Feedback de Sucesso/Erro */}
+      {/* Feedback de Sucesso/Erro (InjeÃ§Ã£o Funcional) */}
       {state?.message && (
         <div className={`p-3 rounded-lg text-xs font-bold border ${
           state.success 
@@ -8587,13 +10428,19 @@ export default function LoginPage() {
             {/* BotÃµes de AÃ§Ã£o */}
             <div className="grid grid-cols-2 gap-4 pt-2">
               <button
-                formAction={login}
+                formAction={async (formData) => {
+                  "use server";
+                  await login(formData);
+                }}
                 className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-lg transition-all shadow-lg shadow-emerald-900/20"
               >
                 Entrar
               </button>
               <button
-                formAction={signup}
+                formAction={async (formData) => {
+                  "use server";
+                  await signup(formData);
+                }}
                 className="w-full bg-transparent hover:bg-neutral-800 text-neutral-400 hover:text-white font-medium py-3 rounded-lg border border-neutral-800 transition-all"
               >
                 Criar Conta
@@ -8891,18 +10738,15 @@ export default function Home() {
       
       <Navbar />
 
-      {/* AJUSTE 1: Mudei pt-20 para pt-16 (menos espaço pro topo) */}
       <main className="flex-1 pt-16">
         
         {/* HERO SECTION COMPACTA */}
-        {/* AJUSTE 2: py-28 -> py-12 / min-h-[80vh] -> min-h-[60vh] (Sobe tudo drasticamente) */}
         <header className="relative py-12 px-4 overflow-hidden flex flex-col items-center justify-center min-h-[60vh]">
            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-6xl h-[500px] bg-emerald-900/10 rounded-full blur-[100px] pointer-events-none" />
            <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))] pointer-events-none opacity-20"></div>
 
            <div className="max-w-5xl mx-auto text-center relative z-10">
              
-             {/* AJUSTE 3: mb-8 -> mb-6 (Aproxima badge do título) */}
              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-neutral-900/80 border border-neutral-800 backdrop-blur-sm mb-6 animate-in fade-in slide-in-from-bottom-4 duration-1000">
                <span className="relative flex h-2.5 w-2.5">
                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -8911,7 +10755,6 @@ export default function Home() {
                <span className="text-sm font-medium text-neutral-300">Ecossistema Integrado de Tecnologia e Educação</span>
              </div>
 
-             {/* Título Ajustado (Mantido 3xl/4xl mas com margem menor: mb-6) */}
              <h1 className="text-3xl md:text-4xl font-extrabold mb-6 tracking-tight leading-tight animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200">
                O Sistema Operacional da sua <br />
                <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-emerald-600 text-glow">
@@ -8919,10 +10762,9 @@ export default function Home() {
                </span>
              </h1>
              
-             {/* Subtítulo: mb-12 -> mb-8 (Aproxima texto dos botões) */}
              <p className="text-lg md:text-xl text-neutral-400 mb-8 leading-relaxed max-w-3xl mx-auto animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
                Centralize gestão, capacitação e inteligência estratégica em uma única plataforma. 
-               Do "Primeiro Emprego" à liderança executiva, o VaultMindOS conecta potenciais a resultados.
+               Do &quot;Primeiro Emprego&quot; à liderança executiva, o VaultMindOS conecta potenciais a resultados.
              </p>
 
              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-in fade-in slide-in-from-bottom-10 duration-1000 delay-500">
@@ -8940,17 +10782,16 @@ export default function Home() {
 
 
         {/* Nossas Áreas de Atuação - Compactada */}
-        {/* AJUSTE 4: py-24 -> py-16 (Sobe os cards para perto do Hero) */}
         <section className="py-16 bg-neutral-950 relative overflow-hidden border-t border-neutral-900">
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-emerald-900/5 rounded-full blur-[150px] pointer-events-none" />
 
-            {/* AJUSTE 5: mb-16 -> mb-10 (Aproxima título dos cards) */}
             <div className="text-center mb-10 relative z-10 px-4">
                 <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white tracking-tight">
                     Nossas Áreas de Atuação
                 </h2>
-                <p className="text-neutral-400 max-w-2xl mx-auto">
-                   Tecnologia de ponta a ponta para sua corporação.
+                {/* FUSÃO TÉCNICA: Injeção de Inteligência Funcional Isolada */}
+                <p className="text-neutral-400 italic max-w-2xl mx-auto">
+                    &quot;Transformando potencial em prontidão técnica para o mercado real.&quot;
                 </p>
             </div>
 
@@ -8963,7 +10804,6 @@ export default function Home() {
 
 
         {/* Why Us Section - Compactada */}
-        {/* AJUSTE 6: py-24 -> py-16 */}
         <section className="py-16 bg-neutral-900/30 relative border-y border-neutral-900">
           <div className="max-w-7xl mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
               
@@ -8972,6 +10812,17 @@ export default function Home() {
                        <div className="absolute inset-0 bg-gradient-to-tr from-neutral-950 via-transparent to-emerald-900/20 opacity-50 group-hover:opacity-70 transition-opacity" />
                        
                        <div className="absolute inset-4 border border-neutral-800 rounded-2xl bg-neutral-950/50 p-6 flex flex-col gap-4 backdrop-blur-md">
+                           {/* FUSÃO TÉCNICA: Otimização de Imagem injetada para compliance com Lint/LCP */}
+                           <div className="mb-4">
+                            <Image 
+                              src="/logo-vaultmind.png" 
+                              alt="VaultMindOS Logo" 
+                              width={128} 
+                              height={32} 
+                              priority 
+                              className="object-contain"
+                            />
+                           </div>
                            <div className="h-8 w-3/4 bg-neutral-800/50 rounded-lg animate-pulse" />
                            <div className="flex gap-4">
                                <div className="h-24 w-1/2 bg-neutral-800/50 rounded-lg" />
@@ -9027,6 +10878,463 @@ export default function Home() {
       </main>
       
     </div>
+  );
+}
+// Deploy de Teste - Sincronização M07/M12 concluída em 06/02/2026
+```
+
+---
+
+## FILE: \web\src\app\(public)\apresentacao\page.tsx
+```typescript
+import { FeatureCard } from "@/components/ui/FeatureCard";
+import { Briefcase, ShieldCheck, Network, Cpu, Zap } from "lucide-react";
+
+export default function ApresentacaoPage() {
+  const trilhas = [
+    { title: "Administrativa 4.0", icon: Briefcase, desc: "GestÃ£o digital e ERP moderno." },
+    { title: "SeguranÃ§a & IoT", icon: ShieldCheck, desc: "Monitoramento e automaÃ§Ã£o residencial." },
+    { title: "Redes & Conectividade", icon: Network, desc: "Infraestrutura Wi-Fi 6 e Fibra." },
+    { title: "Suporte & Hardware", icon: Cpu, desc: "ManutenÃ§Ã£o proativa e recuperaÃ§Ã£o." },
+    { title: "ElÃ©trica Moderna", icon: Zap, desc: "EficiÃªncia energÃ©tica e quadros inteligentes." },
+  ];
+
+  return (
+    <main className="bg-neutral-950 text-neutral-100 min-h-screen">
+      {/* Hero Section - Abertura do Roteiro */}
+      <section className="py-20 px-6 border-b border-neutral-800">
+        <div className="max-w-5xl mx-auto text-center">
+          <h1 className="text-4xl md:text-6xl font-bold mb-4">
+            VaultMind<span className="text-emerald-500">OS</span>
+          </h1>
+          <p className="text-emerald-500 text-lg md:text-xl font-medium tracking-widest uppercase mb-8">
+            Operating System of Personal Intelligence
+          </p>
+          <div className="inline-block px-4 py-1 border border-emerald-500/30 rounded-full bg-emerald-500/10 text-emerald-500 text-sm mb-12">
+            Endosso: ConnectionCyberOS
+          </div>
+        </div>
+      </section>
+
+      {/* Grid de Trilhas - Diferencial Contextual */}
+      <section className="py-16 px-6 max-w-7xl mx-auto">
+        <h2 className="text-2xl font-bold text-center mb-12 text-emerald-500 uppercase tracking-tighter">
+          EspecializaÃ§Ã£o por InjeÃ§Ã£o DinÃ¢mica
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+          {trilhas.map((trilha) => (
+            <FeatureCard 
+              key={trilha.title}
+              title={trilha.title}
+              description={trilha.desc}
+              icon={trilha.icon}
+            />
+          ))}
+        </div>
+      </section>
+
+      {/* Call to Action - ConversÃ£o (React 19) */}
+      <section className="py-16 bg-neutral-900/50 text-center">
+        <h3 className="text-xl mb-6">Pronto para a ProntidÃ£o TÃ©cnica?</h3>
+        <button className="bg-emerald-600 hover:bg-emerald-500 text-white px-8 py-3 rounded-md font-bold transition-all transform hover:scale-105">
+          Garantir Minha Vaga (Live Demo)
+        </button>
+      </section>
+    </main>
+  );
+}
+```
+
+---
+
+## FILE: \web\src\app\(public)\primeiro-emprego\actions.ts
+```typescript
+"use server";
+
+import { createClient } from "@/utils/supabase/server";
+import { LeadProjeto, ActionResponse } from "@/types/database";
+import { Resend } from "resend";
+import { getWelcomeEmailTemplate } from "@/lib/emails";
+import { revalidatePath } from "next/cache";
+
+// InicializaÃ§Ã£o segura do Resend
+const resend = process.env.RESEND_API_KEY 
+  ? new Resend(process.env.RESEND_API_KEY) 
+  : null;
+
+/**
+ * Server Action para o FormulÃ¡rio "Primeiro Emprego"
+ * Stack: Next.js 15 + Supabase + Resend
+ */
+export async function registrarInteresse(
+  prevState: ActionResponse | null,
+  formData: FormData
+): Promise<ActionResponse> {
+  
+  // ---------------------------------------------------------
+  // ðŸ›¡ï¸ VALIDAÃ‡ÃƒO DE INTEGRIDADE (FIX PARA BUILD VERCEL)
+  // ---------------------------------------------------------
+  // Se por algum motivo o formData chegar nulo (erro de runtime anterior),
+  // nÃ³s interceptamos aqui antes de tentar ler ".get".
+  if (!formData || typeof formData.get !== 'function') {
+    console.error("[CRITICAL] FormData invÃ¡lido ou ausente.");
+    return { success: false, message: "Erro tÃ©cnico: Dados do formulÃ¡rio nÃ£o recebidos." };
+  }
+
+  const supabase = await createClient();
+
+  // 1. ExtraÃ§Ã£o e SanitizaÃ§Ã£o
+  const rawData: LeadProjeto = {
+    email: (formData.get("email") as string)?.trim().toLowerCase() || "",
+    perfil: (formData.get("perfil") as string) || "nao_informado",
+    trilha_interesse: (formData.get("trilha") as string) || "geral",
+    origem: "landing_page_espera"
+  };
+
+  // 2. ValidaÃ§Ã£o BÃ¡sica
+  if (!rawData.email || !rawData.email.includes("@")) {
+    return { success: false, message: "Por favor, insira um e-mail vÃ¡lido." };
+  }
+
+  try {
+    // 3. InserÃ§Ã£o no Supabase
+    // FUSÃƒO: RenomeaÃ§Ã£o de variÃ¡vel para evitar shadowing e uso genÃ©rico de 'error'
+    const { error: insertError } = await supabase
+      .from("leads_projeto_primeiro_emprego")
+      .insert([rawData]);
+
+    if (insertError) {
+      // Tratamento de Duplicidade (Erro 23505)
+      if (insertError.code === '23505') {
+        return { success: true, message: "Este e-mail jÃ¡ estÃ¡ na nossa lista de espera!" };
+      }
+      // Log do erro especÃ­fico de inserÃ§Ã£o
+      console.error("Erro Supabase:", insertError);
+      throw insertError;
+    }
+
+    // 4. Disparo de E-mail (Resend)
+    if (resend) {
+        try {
+            const template = getWelcomeEmailTemplate({ 
+                nome: "Futuro Profissional", 
+                trilha: rawData.trilha_interesse 
+            });
+            
+            await resend.emails.send({
+                from: 'VaultMindOS <contatos@cyberconnection.com.br>',
+                to: rawData.email,
+                subject: template.subject,
+                html: template.html,
+            });
+        } catch (emailError) {
+            console.error("[EMAIL ERROR]", emailError);
+        }
+    }
+
+    // 5. FinalizaÃ§Ã£o
+    revalidatePath("/primeiro-emprego");
+    return { success: true, message: "Cadastro realizado! Verifique seu e-mail de boas-vindas." };
+    
+  } catch (err) {
+    // Uso da variÃ¡vel 'err' para evitar aviso de linter (unused var)
+    console.error("Erro crÃ­tico na Server Action:", err);
+    return { success: false, message: "Erro ao conectar com o servidor. Tente novamente." };
+  }
+}
+```
+
+---
+
+## FILE: \web\src\app\(public)\primeiro-emprego\page.tsx
+```typescript
+import React from 'react';
+import Link from 'next/link';
+import Image from 'next/image'; 
+import { PrimeiroEmpregoForm } from './PrimeiroEmpregoForm';
+// FUSÃƒO TÃ‰CNICA: CorreÃ§Ã£o de Caminhos (RemoÃ§Ã£o de /global/ inexistente)
+import { Navbar } from "@/components/Navbar";
+import { PoweredByFooter } from "@/components/PoweredByFooter"; 
+import { FeatureCard } from '@/components/ui/FeatureCard';
+import { 
+  CheckCircle2, 
+  ShieldCheck, 
+  Monitor, 
+  Zap,
+  Users,
+  Rocket,
+  ArrowRight
+} from 'lucide-react';
+
+export default function PrimeiroEmpregoPage() {
+  // Dados das trilhas (Preservados e tipados para FeatureCard)
+  const trilhas = [
+    { title: 'Administrativa 4.0', icon: Users, description: 'GestÃ£o, ERP e Rotinas Digitais' },
+    { title: 'SeguranÃ§a & AutomaÃ§Ã£o', icon: ShieldCheck, description: 'CFTV IP e Dispositivos IoT' },
+    { title: 'Redes & Conectividade', icon: Zap, description: 'Wi-Fi 6 e Infraestrutura' },
+    { title: 'Suporte & Hardware', icon: Monitor, description: 'ManutenÃ§Ã£o e DiagnÃ³stico' },
+    { title: 'ElÃ©trica Moderna', icon: Rocket, description: 'InstalaÃ§Ãµes e EficiÃªncia Solar' },
+  ];
+
+  return (
+    <div className="min-h-screen bg-neutral-950 text-neutral-100 selection:bg-emerald-500/30 flex flex-col">
+      
+      {/* HEADER GLOBAL (Injetado conforme padrÃ£o ConnectionCyberOS e Caminho Validado) */}
+      <Navbar />
+
+      {/* CONTEÃšDO PRINCIPAL */}
+      <main className="flex-1">
+        
+        {/* Hero Section - Visual Rico Preservado */}
+        <section className="relative pt-32 pb-20 px-4 overflow-hidden">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(16,185,129,0.15),transparent)]" />
+          <div className="max-w-5xl mx-auto text-center relative z-10 flex flex-col items-center">
+            
+            <span className="inline-block px-4 py-1.5 mb-6 text-xs font-bold tracking-widest uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full animate-in fade-in zoom-in duration-700 focus:outline-none">
+              Iniciativa Primeiro Emprego & RecolocaÃ§Ã£o
+            </span>
+            
+            <h1 className="text-5xl md:text-7xl font-black mb-8 bg-clip-text text-transparent bg-gradient-to-b from-white to-neutral-500 tracking-tight leading-tight">
+              Transformando Potencial <br /> em ProntidÃ£o TÃ©cnica.
+            </h1>
+            
+            <p className="text-lg md:text-xl text-neutral-400 mb-10 leading-relaxed max-w-3xl mx-auto">
+              A ponte definitiva entre quem quer trabalhar e quem precisa contratar. 
+              CapacitaÃ§Ã£o tecnolÃ³gica contextualizada sob a governanÃ§a 
+              <span className="text-emerald-500 font-semibold italic ml-1 focus:outline-none">ConnectionCyberOS</span>.
+            </p>
+
+            <div className="flex flex-col items-center gap-6 w-full max-w-md">
+              {/* INJEÃ‡ÃƒO FUNCIONAL: Componente Client de Captura */}
+              <PrimeiroEmpregoForm />
+              
+              <p className="text-xs text-neutral-600">
+                Junte-se a lista de espera para receber novidades em 
+                <span className="text-emerald-500 font-medium ml-1">contatos@cyberconnection.com.br</span>
+              </p>
+            </div>
+
+          </div>
+        </section>
+
+        {/* Trilhas de FormaÃ§Ã£o (Layout Grid Preservado) */}
+        <section className="py-24 px-4 bg-neutral-900/20 border-y border-neutral-900">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl font-bold mb-4 uppercase tracking-tighter">Trilhas de EspecializaÃ§Ã£o Contextual</h2>
+              <p className="text-neutral-500">FormaÃ§Ã£o tÃ©cnica focada na realidade do mercado 4.0</p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
+              {trilhas.map((trilha, i) => (
+                <FeatureCard key={i} {...trilha} />
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* O Diferencial VaultMind (SeÃ§Ã£o Preservada) */}
+        <section className="py-24 px-4">
+          <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-16 items-center">
+            <div className="order-2 md:order-1">
+              <h2 className="text-4xl font-bold mb-6 leading-tight">
+                Metodologia Transversal com <span className="text-emerald-500 text-glow">IA e InteligÃªncia Profissional.</span>
+              </h2>
+              <ul className="space-y-4">
+                {[
+                  'DomÃ­nio de IA para produtividade em todas as Ã¡reas.',
+                  'GestÃ£o de carreira com LinkedIn estratÃ©gico.',
+                  'NoÃ§Ãµes de MEI e Contabilidade integrada.',
+                  'SimulaÃ§Ã£o de Empresa FictÃ­cia para prÃ¡tica real.'
+                ].map((item, i) => (
+                  <li key={i} className="flex items-start gap-3 text-neutral-400">
+                    <CheckCircle2 className="w-6 h-6 text-emerald-500 shrink-0" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            
+            <div className="order-1 md:order-2 aspect-video bg-neutral-900 rounded-3xl border border-neutral-800 flex items-center justify-center p-8 relative overflow-hidden group">
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-3xl blur opacity-20 group-hover:opacity-30 transition-opacity" />
+                <div className="relative text-center z-10">
+                  <Monitor className="w-16 h-16 text-neutral-700 mx-auto mb-4 group-hover:text-emerald-500 transition-colors" />
+                  <p className="text-neutral-500 font-mono text-sm uppercase tracking-widest">Preview: VaultMindOS Academy Module</p>
+                </div>
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+      {/* RODAPÃ‰ GLOBAL (Preservado e Caminho Corrigido) */}
+      <PoweredByFooter />
+      
+    </div>
+  );
+}
+```
+
+---
+
+## FILE: \web\src\app\(public)\primeiro-emprego\PrimeiroEmpregoForm.tsx
+```typescript
+"use client";
+
+import { useActionState } from "react";
+import { registrarInteresse } from "./actions";
+import { Mail, Loader2, ArrowRight, CheckCircle, AlertCircle } from "lucide-react";
+
+export function PrimeiroEmpregoForm() {
+  // Hook nativo do Next.js 15 para gerenciar Server Actions com estado
+  const [state, action, isPending] = useActionState(registrarInteresse, null);
+
+  // Se o cadastro for bem-sucedido, mostramos o card de sucesso (preservando o visual original)
+  if (state?.success) {
+    return (
+      <div className="p-6 bg-emerald-500/10 border border-emerald-500/20 rounded-xl flex items-center gap-3 text-emerald-400 animate-in fade-in slide-in-from-bottom-4">
+        <CheckCircle className="w-6 h-6 shrink-0" />
+        <div>
+          <span className="font-bold block">Sucesso!</span>
+          <span className="text-sm opacity-90">{state.message}</span>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <form action={action} className="flex flex-col gap-4 w-full max-w-md mx-auto sm:mx-0">
+      
+      <div className="flex flex-col gap-2 text-left">
+        {/* Inputs Ocultos (LÃ³gica de NegÃ³cio) */}
+        <input type="hidden" name="trilha" value="geral" />
+        <input type="hidden" name="perfil" value="aluno" />
+        
+        {/* Input de E-mail com Visual Glow */}
+        <div className="relative group">
+            <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-xl blur opacity-20 group-hover:opacity-40 transition duration-500"></div>
+            <div className="relative flex items-center bg-neutral-900 rounded-xl border border-neutral-800 focus-within:border-emerald-500 transition-colors">
+                <Mail className="absolute left-4 w-5 h-5 text-neutral-500" />
+                <input 
+                  type="email" 
+                  name="email" 
+                  required 
+                  placeholder="Digite seu melhor e-mail..."
+                  className="w-full bg-transparent px-4 py-4 pl-12 text-white placeholder:text-neutral-500 outline-none rounded-xl"
+                />
+            </div>
+        </div>
+      </div>
+      
+      {/* Feedback de Erro */}
+      {state?.success === false && (
+         <div className="text-red-400 text-sm flex items-center gap-2 px-1">
+            <AlertCircle className="w-4 h-4" /> {state.message}
+         </div>
+      )}
+      
+      {/* BotÃ£o de Submit */}
+      <button 
+        type="submit" 
+        disabled={isPending}
+        className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-500 disabled:bg-emerald-800 disabled:cursor-not-allowed text-white px-8 py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all group shadow-lg shadow-emerald-900/20"
+      >
+        {isPending ? (
+          <>
+            <Loader2 className="w-5 h-5 animate-spin" /> Registrando...
+          </>
+        ) : (
+          <>
+            Quero me inscrever na lista de espera
+            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+          </>
+        )}
+      </button>
+    </form>
+  );
+}
+```
+
+---
+
+## FILE: \web\src\app\(public)\primeiro-emprego\rascunho\form.tsx
+```typescript
+'use client'
+
+import { useFormStatus } from "react-dom";
+import { registrarInteresse } from "./actions"; // Importa sua Action
+import { ArrowRight, Loader2, CheckCircle, AlertCircle } from "lucide-react";
+import { useState } from "react";
+
+function SubmitButton() {
+  const { pending } = useFormStatus();
+
+  return (
+    <button 
+      type="submit" 
+      disabled={pending}
+      className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-500 disabled:bg-emerald-800 disabled:cursor-not-allowed text-white px-8 py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all group shadow-lg shadow-emerald-900/20"
+    >
+      {pending ? (
+        <>
+          <Loader2 className="w-5 h-5 animate-spin" /> Registrando...
+        </>
+      ) : (
+        <>
+          Quero me inscrever na lista de espera
+          <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+        </>
+      )}
+    </button>
+  );
+}
+
+export function LeadForm() {
+  const [state, setState] = useState<{ success: boolean; message: string } | null>(null);
+
+  async function clientAction(formData: FormData) {
+    const result = await registrarInteresse(formData);
+    setState(result);
+  }
+
+  if (state?.success) {
+    return (
+      <div className="p-6 bg-emerald-500/10 border border-emerald-500/20 rounded-xl flex items-center gap-3 text-emerald-400 animate-in fade-in slide-in-from-bottom-4">
+        <CheckCircle className="w-6 h-6 shrink-0" />
+        <div>
+          <span className="font-bold block">Sucesso!</span>
+          <span className="text-sm opacity-90">{state.message}</span>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <form action={clientAction} className="flex flex-col gap-4 w-full max-w-md mx-auto sm:mx-0">
+      <div className="flex flex-col gap-2 text-left">
+        {/* Input Oculto para definir o perfil */}
+        <input type="hidden" name="perfil" value="aluno" />
+        
+        <div className="relative group">
+            <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-xl blur opacity-20 group-hover:opacity-40 transition duration-500"></div>
+            <input 
+              type="email" 
+              name="email" 
+              required 
+              placeholder="Digite seu melhor e-mail..."
+              className="relative w-full bg-neutral-900 border border-neutral-800 focus:border-emerald-500 rounded-xl px-4 py-4 text-white placeholder:text-neutral-500 outline-none transition-all shadow-xl"
+            />
+        </div>
+      </div>
+      
+      {state?.success === false && (
+         <div className="text-red-400 text-sm flex items-center gap-2">
+            <AlertCircle className="w-4 h-4" /> {state.message}
+         </div>
+      )}
+      
+      <SubmitButton />
+    </form>
   );
 }
 ```
@@ -9286,413 +11594,6 @@ export default function ForgotPassword() {
 
 ---
 
-## FILE: \web\src\app\primeiro-emprego\actions.ts
-```typescript
-"use server";
-
-import { createClient } from "@/utils/supabase/server";
-import { LeadProjeto, ActionResponse } from "@/types/database";
-import { Resend } from "resend";
-import { getWelcomeEmailTemplate } from "@/lib/emails";
-import { revalidatePath } from "next/cache";
-
-// InicializaÃ§Ã£o segura do Resend
-const resend = process.env.RESEND_API_KEY 
-  ? new Resend(process.env.RESEND_API_KEY) 
-  : null;
-
-/**
- * Server Action para o FormulÃ¡rio "Primeiro Emprego"
- * Stack: Next.js 15 + Supabase + Resend
- */
-export async function registrarInteresse(
-  prevState: ActionResponse | null,
-  formData: FormData
-): Promise<ActionResponse> {
-  
-  // ---------------------------------------------------------
-  // ðŸ›¡ï¸ VALIDAÃ‡ÃƒO DE INTEGRIDADE (FIX PARA BUILD VERCEL)
-  // ---------------------------------------------------------
-  // Se por algum motivo o formData chegar nulo (erro de runtime anterior),
-  // nÃ³s interceptamos aqui antes de tentar ler ".get".
-  if (!formData || typeof formData.get !== 'function') {
-    console.error("[CRITICAL] FormData invÃ¡lido ou ausente.");
-    return { success: false, message: "Erro tÃ©cnico: Dados do formulÃ¡rio nÃ£o recebidos." };
-  }
-
-  const supabase = await createClient();
-
-  // 1. ExtraÃ§Ã£o e SanitizaÃ§Ã£o
-  const rawData: LeadProjeto = {
-    email: (formData.get("email") as string)?.trim().toLowerCase() || "",
-    perfil: (formData.get("perfil") as string) || "nao_informado",
-    trilha_interesse: (formData.get("trilha") as string) || "geral",
-    origem: "landing_page_espera"
-  };
-
-  // 2. ValidaÃ§Ã£o BÃ¡sica
-  if (!rawData.email || !rawData.email.includes("@")) {
-    return { success: false, message: "Por favor, insira um e-mail vÃ¡lido." };
-  }
-
-  try {
-    // 3. InserÃ§Ã£o no Supabase
-    const { error } = await supabase
-      .from("leads_projeto_primeiro_emprego")
-      .insert([rawData]);
-
-    if (error) {
-      if (error.code === '23505') {
-        return { success: true, message: "Este e-mail jÃ¡ estÃ¡ na nossa lista de espera!" };
-      }
-      console.error("Erro Supabase:", error);
-      throw error;
-    }
-
-    // 4. Disparo de E-mail (Resend)
-    if (resend) {
-        try {
-            const template = getWelcomeEmailTemplate({ 
-                nome: "Futuro Profissional", 
-                trilha: rawData.trilha_interesse 
-            });
-            
-            await resend.emails.send({
-                from: 'VaultMindOS <contatos@cyberconnection.com.br>',
-                to: rawData.email,
-                subject: template.subject,
-                html: template.html,
-            });
-        } catch (emailError) {
-            console.error("[EMAIL ERROR]", emailError);
-        }
-    }
-
-    // 5. FinalizaÃ§Ã£o
-    revalidatePath("/primeiro-emprego");
-    return { success: true, message: "Cadastro realizado! Verifique seu e-mail de boas-vindas." };
-    
-  } catch (error) {
-    return { success: false, message: "Erro ao conectar com o servidor. Tente novamente." };
-  }
-}
-```
-
----
-
-## FILE: \web\src\app\primeiro-emprego\page.tsx
-```typescript
-import React from 'react';
-import Link from 'next/link';
-import Image from 'next/image'; 
-// ATUALIZAÃ‡ÃƒO CRÃTICA: Importamos o novo formulÃ¡rio corrigido (Client Component)
-import { PrimeiroEmpregoForm } from './PrimeiroEmpregoForm';
-import { PoweredByFooter } from "@/components/ui/PoweredByFooter"; 
-import { FeatureCard } from '@/components/ui/FeatureCard';
-import { 
-  CheckCircle2, 
-  ShieldCheck, 
-  Monitor, 
-  Zap,
-  Users,
-  Rocket
-} from 'lucide-react';
-
-export default function PrimeiroEmpregoLanding() {
-  // Dados das trilhas (Mantidos)
-  const trilhas = [
-    { title: 'Administrativa 4.0', icon: Users, description: 'GestÃ£o, ERP e Rotinas Digitais' },
-    { title: 'SeguranÃ§a & AutomaÃ§Ã£o', icon: ShieldCheck, description: 'CFTV IP e Dispositivos IoT' },
-    { title: 'Redes & Conectividade', icon: Zap, description: 'Wi-Fi 6 e Infraestrutura' },
-    { title: 'Suporte & Hardware', icon: Monitor, description: 'ManutenÃ§Ã£o e DiagnÃ³stico' },
-    { title: 'ElÃ©trica Moderna', icon: Rocket, description: 'InstalaÃ§Ãµes e EficiÃªncia Solar' },
-  ];
-
-  return (
-    <div className="min-h-screen bg-neutral-950 text-neutral-100 selection:bg-emerald-500/30 flex flex-col">
-      
-      {/* HEADER (Mantido visualmente idÃªntico) */}
-      <nav className="border-b border-neutral-800 bg-neutral-950/50 backdrop-blur-md sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-          
-          {/* Logo */}
-          <div className="flex items-center gap-2">
-            <Link href="/" className="hover:opacity-80 transition-opacity relative w-40 h-10">
-                 <Image 
-                    src="/logo-vaultmind.png" 
-                    alt="VaultMindOS" 
-                    fill 
-                    className="object-contain object-left"
-                    priority
-                />
-            </Link>
-          </div>
-
-          {/* BotÃ£o Login */}
-          <Link href="/login" className="bg-neutral-900 border border-neutral-800 hover:bg-neutral-800 text-white px-5 py-2 rounded-full text-sm font-medium transition-all hover:border-emerald-500/50">
-            JÃ¡ sou Aluno
-          </Link>
-        </div>
-      </nav>
-
-      {/* CONTEÃšDO PRINCIPAL */}
-      <main className="flex-1">
-        
-        {/* Hero Section */}
-        <header className="relative py-24 px-4 overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(16,185,129,0.1),transparent)]" />
-          <div className="max-w-4xl mx-auto text-center relative z-10 flex flex-col items-center">
-            
-            <span className="inline-block px-4 py-1.5 mb-6 text-xs font-bold tracking-widest uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full animate-in fade-in zoom-in duration-700">
-              Iniciativa Primeiro Emprego & RecolocaÃ§Ã£o
-            </span>
-            
-            <h1 className="text-5xl md:text-7xl font-extrabold mb-8 bg-clip-text text-transparent bg-gradient-to-b from-white to-neutral-400 tracking-tight leading-tight">
-              Transformando Potencial em ProntidÃ£o.
-            </h1>
-            
-            <p className="text-lg md:text-xl text-neutral-400 mb-10 leading-relaxed max-w-2xl">
-              A ponte definitiva entre quem quer trabalhar e quem precisa contratar. 
-              Uma metodologia inovadora de capacitaÃ§Ã£o tÃ©cnica contextualizada dentro do ecossistema VaultMindOS.
-            </p>
-
-            <div className="flex flex-col items-center gap-6 w-full max-w-md">
-              {/* AQUI ESTÃ A MUDANÃ‡A: Usando o novo componente */}
-              <PrimeiroEmpregoForm />
-              
-              <p className="text-xs text-neutral-600">
-                  Junte-se a lista de espera para receber novidades em 
-                  <span className="text-emerald-500 font-medium"> contatos@cyberconnection.com.br</span>
-              </p>
-            </div>
-
-          </div>
-        </header>
-
-        {/* Trilhas de FormaÃ§Ã£o */}
-        <section className="py-20 px-4 bg-neutral-900/30 border-y border-neutral-900">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl font-bold mb-4">Trilhas de EspecializaÃ§Ã£o Contextual</h2>
-              <p className="text-neutral-500">VocÃª nÃ£o aprende apenas a ferramenta. VocÃª aprende a profissÃ£o.</p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
-              {trilhas.map((trilha, i) => (
-                <FeatureCard key={i} {...trilha} />
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* O Diferencial VaultMind */}
-        <section className="py-24 px-4">
-          <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-16 items-center">
-            <div className="order-2 md:order-1">
-              <h2 className="text-4xl font-bold mb-6 leading-tight">
-                Metodologia Transversal com <span className="text-emerald-500 text-glow">IA e InteligÃªncia Profissional.</span>
-              </h2>
-              <ul className="space-y-4">
-                {[
-                  'DomÃ­nio de IA para produtividade em todas as Ã¡reas.',
-                  'GestÃ£o de carreira com LinkedIn estratÃ©gico.',
-                  'NoÃ§Ãµes de MEI e Contabilidade integrada.',
-                  'SimulaÃ§Ã£o de Empresa FictÃ­cia para prÃ¡tica real.'
-                ].map((item, i) => (
-                  <li key={i} className="flex items-start gap-3 text-neutral-400">
-                    <CheckCircle2 className="w-6 h-6 text-emerald-500 shrink-0" />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            
-            <div className="order-1 md:order-2 aspect-video bg-neutral-900 rounded-3xl border border-neutral-800 flex items-center justify-center p-8 relative overflow-hidden group">
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-3xl blur opacity-20 group-hover:opacity-30 transition-opacity" />
-                <div className="relative text-center z-10">
-                  <Monitor className="w-16 h-16 text-neutral-700 mx-auto mb-4 group-hover:text-emerald-500 transition-colors" />
-                  <p className="text-neutral-500 font-mono text-sm">Preview: VaultMindOS Academy Module</p>
-                </div>
-            </div>
-          </div>
-        </section>
-
-      </main>
-
-      {/* RODAPÃ‰ GLOBAL */}
-      <PoweredByFooter />
-      
-    </div>
-  );
-}
-```
-
----
-
-## FILE: \web\src\app\primeiro-emprego\PrimeiroEmpregoForm.tsx
-```typescript
-"use client";
-
-import { useActionState } from "react";
-import { registrarInteresse } from "./actions";
-import { Mail, Loader2, ArrowRight, CheckCircle, AlertCircle } from "lucide-react";
-
-export function PrimeiroEmpregoForm() {
-  // Hook nativo do Next.js 15 para gerenciar Server Actions com estado
-  const [state, action, isPending] = useActionState(registrarInteresse, null);
-
-  // Se o cadastro for bem-sucedido, mostramos o card de sucesso (preservando o visual original)
-  if (state?.success) {
-    return (
-      <div className="p-6 bg-emerald-500/10 border border-emerald-500/20 rounded-xl flex items-center gap-3 text-emerald-400 animate-in fade-in slide-in-from-bottom-4">
-        <CheckCircle className="w-6 h-6 shrink-0" />
-        <div>
-          <span className="font-bold block">Sucesso!</span>
-          <span className="text-sm opacity-90">{state.message}</span>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <form action={action} className="flex flex-col gap-4 w-full max-w-md mx-auto sm:mx-0">
-      
-      <div className="flex flex-col gap-2 text-left">
-        {/* Inputs Ocultos (LÃ³gica de NegÃ³cio) */}
-        <input type="hidden" name="trilha" value="geral" />
-        <input type="hidden" name="perfil" value="aluno" />
-        
-        {/* Input de E-mail com Visual Glow */}
-        <div className="relative group">
-            <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-xl blur opacity-20 group-hover:opacity-40 transition duration-500"></div>
-            <div className="relative flex items-center bg-neutral-900 rounded-xl border border-neutral-800 focus-within:border-emerald-500 transition-colors">
-                <Mail className="absolute left-4 w-5 h-5 text-neutral-500" />
-                <input 
-                  type="email" 
-                  name="email" 
-                  required 
-                  placeholder="Digite seu melhor e-mail..."
-                  className="w-full bg-transparent px-4 py-4 pl-12 text-white placeholder:text-neutral-500 outline-none rounded-xl"
-                />
-            </div>
-        </div>
-      </div>
-      
-      {/* Feedback de Erro */}
-      {state?.success === false && (
-         <div className="text-red-400 text-sm flex items-center gap-2 px-1">
-            <AlertCircle className="w-4 h-4" /> {state.message}
-         </div>
-      )}
-      
-      {/* BotÃ£o de Submit */}
-      <button 
-        type="submit" 
-        disabled={isPending}
-        className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-500 disabled:bg-emerald-800 disabled:cursor-not-allowed text-white px-8 py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all group shadow-lg shadow-emerald-900/20"
-      >
-        {isPending ? (
-          <>
-            <Loader2 className="w-5 h-5 animate-spin" /> Registrando...
-          </>
-        ) : (
-          <>
-            Quero me inscrever na lista de espera
-            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-          </>
-        )}
-      </button>
-    </form>
-  );
-}
-```
-
----
-
-## FILE: \web\src\app\primeiro-emprego\rascunho\form.tsx
-```typescript
-'use client'
-
-import { useFormStatus } from "react-dom";
-import { registrarInteresse } from "./actions"; // Importa sua Action
-import { ArrowRight, Loader2, CheckCircle, AlertCircle } from "lucide-react";
-import { useState } from "react";
-
-function SubmitButton() {
-  const { pending } = useFormStatus();
-
-  return (
-    <button 
-      type="submit" 
-      disabled={pending}
-      className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-500 disabled:bg-emerald-800 disabled:cursor-not-allowed text-white px-8 py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all group shadow-lg shadow-emerald-900/20"
-    >
-      {pending ? (
-        <>
-          <Loader2 className="w-5 h-5 animate-spin" /> Registrando...
-        </>
-      ) : (
-        <>
-          Quero me inscrever na lista de espera
-          <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-        </>
-      )}
-    </button>
-  );
-}
-
-export function LeadForm() {
-  const [state, setState] = useState<{ success: boolean; message: string } | null>(null);
-
-  async function clientAction(formData: FormData) {
-    const result = await registrarInteresse(formData);
-    setState(result);
-  }
-
-  if (state?.success) {
-    return (
-      <div className="p-6 bg-emerald-500/10 border border-emerald-500/20 rounded-xl flex items-center gap-3 text-emerald-400 animate-in fade-in slide-in-from-bottom-4">
-        <CheckCircle className="w-6 h-6 shrink-0" />
-        <div>
-          <span className="font-bold block">Sucesso!</span>
-          <span className="text-sm opacity-90">{state.message}</span>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <form action={clientAction} className="flex flex-col gap-4 w-full max-w-md mx-auto sm:mx-0">
-      <div className="flex flex-col gap-2 text-left">
-        {/* Input Oculto para definir o perfil */}
-        <input type="hidden" name="perfil" value="aluno" />
-        
-        <div className="relative group">
-            <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-xl blur opacity-20 group-hover:opacity-40 transition duration-500"></div>
-            <input 
-              type="email" 
-              name="email" 
-              required 
-              placeholder="Digite seu melhor e-mail..."
-              className="relative w-full bg-neutral-900 border border-neutral-800 focus:border-emerald-500 rounded-xl px-4 py-4 text-white placeholder:text-neutral-500 outline-none transition-all shadow-xl"
-            />
-        </div>
-      </div>
-      
-      {state?.success === false && (
-         <div className="text-red-400 text-sm flex items-center gap-2">
-            <AlertCircle className="w-4 h-4" /> {state.message}
-         </div>
-      )}
-      
-      <SubmitButton />
-    </form>
-  );
-}
-```
-
----
-
 ## FILE: \web\src\app\update-password\actions.ts
 ```typescript
 'use server'
@@ -9937,6 +11838,25 @@ export function Navbar() {
 
 ---
 
+## FILE: \web\src\components\PoweredByFooter.tsx
+```typescript
+import { Shield } from "lucide-react";
+
+export function PoweredByFooter() {
+  return (
+    <div className="w-full py-8 border-t border-neutral-900 bg-neutral-950 flex flex-col items-center justify-center gap-2 text-neutral-600">
+      <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em]">
+        <Shield className="w-3 h-3" />
+        Powered by ConnectionCyberOS
+      </div>
+      <p className="text-[10px] text-neutral-700">Governance & Security Protocol â€¢ 2026</p>
+    </div>
+  );
+}
+```
+
+---
+
 ## FILE: \web\src\components\SystemStatus.tsx
 ```typescript
 export default function SystemStatus() {
@@ -10116,6 +12036,32 @@ export const getWelcomeEmailTemplate = ({ nome = "Futuro Profissional", trilha }
 
 ## FILE: \web\src\types\database.ts
 ```typescript
+// M07 â€” Tipagem oficial do mÃ³dulo de dados
+
+export interface Course {
+  id: string;
+  slug: string;
+  title: string;
+  description: string | null;
+  level: string | null;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Lesson {
+  id: string;
+  course_id: string;
+  slug: string;
+  title: string;
+  description: string | null;
+  video_url: string | null;
+  order_index: number;
+  is_preview: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
 ```
 
 ---

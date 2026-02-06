@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>VaultMindOS – Experience Presentation</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg-dark: #050810;
+      --accent-blue: #0ea5e9;
+      --accent-cyan: #a5f3fc;
+      --accent-orange: #f97316;
+      --text-gray: #9ca3af;
+      --card-bg: rgba(15, 23, 42, 0.6);
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg-dark);
+      color: #f5f5f5;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      overflow: hidden;
+      background-image: radial-gradient(circle at 50% 50%, #111827 0%, #050810 100%);
+    }
+
+    .slide {
+      display: none;
+      padding: 60px;
+      height: 100vh;
+      box-sizing: border-box;
+      flex-direction: column;
+      justify-content: center;
+      animation: fadeIn 0.8s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .slide.active {
+      display: flex;
+    }
+
+    /* Typography */
+    h1 {
+      font-size: 3.5rem;
+      margin: 0;
+      background: linear-gradient(to right, #fff, var(--accent-blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -1px;
+    }
+
+    h2 {
+      color: var(--accent-cyan);
+      font-size: 1.8rem;
+      font-weight: 400;
+      margin-top: 10px;
+    }
+
+    p {
+      font-size: 1.2rem;
+      color: #d1d5db;
+      max-width: 800px;
+    }
+
+    /* Quotes */
+    .quote {
+      margin-top: 40px;
+      padding-left: 20px;
+      border-left: 4px solid var(--accent-orange);
+      font-style: italic;
+      color: var(--text-gray);
+    }
+
+    .quote-author {
+      display: block;
+      margin-top: 8px;
+      font-weight: 700;
+      font-style: normal;
+      color: var(--accent-orange);
+      font-size: 0.9rem;
+      text-transform: uppercase;
+    }
+
+    /* Elements */
+    .logo-row {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      margin-bottom: 40px;
+    }
+
+    .logo-row img {
+      height: 80px;
+      filter: drop-shadow(0 0 10px rgba(14, 165, 233, 0.3));
+    }
+
+    .grid-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      margin-top: 30px;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
+      margin-bottom: 12px;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+    }
+
+    li::before {
+      content: "→";
+      color: var(--accent-blue);
+      margin-right: 12px;
+      font-weight: bold;
+    }
+
+    .nav-buttons {
+      position: fixed;
+      bottom: 40px;
+      right: 60px;
+      display: flex;
+      gap: 20px;
+      z-index: 100;
+    }
+
+    button {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 12px 28px;
+      border-radius: 50px;
+      color: #fff;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      backdrop-filter: blur(10px);
+    }
+
+    button:hover {
+      background: var(--accent-blue);
+      border-color: var(--accent-blue);
+      transform: translateY(-2px);
+    }
+
+    .progress-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      height: 4px;
+      background: var(--accent-blue);
+      transition: width 0.3s;
+    }
+  </style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+
+<div class="slide active">
+  <div class="logo-row">
+    <img src="vaultmind-logo.png" alt="VaultMindOS" />
+    <img src="connectioncyber-logo.png" alt="ConnectionCyberOS" />
+  </div>
+  <h1>VaultMindOS</h1>
+  <h2>by ConnectionCyber</h2>
+  <p>Acelerando o futuro da nova geração de talentos.</p>
+  <div class="quote">
+    "O futuro pertence àqueles que se preparam para ele hoje."
+    <span class="quote-author">Malcolm X</span>
+  </div>
+</div>
+
+<div class="slide">
+  <h1>O Desafio Real</h1>
+  <div class="grid-content">
+    <div>
+      <p>O gap entre a escola e o mercado nunca foi tão grande. Jovens enfrentam:</p>
+      <ul>
+        <li>Ansiedade pela falta de experiência</li>
+        <li>Currículos vazios e sem estratégia</li>
+        <li>Invisibilidade perante algoritmos de RH</li>
+      </ul>
+    </div>
+    <div class="quote">
+      "Seus clientes mais insatisfeitos são sua maior fonte de aprendizado."
+      <span class="quote-author">Bill Gates</span>
+    </div>
+  </div>
+</div>
+
+<div class="slide">
+  <h1>VaultMindOS</h1>
+  <p>Não é um curso. É um sistema operacional de carreira.</p>
+  <div class="grid-content">
+    <ul>
+      <li>Trilhas de formação prática</li>
+      <li>Simuladores de ambiente corporativo</li>
+      <li>Construção de portfólio real</li>
+    </ul>
+    <div class="quote">
+      "Inovação é o que distingue um líder de um seguidor."
+      <span class="quote-author">Steve Jobs</span>
+    </div>
+  </div>
+</div>
+
+<div class="slide">
+  <h1>Três Pilares de Impacto</h1>
+  <div class="grid-content">
+    <div>
+      <h3 style="color:var(--accent-orange)">01. Informação</h3>
+      <p style="font-size: 1rem">Conteúdo curado para o mundo real.</p>
+      <h3 style="color:var(--accent-orange)">02. Formação</h3>
+      <p style="font-size: 1rem">Prática intensa e simulações.</p>
+      <h3 style="color:var(--accent-orange)">03. Oportunidade</h3>
+      <p style="font-size: 1rem">Conexão direta com o mercado.</p>
+    </div>
+    <div class="quote">
+      "A única maneira de fazer um excelente trabalho é amar o que você faz."
+      <span class="quote-author">Steve Jobs</span>
+    </div>
+  </div>
+</div>
+
+<div class="slide">
+  <h1>A Jornada Guiada</h1>
+  <p>Do primeiro clique à assinatura do contrato.</p>
+  <div class="grid-content" style="grid-template-columns: 1.5fr 1fr;">
+    <ul style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+      <li>Acesso & Perfil</li>
+      <li>Trilhas Customizadas</li>
+      <li>Simulações de RH</li>
+      <li>Currículo Inteligente</li>
+      <li>Match com Vagas</li>
+      <li>Suporte Pós-Contratação</li>
+    </ul>
+    <div class="quote">
+      "O sucesso é um mestre terrível. Ele convence as pessoas inteligentes de que elas não podem perder."
+      <span class="quote-author">Bill Gates</span>
+    </div>
+  </div>
+</div>
+
+<div class="slide">
+  <h1>Valor Corporativo</h1>
+  <p>Recrutar jovens talentos não precisa ser um risco.</p>
+  <div class="grid-content">
+    <ul>
+      <li>Talentos pré-validados</li>
+      <li>Redução drástica de turnover</li>
+      <li>Responsabilidade social mensurável</li>
+    </ul>
+    <div class="quote">
+      "A gestão é, acima de tudo, prática onde a arte, a ciência e a técnica se encontram."
+      <span class="quote-author">Henry Mintzberg</span>
+    </div>
+  </div>
+</div>
+
+<div class="slide">
+  <h1>Arquitetura do Futuro</h1>
+  <p>Escalabilidade com foco em dados e IA.</p>
+  <div class="grid-content">
+    <ul>
+      <li>Base de dados unificada</li>
+      <li>Blueprint de validação constante</li>
+      <li>Roadmap para integração de IA Generativa</li>
+    </ul>
+    <div class="quote">
+      "A tecnologia é apenas uma ferramenta. No que diz respeito a motivar as crianças e fazê-las trabalhar juntas, o professor é o mais importante."
+      <span class="quote-author">Bill Gates</span>
+    </div>
+  </div>
+</div>
+
+<div class="slide">
+  <div class="logo-row">
+    <img src="vaultmind-logo.png" alt="VaultMindOS" />
+  </div>
+  <h1>Vamos abrir essa porta juntos?</h1>
+  <p>VaultMindOS: Onde o potencial encontra a oportunidade.</p>
+  <div class="quote">
+    "Sempre parece impossível até que seja feito."
+    <span class="quote-author">Nelson Mandela</span>
+  </div>
+</div>
+
+<div class="nav-buttons">
+  <button onclick="prevSlide()">Anterior</button>
+  <button onclick="nextSlide()">Próximo</button>
+</div>
+
+<script>
+  let currentSlide = 0;
+  const slides = document.querySelectorAll('.slide');
+  const progress = document.getElementById('progress');
+
+  function updateProgress() {
+    const percent = ((currentSlide + 1) / slides.length) * 100;
+    progress.style.width = percent + '%';
+  }
+
+  function showSlide(index) {
+    slides.forEach((slide, i) => {
+      slide.classList.toggle('active', i === index);
+    });
+    updateProgress();
+  }
+
+  function nextSlide() {
+    currentSlide = (currentSlide + 1) % slides.length;
+    showSlide(currentSlide);
+  }
+
+  function prevSlide() {
+    currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+    showSlide(currentSlide);
+  }
+
+  // Atalhos de teclado
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+    if (e.key === 'ArrowLeft') prevSlide();
+  });
+
+  updateProgress();
+</script>
+
+</body>
+</html>
