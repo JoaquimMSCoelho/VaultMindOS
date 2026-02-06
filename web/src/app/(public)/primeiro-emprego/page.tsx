@@ -2,8 +2,9 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image'; 
 import { PrimeiroEmpregoForm } from './PrimeiroEmpregoForm';
-import { Navbar } from "@/components/global/Navbar";
-import { PoweredByFooter } from "@/components/global/PoweredByFooter"; 
+// FUSÃO TÉCNICA: Correção de Caminhos (Remoção de /global/ inexistente)
+import { Navbar } from "@/components/Navbar";
+import { PoweredByFooter } from "@/components/PoweredByFooter"; 
 import { FeatureCard } from '@/components/ui/FeatureCard';
 import { 
   CheckCircle2, 
@@ -28,13 +29,13 @@ export default function PrimeiroEmpregoPage() {
   return (
     <div className="min-h-screen bg-neutral-950 text-neutral-100 selection:bg-emerald-500/30 flex flex-col">
       
-      {/* HEADER GLOBAL (Injetado conforme padrão ConnectionCyberOS) */}
+      {/* HEADER GLOBAL (Injetado conforme padrão ConnectionCyberOS e Caminho Validado) */}
       <Navbar />
 
       {/* CONTEÚDO PRINCIPAL */}
       <main className="flex-1">
         
-        {/* Hero Section */}
+        {/* Hero Section - Visual Rico Preservado */}
         <section className="relative pt-32 pb-20 px-4 overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(16,185,129,0.15),transparent)]" />
           <div className="max-w-5xl mx-auto text-center relative z-10 flex flex-col items-center">
@@ -66,7 +67,7 @@ export default function PrimeiroEmpregoPage() {
           </div>
         </section>
 
-        {/* Trilhas de Formação (Mapeamento via FeatureCard validado) */}
+        {/* Trilhas de Formação (Layout Grid Preservado) */}
         <section className="py-24 px-4 bg-neutral-900/20 border-y border-neutral-900">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-16">
@@ -82,7 +83,7 @@ export default function PrimeiroEmpregoPage() {
           </div>
         </section>
 
-        {/* O Diferencial VaultMind */}
+        {/* O Diferencial VaultMind (Seção Preservada) */}
         <section className="py-24 px-4">
           <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-16 items-center">
             <div className="order-2 md:order-1">
@@ -116,7 +117,7 @@ export default function PrimeiroEmpregoPage() {
 
       </main>
 
-      {/* RODAPÉ GLOBAL (Preservado conforme Governança) */}
+      {/* RODAPÉ GLOBAL (Preservado e Caminho Corrigido) */}
       <PoweredByFooter />
       
     </div>
