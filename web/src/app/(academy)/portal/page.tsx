@@ -1,7 +1,31 @@
 ﻿import { createClient } from "@/utils/supabase/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Play, Info, Lock, Zap, LogOut, Clock, Award, PlayCircle } from "lucide-react";
+import { Play, Lock, Clock, Award, PlayCircle } from "lucide-react";
+
+// Definição de Interfaces para Tipagem Estrita
+interface LessonData {
+  id: string;
+}
+
+interface ModuleData {
+  lessons: LessonData[];
+}
+
+interface EnrollmentData {
+  status: string;
+  source: string;
+}
+
+interface CourseData {
+  id: string;
+  title: string;
+  description: string;
+  slug: string;
+  thumbnail_url: string | null;
+  modules: ModuleData[];
+  enrollments: EnrollmentData[];
+}
 
 export default async function PortalDashboard() {
   const supabase = await createClient();
@@ -43,14 +67,15 @@ export default async function PortalDashboard() {
     );
   }
 
-  const safeCourses = courses || [];
+  // Cast explícito para garantir a tipagem nos arrays
+  const safeCourses = (courses || []) as unknown as CourseData[];
   const featuredCourse = safeCourses[0];
   const otherCourses = safeCourses.slice(1);
 
-  const getProgress = (course: any) => {
-    const totalLessons = course.modules?.reduce((acc: number, mod: any) => acc + mod.lessons.length, 0) || 0;
-    const completedCount = course.modules?.reduce((acc: number, mod: any) => {
-       return acc + mod.lessons.filter((l: any) => completedLessonIds.has(l.id)).length;
+  const getProgress = (course: CourseData) => {
+    const totalLessons = course.modules?.reduce((acc: number, mod: ModuleData) => acc + mod.lessons.length, 0) || 0;
+    const completedCount = course.modules?.reduce((acc: number, mod: ModuleData) => {
+       return acc + mod.lessons.filter((l: LessonData) => completedLessonIds.has(l.id)).length;
     }, 0) || 0;
     const percent = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
     return { percent, completedCount, totalLessons };
@@ -130,7 +155,7 @@ export default async function PortalDashboard() {
                 Meus Cursos e Trilhas
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-                  {otherCourses.map((course) => {
+                  {otherCourses.map((course: CourseData) => {
                     const { percent, completedCount, totalLessons } = getProgress(course);
                     const isCompleted = percent === 100 && totalLessons > 0;
                     return (

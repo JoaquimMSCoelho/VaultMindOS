@@ -47,16 +47,19 @@ export async function registrarInteresse(
 
   try {
     // 3. Inserção no Supabase
-    const { error } = await supabase
+    // FUSÃO: Renomeação de variável para evitar shadowing e uso genérico de 'error'
+    const { error: insertError } = await supabase
       .from("leads_projeto_primeiro_emprego")
       .insert([rawData]);
 
-    if (error) {
-      if (error.code === '23505') {
+    if (insertError) {
+      // Tratamento de Duplicidade (Erro 23505)
+      if (insertError.code === '23505') {
         return { success: true, message: "Este e-mail já está na nossa lista de espera!" };
       }
-      console.error("Erro Supabase:", error);
-      throw error;
+      // Log do erro específico de inserção
+      console.error("Erro Supabase:", insertError);
+      throw insertError;
     }
 
     // 4. Disparo de E-mail (Resend)
@@ -82,7 +85,9 @@ export async function registrarInteresse(
     revalidatePath("/primeiro-emprego");
     return { success: true, message: "Cadastro realizado! Verifique seu e-mail de boas-vindas." };
     
-  } catch (error) {
+  } catch (err) {
+    // Uso da variável 'err' para evitar aviso de linter (unused var)
+    console.error("Erro crítico na Server Action:", err);
     return { success: false, message: "Erro ao conectar com o servidor. Tente novamente." };
   }
 }

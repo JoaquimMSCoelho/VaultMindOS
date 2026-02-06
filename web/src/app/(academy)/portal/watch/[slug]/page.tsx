@@ -2,10 +2,9 @@ import { createClient } from "@/utils/supabase/server";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, PlayCircle, Lock } from "lucide-react"; 
-// IMPORTAÇÃO: Componente interativo de Check
 import { LessonCheck } from "@/components/LessonCheck";
 
-// Definição de Tipos
+// Definição de Tipos Estritos
 type Lesson = {
   id: string;
   title: string;
@@ -13,6 +12,7 @@ type Lesson = {
   is_free: boolean;
   video_url: string;
   position: number;
+  moduleTitle?: string;
 };
 
 type Module = {
@@ -62,8 +62,8 @@ export default async function WatchPage({
     return notFound();
   }
 
-  // 3. BUSCA DE PROGRESSO
-  let completedLessonIds = new Set<string>();
+  // 3. BUSCA DE PROGRESSO (CORREÇÃO: CONST & TIPAGEM)
+  const completedLessonIds = new Set<string>();
   if (user) {
     const { data: progressData } = await supabase
       .from('user_progress')
@@ -72,30 +72,32 @@ export default async function WatchPage({
       .eq('is_completed', true);
     
     if (progressData) {
-      progressData.forEach(p => completedLessonIds.add(p.lesson_id));
+      progressData.forEach((p: { lesson_id: string }) => completedLessonIds.add(p.lesson_id));
     }
   }
 
-  // Ordenação
-  const sortedModules = (course.modules || []).sort((a: any, b: any) => a.position - b.position);
-  sortedModules.forEach((mod: any) => {
-    mod.lessons.sort((a: any, b: any) => a.position - b.position);
+  // Ordenação Técnica
+  const sortedModules: Module[] = (course.modules || []).sort((a: Module, b: Module) => a.position - b.position);
+  sortedModules.forEach((mod: Module) => {
+    mod.lessons.sort((a: Lesson, b: Lesson) => a.position - b.position);
   });
 
   // 4. INTELIGÊNCIA DE NAVEGAÇÃO
-  const allLessons = sortedModules.flatMap((m: any) => m.lessons.map((l: any) => ({ ...l, moduleTitle: m.title })));
+  const allLessons: Lesson[] = sortedModules.flatMap((m: Module) => 
+    m.lessons.map((l: Lesson) => ({ ...l, moduleTitle: m.title }))
+  );
 
   // Lógica de Seleção
-  let activeLesson = null;
+  let activeLesson: Lesson | null = null;
   if (aula) {
-    activeLesson = allLessons.find((l: any) => l.id === aula);
+    activeLesson = allLessons.find((l: Lesson) => l.id === aula) || null;
   }
   if (!activeLesson && allLessons.length > 0) {
     activeLesson = allLessons[0];
   }
 
   // Cálculo Anterior / Próximo
-  const activeIndex = allLessons.findIndex((l: any) => l.id === activeLesson?.id);
+  const activeIndex = allLessons.findIndex((l: Lesson) => l.id === activeLesson?.id);
   const prevLesson = activeIndex > 0 ? allLessons[activeIndex - 1] : null;
   const nextLesson = activeIndex < allLessons.length - 1 ? allLessons[activeIndex + 1] : null;
 
@@ -105,10 +107,9 @@ export default async function WatchPage({
   return (
     <div className="fixed inset-0 z-50 bg-[#141414] text-white flex flex-col font-sans">
       
-      {/* HEADER DE NAVEGAÇÃO (AJUSTADO: ALTA VISIBILIDADE + POSIÇÃO DIREITA) */}
+      {/* HEADER DE NAVEGAÇÃO */}
       <header className="h-20 border-b border-white/10 flex items-center justify-between px-4 md:px-6 bg-[#141414] shrink-0 gap-4">
         
-        {/* Lado Esquerdo: Voltar e Título */}
         <div className="flex items-center gap-4 md:gap-6 shrink-0 w-1/3">
           <Link 
             href="/portal" 
@@ -121,18 +122,15 @@ export default async function WatchPage({
             <span className="text-sm md:text-base font-medium hidden sm:inline">Voltar</span>
           </Link>
           <div className="h-6 w-px bg-white/10 hidden sm:block"></div>
-          {/* Título Reduzido (Escala -1) */}
           <h1 className="text-sm md:text-base font-bold text-zinc-100 truncate leading-tight opacity-80">
             {course.title}
           </h1>
         </div>
 
-        {/* CENTRO-DIREITA: CONTROLES DE NAVEGAÇÃO (MOVIDO PARA A DIREITA) */}
-        {/* justify-end empurra para a direita. pr-8 ou pr-12 ajusta a distância da barra de progresso */}
+        {/* CONTROLES DE NAVEGAÇÃO */}
         <div className="flex-1 flex justify-end pr-83 md:pr-115">
             <div className="flex items-center gap-3">
                 
-                {/* BOTÃO ANTERIOR (HIGH VISIBILITY) */}
                 {prevLesson ? (
                     <Link
                         href={`/portal/watch/${slug}?aula=${prevLesson.id}`}
@@ -143,14 +141,12 @@ export default async function WatchPage({
                         <span className="text-xs font-bold uppercase tracking-wider hidden md:inline">Anterior</span>
                     </Link>
                 ) : (
-                    // Desativado Visualmente
                     <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-zinc-900 border border-white/5 opacity-40 cursor-not-allowed text-zinc-500">
                         <ChevronLeft className="w-4 h-4" />
                         <span className="text-xs font-bold uppercase tracking-wider hidden md:inline">Anterior</span>
                     </div>
                 )}
 
-                {/* BOTÃO PRÓXIMO (HIGH VISIBILITY & DESTAQUE) */}
                 {nextLesson ? (
                     <Link
                         href={`/portal/watch/${slug}?aula=${nextLesson.id}`}
@@ -161,7 +157,6 @@ export default async function WatchPage({
                         <ChevronRight className="w-4 h-4" />
                     </Link>
                 ) : (
-                    // Desativado Visualmente
                     <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-zinc-900 border border-white/5 opacity-40 cursor-not-allowed text-zinc-500">
                         <span className="text-xs font-bold uppercase tracking-wider hidden md:inline">Próxima</span>
                         <ChevronRight className="w-4 h-4" />
@@ -170,7 +165,7 @@ export default async function WatchPage({
             </div>
         </div>
 
-        {/* Lado Direito: Barra de Progresso (Mantida, mas compacta) */}
+        {/* BARRA DE PROGRESSO */}
         <div className="flex items-center gap-4 shrink-0 hidden lg:flex w-auto justify-end">
            <div className="flex flex-col items-end gap-1">
              <div className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">
@@ -189,10 +184,9 @@ export default async function WatchPage({
       {/* ÁREA PRINCIPAL */}
       <main className="flex-1 flex flex-col lg:flex-row overflow-hidden">
         
-        {/* COLUNA 1: PLAYER DE VÍDEO + DESCRIÇÃO */}
         <div className="flex-1 bg-black flex flex-col relative overflow-y-auto custom-scrollbar">
           
-          {/* ÁREA DO VÍDEO */}
+          {/* PLAYER */}
           {activeLesson ? (
             <div className="w-full bg-zinc-950 border-b border-white/5 py-4">
                 <div className="w-full max-w-6xl mx-auto px-4">
@@ -205,7 +199,6 @@ export default async function WatchPage({
                                     autoPlay 
                                     className="w-full h-full absolute inset-0 object-contain"
                                     src={activeLesson.video_url}
-                                    poster={course.thumbnail_url}
                                 >
                                 </video>
                             ) : (
@@ -224,17 +217,15 @@ export default async function WatchPage({
              </div>
           )}
 
-          {/* DADOS DA AULA - LAYOUT SPLIT (40/60) */}
+          {/* DADOS DA AULA - SPLIT (40/60) */}
           {activeLesson && (
               <div className="p-8 max-w-6xl mx-auto w-full">
                   <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-start">
                     
-                    {/* LADO ESQUERDO: Título e Meta (40%) */}
                     <div className="lg:col-span-2 flex flex-col gap-4">
                         <h2 className="text-2xl font-bold text-white leading-tight">{activeLesson.title}</h2>
                         
                         <div className="flex items-center gap-4 text-zinc-400">
-                            {/* Botão de Conclusão */}
                             <div className="flex items-center gap-2">
                                 <LessonCheck 
                                   lessonId={activeLesson.id} 
@@ -254,7 +245,6 @@ export default async function WatchPage({
                         </div>
                     </div>
                     
-                    {/* LADO DIREITO: Descrição (60%) */}
                     <div className="lg:col-span-3 prose prose-invert max-w-none">
                         <h3 className="text-xl font-bold text-zinc-200 mb-3 mt-0">Descrição da Aula</h3>
                         <p className="text-zinc-300 text-base leading-relaxed">
@@ -268,7 +258,7 @@ export default async function WatchPage({
           )}
         </div>
 
-        {/* COLUNA 2: SIDEBAR */}
+        {/* SIDEBAR */}
         <aside className="w-full lg:w-[420px] bg-[#141414] border-l border-white/5 flex flex-col h-[40vh] lg:h-full shrink-0">
             <div className="p-6 md:p-8 border-b border-white/5 bg-[#141414] z-10">
                 <h3 className="font-bold text-xl text-white">Conteúdo</h3>
@@ -278,7 +268,7 @@ export default async function WatchPage({
             </div>
 
             <div className="flex-1 overflow-y-auto custom-scrollbar pb-20">
-                {sortedModules.map((module: any, index: number) => (
+                {sortedModules.map((module: Module, index: number) => (
                     <div key={module.id} className="border-b border-white/5 last:border-0">
                         <div className="px-6 py-4 bg-zinc-900/50 sticky top-0 z-10 backdrop-blur-sm border-y border-white/5">
                             <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider block mb-1">Módulo {index + 1}</span>
@@ -286,7 +276,7 @@ export default async function WatchPage({
                         </div>
 
                         <div>
-                            {module.lessons.map((lesson: any) => {
+                            {module.lessons.map((lesson: Lesson) => {
                                 const isActive = lesson.id === activeLesson?.id;
                                 const isCompleted = completedLessonIds.has(lesson.id);
 
@@ -298,7 +288,6 @@ export default async function WatchPage({
                                           isActive ? "bg-white/5 border-l-4 border-red-600" : "border-l-4 border-transparent"
                                       }`}
                                   >
-                                      {/* CHECKBOX SIDEBAR */}
                                       <div className="mt-1 shrink-0 z-20">
                                         <LessonCheck 
                                           lessonId={lesson.id}

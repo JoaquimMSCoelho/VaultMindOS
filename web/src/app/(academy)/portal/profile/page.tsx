@@ -1,8 +1,17 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image"; // FUSÃO: Injeção de componente nativo Next.js
 import { ChevronLeft, User, Award } from "lucide-react"; 
-import { ProfileForm } from "./ProfileForm"; // Importação do novo componente
+import { ProfileForm } from "./ProfileForm";
+
+// FUSÃO: Interface para tipagem estrita de matrículas
+interface EnrollmentData {
+  source: string;
+  status: string;
+  created_at: string;
+  courses: { title: string };
+}
 
 export default async function ProfilePage() {
   const supabase = await createClient();
@@ -30,6 +39,7 @@ export default async function ProfilePage() {
     .eq("user_id", user.id)
     .eq("status", "active");
 
+  // Nota: O TypeScript pode inferir arrays do Supabase, mas a interface garante segurança no uso abaixo.
   const isSocialProject = enrollments?.some(e => e.source === 'social_project');
   const isPremium = enrollments?.some(e => e.source === 'purchase' || e.source === 'subscription');
   const planName = isSocialProject ? "Bolsista - Projeto Primeiro Emprego" : (isPremium ? "Aluno Premium" : "Acesso Gratuito");
@@ -62,7 +72,15 @@ export default async function ProfilePage() {
                 
                 <div className="w-28 h-28 rounded-full bg-neutral-950 flex items-center justify-center mb-4 border border-neutral-800 ring-4 ring-neutral-900 overflow-hidden relative group">
                    {profile?.avatar_url ? (
-                     <img src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover transition-transform group-hover:scale-110" />
+                     /* FUSÃO: Substituição de <img> por <Image /> para otimização de LCP */
+                     <Image 
+                        src={profile.avatar_url} 
+                        alt="Avatar" 
+                        width={112} 
+                        height={112} 
+                        className="w-full h-full object-cover transition-transform group-hover:scale-110"
+                        priority
+                     />
                    ) : (
                      <User className="w-10 h-10 text-neutral-600" />
                    )}
@@ -85,16 +103,15 @@ export default async function ProfilePage() {
           {/* COLUNA DIREITA: FORMULÁRIO E DETALHES */}
           <div className="col-span-1 md:col-span-2 space-y-6">
             
-            {/* FORMULÁRIO (Refatorado para Client Component) */}
+            {/* FORMULÁRIO (Client Component) */}
             <section className="bg-neutral-900/30 border border-neutral-800 rounded-xl p-6 md:p-8 backdrop-blur-sm">
                <h3 className="text-sm font-bold uppercase tracking-wider text-emerald-500 mb-6 flex items-center gap-2">
                  <User className="w-4 h-4" /> Dados Pessoais
                </h3>
                
-               {/* Injeção do Componente Cliente */}
                <ProfileForm 
-                  fullName={profile?.full_name || ""} 
-                  email={user.email || ""} 
+                 fullName={profile?.full_name || ""} 
+                 email={user.email || ""} 
                />
             </section>
 
@@ -106,23 +123,28 @@ export default async function ProfilePage() {
                
                {enrollments && enrollments.length > 0 ? (
                  <div className="space-y-3">
-                    {enrollments.map((enrollment: any, index: number) => (
-                      <div key={index} className="flex items-center justify-between p-4 bg-neutral-950 border border-neutral-800 rounded-lg group hover:border-emerald-500/30 transition-colors">
-                          <div>
-                           <p className="font-bold text-sm text-neutral-200 group-hover:text-emerald-400 transition-colors">{enrollment.courses.title}</p>
-                           <p className="text-[10px] text-neutral-500 mt-1">Início: {new Date(enrollment.created_at).toLocaleDateString('pt-BR')}</p>
-                          </div>
-                          <div className="text-right">
-                             <span className={`text-[10px] font-bold px-2 py-1 rounded border ${
-                                 enrollment.source === 'social_project' 
-                                 ? 'bg-emerald-950 text-emerald-500 border-emerald-900' 
-                                 : 'bg-neutral-800 text-neutral-400 border-neutral-700'
-                             }`}>
-                               {enrollment.source === 'social_project' ? 'BOLSA INTEGRAL' : 'PREMIUM'}
-                             </span>
-                          </div>
-                      </div>
-                    ))}
+                    {/* FUSÃO: Aplicação da tipagem EnrollmentData no map */}
+                    {enrollments.map((enrollment: any, index: number) => {
+                      // Casting seguro para uso interno no map, garantindo compatibilidade com o retorno do Supabase
+                      const typedEnrollment = enrollment as EnrollmentData;
+                      return (
+                        <div key={index} className="flex items-center justify-between p-4 bg-neutral-950 border border-neutral-800 rounded-lg group hover:border-emerald-500/30 transition-colors">
+                            <div>
+                             <p className="font-bold text-sm text-neutral-200 group-hover:text-emerald-400 transition-colors">{typedEnrollment.courses.title}</p>
+                             <p className="text-[10px] text-neutral-500 mt-1">Início: {new Date(typedEnrollment.created_at).toLocaleDateString('pt-BR')}</p>
+                            </div>
+                            <div className="text-right">
+                               <span className={`text-[10px] font-bold px-2 py-1 rounded border ${
+                                   typedEnrollment.source === 'social_project' 
+                                   ? 'bg-emerald-950 text-emerald-500 border-emerald-900' 
+                                   : 'bg-neutral-800 text-neutral-400 border-neutral-700'
+                               }`}>
+                                 {typedEnrollment.source === 'social_project' ? 'BOLSA INTEGRAL' : 'PREMIUM'}
+                               </span>
+                            </div>
+                        </div>
+                      );
+                    })}
                  </div>
                ) : (
                  <div className="text-center py-8 text-neutral-600 text-sm bg-neutral-950/50 rounded-lg border border-dashed border-neutral-800">

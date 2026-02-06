@@ -26,17 +26,18 @@ export default async function AcademyLayout({
         {/* Logo Area (VaultMindOS) */}
         <div className="h-20 flex items-center justify-center md:justify-start md:px-6 border-b border-neutral-800 bg-neutral-900/20">
           <Link href="/portal" className="relative w-40 h-10 hidden md:block opacity-90 hover:opacity-100 transition-opacity">
-             <Image 
+              <Image 
                 src="/logo-vaultmind.png" 
-                alt="VaultMindOS" 
-                fill 
+                alt="VaultMindOS Logo" 
+                width={128} 
+                height={32} 
                 className="object-contain object-left"
                 priority
-             />
+              />
           </Link>
           {/* Logo Mobile (Ícone) */}
           <div className="md:hidden w-10 h-10 relative">
-             <div className="w-10 h-10 bg-emerald-600 rounded-lg flex items-center justify-center font-bold text-white">V</div>
+              <div className="w-10 h-10 bg-emerald-600 rounded-lg flex items-center justify-center font-bold text-white">V</div>
           </div>
         </div>
 
@@ -83,11 +84,17 @@ export default async function AcademyLayout({
                 <span className="absolute top-0 right-0 w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
               </button>
               
-              {/* Avatar do Usuário */}
+              {/* Avatar do Usuário - FUSÃO: Injeção de Inteligência Funcional Isolada */}
               <Link href="/portal/profile">
                 <div className="w-9 h-9 rounded-full bg-neutral-800 border border-neutral-700 overflow-hidden hover:border-emerald-500 transition-colors cursor-pointer relative">
                     {avatarUrl ? (
-                        <img src={avatarUrl} alt="User" className="w-full h-full object-cover" />
+                        <Image 
+                          src={avatarUrl} 
+                          alt="User Avatar" 
+                          width={36} 
+                          height={36} 
+                          className="w-full h-full object-cover"
+                        />
                     ) : (
                         <div className="w-full h-full flex items-center justify-center bg-neutral-900 text-neutral-500">
                             <User className="w-5 h-5" />

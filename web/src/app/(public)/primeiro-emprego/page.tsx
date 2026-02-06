@@ -1,9 +1,9 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image'; 
-// ATUALIZAÇÃO CRÍTICA: Importamos o novo formulário corrigido (Client Component)
 import { PrimeiroEmpregoForm } from './PrimeiroEmpregoForm';
-import { PoweredByFooter } from "@/components/ui/PoweredByFooter"; 
+import { Navbar } from "@/components/global/Navbar";
+import { PoweredByFooter } from "@/components/global/PoweredByFooter"; 
 import { FeatureCard } from '@/components/ui/FeatureCard';
 import { 
   CheckCircle2, 
@@ -11,11 +11,12 @@ import {
   Monitor, 
   Zap,
   Users,
-  Rocket
+  Rocket,
+  ArrowRight
 } from 'lucide-react';
 
-export default function PrimeiroEmpregoLanding() {
-  // Dados das trilhas (Mantidos)
+export default function PrimeiroEmpregoPage() {
+  // Dados das trilhas (Preservados e tipados para FeatureCard)
   const trilhas = [
     { title: 'Administrativa 4.0', icon: Users, description: 'Gestão, ERP e Rotinas Digitais' },
     { title: 'Segurança & Automação', icon: ShieldCheck, description: 'CFTV IP e Dispositivos IoT' },
@@ -27,70 +28,50 @@ export default function PrimeiroEmpregoLanding() {
   return (
     <div className="min-h-screen bg-neutral-950 text-neutral-100 selection:bg-emerald-500/30 flex flex-col">
       
-      {/* HEADER (Mantido visualmente idêntico) */}
-      <nav className="border-b border-neutral-800 bg-neutral-950/50 backdrop-blur-md sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-          
-          {/* Logo */}
-          <div className="flex items-center gap-2">
-            <Link href="/" className="hover:opacity-80 transition-opacity relative w-40 h-10">
-                 <Image 
-                    src="/logo-vaultmind.png" 
-                    alt="VaultMindOS" 
-                    fill 
-                    className="object-contain object-left"
-                    priority
-                />
-            </Link>
-          </div>
-
-          {/* Botão Login */}
-          <Link href="/login" className="bg-neutral-900 border border-neutral-800 hover:bg-neutral-800 text-white px-5 py-2 rounded-full text-sm font-medium transition-all hover:border-emerald-500/50">
-            Já sou Aluno
-          </Link>
-        </div>
-      </nav>
+      {/* HEADER GLOBAL (Injetado conforme padrão ConnectionCyberOS) */}
+      <Navbar />
 
       {/* CONTEÚDO PRINCIPAL */}
       <main className="flex-1">
         
         {/* Hero Section */}
-        <header className="relative py-24 px-4 overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(16,185,129,0.1),transparent)]" />
-          <div className="max-w-4xl mx-auto text-center relative z-10 flex flex-col items-center">
+        <section className="relative pt-32 pb-20 px-4 overflow-hidden">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(16,185,129,0.15),transparent)]" />
+          <div className="max-w-5xl mx-auto text-center relative z-10 flex flex-col items-center">
             
-            <span className="inline-block px-4 py-1.5 mb-6 text-xs font-bold tracking-widest uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full animate-in fade-in zoom-in duration-700">
+            <span className="inline-block px-4 py-1.5 mb-6 text-xs font-bold tracking-widest uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full animate-in fade-in zoom-in duration-700 focus:outline-none">
               Iniciativa Primeiro Emprego & Recolocação
             </span>
             
-            <h1 className="text-5xl md:text-7xl font-extrabold mb-8 bg-clip-text text-transparent bg-gradient-to-b from-white to-neutral-400 tracking-tight leading-tight">
-              Transformando Potencial em Prontidão.
+            <h1 className="text-5xl md:text-7xl font-black mb-8 bg-clip-text text-transparent bg-gradient-to-b from-white to-neutral-500 tracking-tight leading-tight">
+              Transformando Potencial <br /> em Prontidão Técnica.
             </h1>
             
-            <p className="text-lg md:text-xl text-neutral-400 mb-10 leading-relaxed max-w-2xl">
+            <p className="text-lg md:text-xl text-neutral-400 mb-10 leading-relaxed max-w-3xl mx-auto">
               A ponte definitiva entre quem quer trabalhar e quem precisa contratar. 
-              Uma metodologia inovadora de capacitação técnica contextualizada dentro do ecossistema VaultMindOS.
+              Capacitação tecnológica contextualizada sob a governança 
+              <span className="text-emerald-500 font-semibold italic ml-1 focus:outline-none">ConnectionCyberOS</span>.
             </p>
 
             <div className="flex flex-col items-center gap-6 w-full max-w-md">
-              {/* AQUI ESTÁ A MUDANÇA: Usando o novo componente */}
+              {/* INJEÇÃO FUNCIONAL: Componente Client de Captura */}
               <PrimeiroEmpregoForm />
               
               <p className="text-xs text-neutral-600">
-                  Junte-se a lista de espera para receber novidades em 
-                  <span className="text-emerald-500 font-medium"> contatos@cyberconnection.com.br</span>
+                Junte-se a lista de espera para receber novidades em 
+                <span className="text-emerald-500 font-medium ml-1">contatos@cyberconnection.com.br</span>
               </p>
             </div>
 
           </div>
-        </header>
+        </section>
 
-        {/* Trilhas de Formação */}
-        <section className="py-20 px-4 bg-neutral-900/30 border-y border-neutral-900">
+        {/* Trilhas de Formação (Mapeamento via FeatureCard validado) */}
+        <section className="py-24 px-4 bg-neutral-900/20 border-y border-neutral-900">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-16">
-              <h2 className="text-3xl font-bold mb-4">Trilhas de Especialização Contextual</h2>
-              <p className="text-neutral-500">Você não aprende apenas a ferramenta. Você aprende a profissão.</p>
+              <h2 className="text-3xl font-bold mb-4 uppercase tracking-tighter">Trilhas de Especialização Contextual</h2>
+              <p className="text-neutral-500">Formação técnica focada na realidade do mercado 4.0</p>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
@@ -127,7 +108,7 @@ export default function PrimeiroEmpregoLanding() {
                 <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-3xl blur opacity-20 group-hover:opacity-30 transition-opacity" />
                 <div className="relative text-center z-10">
                   <Monitor className="w-16 h-16 text-neutral-700 mx-auto mb-4 group-hover:text-emerald-500 transition-colors" />
-                  <p className="text-neutral-500 font-mono text-sm">Preview: VaultMindOS Academy Module</p>
+                  <p className="text-neutral-500 font-mono text-sm uppercase tracking-widest">Preview: VaultMindOS Academy Module</p>
                 </div>
             </div>
           </div>
@@ -135,7 +116,7 @@ export default function PrimeiroEmpregoLanding() {
 
       </main>
 
-      {/* RODAPÉ GLOBAL */}
+      {/* RODAPÉ GLOBAL (Preservado conforme Governança) */}
       <PoweredByFooter />
       
     </div>

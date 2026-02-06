@@ -15,7 +15,7 @@ export function ProfileForm({ fullName, email }: ProfileFormProps) {
 
   return (
     <form action={action} className="space-y-5">
-      {/* Feedback de Sucesso/Erro */}
+      {/* Feedback de Sucesso/Erro (Injeção Funcional) */}
       {state?.message && (
         <div className={`p-3 rounded-lg text-xs font-bold border ${
           state.success 

@@ -55,18 +55,15 @@ export default function Home() {
       
       <Navbar />
 
-      {/* AJUSTE 1: Mudei pt-20 para pt-16 (menos espaço pro topo) */}
       <main className="flex-1 pt-16">
         
         {/* HERO SECTION COMPACTA */}
-        {/* AJUSTE 2: py-28 -> py-12 / min-h-[80vh] -> min-h-[60vh] (Sobe tudo drasticamente) */}
         <header className="relative py-12 px-4 overflow-hidden flex flex-col items-center justify-center min-h-[60vh]">
            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-6xl h-[500px] bg-emerald-900/10 rounded-full blur-[100px] pointer-events-none" />
            <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))] pointer-events-none opacity-20"></div>
 
            <div className="max-w-5xl mx-auto text-center relative z-10">
              
-             {/* AJUSTE 3: mb-8 -> mb-6 (Aproxima badge do título) */}
              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-neutral-900/80 border border-neutral-800 backdrop-blur-sm mb-6 animate-in fade-in slide-in-from-bottom-4 duration-1000">
                <span className="relative flex h-2.5 w-2.5">
                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -75,7 +72,6 @@ export default function Home() {
                <span className="text-sm font-medium text-neutral-300">Ecossistema Integrado de Tecnologia e Educação</span>
              </div>
 
-             {/* Título Ajustado (Mantido 3xl/4xl mas com margem menor: mb-6) */}
              <h1 className="text-3xl md:text-4xl font-extrabold mb-6 tracking-tight leading-tight animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200">
                O Sistema Operacional da sua <br />
                <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-emerald-600 text-glow">
@@ -83,10 +79,9 @@ export default function Home() {
                </span>
              </h1>
              
-             {/* Subtítulo: mb-12 -> mb-8 (Aproxima texto dos botões) */}
              <p className="text-lg md:text-xl text-neutral-400 mb-8 leading-relaxed max-w-3xl mx-auto animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
                Centralize gestão, capacitação e inteligência estratégica em uma única plataforma. 
-               Do "Primeiro Emprego" à liderança executiva, o VaultMindOS conecta potenciais a resultados.
+               Do &quot;Primeiro Emprego&quot; à liderança executiva, o VaultMindOS conecta potenciais a resultados.
              </p>
 
              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-in fade-in slide-in-from-bottom-10 duration-1000 delay-500">
@@ -104,17 +99,16 @@ export default function Home() {
 
 
         {/* Nossas Áreas de Atuação - Compactada */}
-        {/* AJUSTE 4: py-24 -> py-16 (Sobe os cards para perto do Hero) */}
         <section className="py-16 bg-neutral-950 relative overflow-hidden border-t border-neutral-900">
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-emerald-900/5 rounded-full blur-[150px] pointer-events-none" />
 
-            {/* AJUSTE 5: mb-16 -> mb-10 (Aproxima título dos cards) */}
             <div className="text-center mb-10 relative z-10 px-4">
                 <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white tracking-tight">
                     Nossas Áreas de Atuação
                 </h2>
-                <p className="text-neutral-400 max-w-2xl mx-auto">
-                   Tecnologia de ponta a ponta para sua corporação.
+                {/* FUSÃO TÉCNICA: Injeção de Inteligência Funcional Isolada */}
+                <p className="text-neutral-400 italic max-w-2xl mx-auto">
+                    &quot;Transformando potencial em prontidão técnica para o mercado real.&quot;
                 </p>
             </div>
 
@@ -127,7 +121,6 @@ export default function Home() {
 
 
         {/* Why Us Section - Compactada */}
-        {/* AJUSTE 6: py-24 -> py-16 */}
         <section className="py-16 bg-neutral-900/30 relative border-y border-neutral-900">
           <div className="max-w-7xl mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
               
@@ -136,6 +129,17 @@ export default function Home() {
                        <div className="absolute inset-0 bg-gradient-to-tr from-neutral-950 via-transparent to-emerald-900/20 opacity-50 group-hover:opacity-70 transition-opacity" />
                        
                        <div className="absolute inset-4 border border-neutral-800 rounded-2xl bg-neutral-950/50 p-6 flex flex-col gap-4 backdrop-blur-md">
+                           {/* FUSÃO TÉCNICA: Otimização de Imagem injetada para compliance com Lint/LCP */}
+                           <div className="mb-4">
+                            <Image 
+                              src="/logo-vaultmind.png" 
+                              alt="VaultMindOS Logo" 
+                              width={128} 
+                              height={32} 
+                              priority 
+                              className="object-contain"
+                            />
+                           </div>
                            <div className="h-8 w-3/4 bg-neutral-800/50 rounded-lg animate-pulse" />
                            <div className="flex gap-4">
                                <div className="h-24 w-1/2 bg-neutral-800/50 rounded-lg" />
