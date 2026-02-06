@@ -197,3 +197,4 @@ export default function Home() {
     </div>
   );
 }
+// Deploy de Teste - Sincronização M07/M12 concluída em 06/02/2026
