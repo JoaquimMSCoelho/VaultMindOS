@@ -79,13 +79,19 @@ export default function LoginPage() {
             {/* Botões de Ação */}
             <div className="grid grid-cols-2 gap-4 pt-2">
               <button
-                formAction={login}
+                formAction={async (formData) => {
+                  "use server";
+                  await login(formData);
+                }}
                 className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-lg transition-all shadow-lg shadow-emerald-900/20"
               >
                 Entrar
               </button>
               <button
-                formAction={signup}
+                formAction={async (formData) => {
+                  "use server";
+                  await signup(formData);
+                }}
                 className="w-full bg-transparent hover:bg-neutral-800 text-neutral-400 hover:text-white font-medium py-3 rounded-lg border border-neutral-800 transition-all"
               >
                 Criar Conta
